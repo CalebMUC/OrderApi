@@ -6,5 +6,7 @@ namespace Minimart_Api.Services
     public interface IMyService
     {
         Task<IEnumerable<TUser>> GetEntitiesAsync();
+
+        Task<IEnumerable<TUser>> GetAsyncUserName(string UserName);
     }
 }

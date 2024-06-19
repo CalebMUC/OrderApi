@@ -14,5 +14,10 @@ namespace Minimart_Api.Services
         {
             return await _repository.GetAllAsync();
         }
+
+        public async Task<IEnumerable<TUser>> GetAsyncUserName(string UserName)
+        {
+            return await _repository.GetAsyncUserName(UserName);
+        }
     }
 }
