@@ -3,7 +3,35 @@
   "WorkspaceRootPath": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\controllers\\entitiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\repositories\\myrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:repositories\\myrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\repositories\\irepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:repositories\\irepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\models\\muchiridbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:models\\muchiridbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\caleb.muchiri\\documents\\ec\\minimart api\\data\\mydbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:data\\mydbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\caleb.muchiri\\documents\\ec\\minimart api\\models\\status.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:models\\status.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\caleb.muchiri\\documents\\ec\\minimart api\\models\\adduser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:models\\adduser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\caleb.muchiri\\documents\\ec\\minimart api\\dockerfile.original||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:dockerfile.original||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\caleb.muchiri\\documents\\ec\\minimart api\\controllers\\entitiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:controllers\\entitiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -15,23 +43,11 @@
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:services\\imyservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\repositories\\myrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:repositories\\myrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\repositories\\irepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:repositories\\irepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\caleb.muchiri\\documents\\ec\\minimart api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\caleb.muchiri\\documents\\ec\\minimart api\\models\\muchiridbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:models\\muchiridbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\caleb.muchiri\\documents\\ec\\minimart api\\models\\tuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\models\\tuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:models\\tuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -69,41 +85,149 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 4,
           "Children": [
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
-            },
-            {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "MyRepository.cs",
-              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Repositories\\MyRepository.cs",
-              "RelativeDocumentMoniker": "Repositories\\MyRepository.cs",
-              "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Repositories\\MyRepository.cs",
-              "RelativeToolTip": "Repositories\\MyRepository.cs",
-              "ViewState": "AQIAAAYAAAAAAAAAAAAAAAIAAAAaAAAA",
+              "DocumentIndex": 4,
+              "Title": "Status.cs",
+              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Models\\Status.cs",
+              "RelativeDocumentMoniker": "Models\\Status.cs",
+              "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Models\\Status.cs",
+              "RelativeToolTip": "Models\\Status.cs",
+              "ViewState": "AQIAAAIAAAAAAAAAAAAxwAUAAABFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-14T05:07:43.089Z",
+              "WhenOpened": "2024-06-18T08:49:56.143Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
+              "Title": "AddUser.cs",
+              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Models\\AddUser.cs",
+              "RelativeDocumentMoniker": "Models\\AddUser.cs",
+              "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Models\\AddUser.cs",
+              "RelativeToolTip": "Models\\AddUser.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAApAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-18T08:38:54.921Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MyDBContext.cs",
+              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Data\\MyDBContext.cs",
+              "RelativeDocumentMoniker": "Data\\MyDBContext.cs",
+              "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Data\\MyDBContext.cs",
+              "RelativeToolTip": "Data\\MyDBContext.cs",
+              "ViewState": "AQIAAAIAAAAAAAAAAIAwwAcAAAA2AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-18T06:38:23.09Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "IRepository.cs",
               "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Repositories\\IRepository.cs",
               "RelativeDocumentMoniker": "Repositories\\IRepository.cs",
               "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Repositories\\IRepository.cs",
               "RelativeToolTip": "Repositories\\IRepository.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAAvAAAA",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAAAsAAAAvAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-14T04:58:28.815Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
+              "Title": "MyRepository.cs",
+              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Repositories\\MyRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\MyRepository.cs",
+              "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Repositories\\MyRepository.cs",
+              "RelativeToolTip": "Repositories\\MyRepository.cs",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAtwCoAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-14T05:07:43.089Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "muchiriDBContext.cs",
+              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Models\\muchiriDBContext.cs",
+              "RelativeDocumentMoniker": "Models\\muchiriDBContext.cs",
+              "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Models\\muchiriDBContext.cs",
+              "RelativeToolTip": "Models\\muchiriDBContext.cs",
+              "ViewState": "AQIAADsAAAAAAAAAAAAUwBcAAAAIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-16T05:40:39.153Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Dockerfile.original",
+              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Dockerfile.original",
+              "RelativeDocumentMoniker": "Dockerfile.original",
+              "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Dockerfile.original",
+              "RelativeToolTip": "Dockerfile.original",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABgAAAApAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-06-18T06:15:12.944Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "IMyService.cs",
+              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Services\\IMyService.cs",
+              "RelativeDocumentMoniker": "Services\\IMyService.cs",
+              "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Services\\IMyService.cs",
+              "RelativeToolTip": "Services\\IMyService.cs",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAAAkAAAAxAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-14T02:56:54.431Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "MyService.cs",
+              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Services\\MyService.cs",
+              "RelativeDocumentMoniker": "Services\\MyService.cs",
+              "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Services\\MyService.cs",
+              "RelativeToolTip": "Services\\MyService.cs",
+              "ViewState": "AQIAAAoAAAAAAAAAAAAQwBMAAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-14T02:58:32.717Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "EntitiesController.cs",
+              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Controllers\\EntitiesController.cs",
+              "RelativeDocumentMoniker": "Controllers\\EntitiesController.cs",
+              "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Controllers\\EntitiesController.cs",
+              "RelativeToolTip": "Controllers\\EntitiesController.cs",
+              "ViewState": "AQIAABIAAAAAAAAAAAAYwB0AAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-14T05:47:44.905Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -111,64 +235,11 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AQIAAAkAAAAAAAAAAAAAAAgAAAAjAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-14T03:00:38.141Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-14T03:00:38.141Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "IMyService.cs",
-              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Services\\IMyService.cs",
-              "RelativeDocumentMoniker": "Services\\IMyService.cs",
-              "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Services\\IMyService.cs",
-              "RelativeToolTip": "Services\\IMyService.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAA0AAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-14T02:56:54.431Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "MyService.cs",
-              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Services\\MyService.cs",
-              "RelativeDocumentMoniker": "Services\\MyService.cs",
-              "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Services\\MyService.cs",
-              "RelativeToolTip": "Services\\MyService.cs",
-              "ViewState": "AQIAAAQAAAAAAAAAAIAwwAwAAABAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-14T02:58:32.717Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "EntitiesController.cs",
-              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Controllers\\EntitiesController.cs",
-              "RelativeDocumentMoniker": "Controllers\\EntitiesController.cs",
-              "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Controllers\\EntitiesController.cs",
-              "RelativeToolTip": "Controllers\\EntitiesController.cs",
-              "ViewState": "AQIAAAsAAAAAAAAAAAAAwBIAAAAIAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-14T05:47:44.905Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "muchiriDBContext.cs",
-              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Models\\muchiriDBContext.cs",
-              "RelativeDocumentMoniker": "Models\\muchiriDBContext.cs",
-              "ToolTip": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Models\\muchiriDBContext.cs",
-              "RelativeToolTip": "Models\\muchiriDBContext.cs",
-              "ViewState": "AQIAAA8AAAAAAAAAAAAYwIYAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-16T05:40:39.153Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 11,
               "Title": "TUser.cs",
               "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Models\\TUser.cs",
               "RelativeDocumentMoniker": "Models\\TUser.cs",
@@ -176,12 +247,11 @@
               "RelativeToolTip": "Models\\TUser.cs",
               "ViewState": "AQIAAAUAAAAAAAAAAAAxwAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-16T05:42:38.824Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-16T05:42:38.824Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 12,
               "Title": "TGlobalQoute.cs",
               "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Models\\TGlobalQoute.cs",
               "RelativeDocumentMoniker": "Models\\TGlobalQoute.cs",
@@ -193,7 +263,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 14,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -205,7 +275,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 13,
               "Title": "MyEntity.cs",
               "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Models\\MyEntity.cs",
               "RelativeDocumentMoniker": "Models\\MyEntity.cs",
@@ -217,7 +287,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 15,
               "Title": "Minimart Api.csproj",
               "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Minimart Api.csproj",
               "RelativeDocumentMoniker": "Minimart Api.csproj",
@@ -229,7 +299,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 18,
               "Title": "Container.targets",
               "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.19.6\\build\\Container.targets",
               "RelativeDocumentMoniker": "..\\..\\..\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.19.6\\build\\Container.targets",
@@ -241,7 +311,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 16,
               "Title": "Minimart Api",
               "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Minimart Api.csproj",
               "RelativeDocumentMoniker": "Minimart Api.csproj",
@@ -252,7 +322,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 17,
               "Title": "Dockerfile",
               "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Dockerfile",
               "RelativeDocumentMoniker": "Dockerfile",

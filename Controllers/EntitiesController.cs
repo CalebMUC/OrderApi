@@ -21,5 +21,13 @@ namespace Minimart_Api.Controllers
 
             return Ok(entities);
         }
+
+        [HttpGet("UserName")]
+        public async Task<IActionResult> GetAsyncUserName([FromQuery]string UserName)
+        {
+            var entities = await _myService.GetAsyncUserName(UserName);
+
+            return Ok(entities);
+        }
     }
 }
