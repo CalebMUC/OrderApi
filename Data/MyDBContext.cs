@@ -7,8 +7,8 @@ namespace Minimart_Api.Data
     {
         public DbSet<AddUser> MyStoredProcedureResults { get; set; }
 
-        public MyDBContext() : base("name = p_AddUser")
-        {
-        }
+        //public MyDBContext() : base("name = p_AddUser")
+        //{
+        //}
     }
 }

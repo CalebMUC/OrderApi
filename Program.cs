@@ -9,6 +9,14 @@ using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Minimart_Api.Models;
+using Microsoft.AspNetCore.Identity;
+using static Minimart_Api.Models.MinimartDBContext;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Minimart_Api.DTOS;
+using Authentication_and_Authorization_Api.Core;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +29,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IMyService, MyService>();
 builder.Services.AddScoped<IRepository, MyRepository>();
+builder.Services.AddScoped<CoreLibraries>();
 //configure Serilog
 
 Log.Logger = new LoggerConfiguration()
@@ -34,11 +43,49 @@ builder.Host.UseSerilog();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
-builder.Services.AddDbContext<muchiriDBContext>(options =>
+builder.Services.AddDbContext<MinimartDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
     .LogTo(message => Log.Information(message), LogLevel.Information) // Log to Serilog
     .EnableSensitiveDataLogging()
     ) ;
+
+//builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+//    .AddEntityFrameworkStores<MinimartDBContext>()
+//    .AddDefaultTokenProviders();
+
+
+
+//uilder.Services.AddTransient<IEmailSender, EmailSender>();  // Update the namespace accordingly
+
+// Add JWT authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    var jwtSettings = builder.Configuration.GetSection("Jwt");
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        //ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        //ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+    };
+});
+
+// Add authorization policies if needed
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("MyPolicy", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+    });
+});
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -55,8 +102,32 @@ builder.Services.AddSwaggerGen(c =>
         Title = "Api",
         Version = "v1"
     });
+
+    // Add JWT Authentication
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement{
+    {
+        new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+        },
+        new string[] {}
+    }});
+
 });
-builder.Services.AddCors(options => options.AddPolicy("AllowAll",builder => builder.AllowAnyOrigin()
+builder.Services.AddCors(options => options.AddPolicy("AllowAllOrigins",builder => builder.AllowAnyOrigin()
 .AllowAnyMethod()
 .AllowAnyHeader()));
 
@@ -79,12 +150,21 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+//app.UseAuthorization();
+// Enable serving of static files
+app.UseStaticFiles();
 
 app.MapControllers();
 
 app.UseExceptionHandler("/error");
 
-app.UseCors("AllowAll");
+app.UseAuthentication();
+
+app.UseAuthorization();
+
+// Use Identity API endpoints
+//app.MapIdentityApi<MinimartDBContext>();
+
+app.UseCors("AllowAllOrigins");
 
 app.Run();

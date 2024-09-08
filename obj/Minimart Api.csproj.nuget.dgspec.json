@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Minimart Api.csproj": {}
+    "D:\\OrderApi\\Minimart Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Minimart Api.csproj": {
+    "D:\\OrderApi\\Minimart Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Minimart Api.csproj",
+        "projectUniqueName": "D:\\OrderApi\\Minimart Api.csproj",
         "projectName": "Minimart Api",
-        "projectPath": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\Minimart Api.csproj",
-        "packagesPath": "C:\\Users\\Caleb.Muchiri\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Caleb.Muchiri\\Documents\\EC\\Minimart Api\\obj\\",
+        "projectPath": "D:\\OrderApi\\Minimart Api.csproj",
+        "packagesPath": "C:\\Users\\lenovo\\.nuget\\packages\\",
+        "outputPath": "D:\\OrderApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Caleb.Muchiri\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\lenovo\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,6 +22,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -45,6 +46,14 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.7, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameWorkCore": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
             "Microsoft.AspNetCore.Mvc.Versioning": {
               "target": "Package",
               "version": "[5.1.0, )"
@@ -62,6 +71,10 @@
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
               "version": "[1.19.6, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
             },
             "Serilog": {
               "target": "Package",
@@ -99,7 +112,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
