@@ -2,7 +2,10 @@
 {
     public class Status
     {
-        public string ResponseCode { get; set; } = string.Empty;
+        public int ResponseCode { get; set; } 
         public string   ResponseMessage { get; set; } = string.Empty;
+
+        
     }
 }
+ 

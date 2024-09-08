@@ -113,21 +113,21 @@ namespace Minimart_Api.Models
 
                 entity.ToTable("t_user");
 
-                entity.Property(e => e.EmailAddress)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                //entity.Property(e => e.EmailAddress)
+                //    .HasMaxLength(50)
+                //    .IsUnicode(false);
 
-                entity.Property(e => e.Name)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                //entity.Property(e => e.Name)
+                //    .HasMaxLength(50)
+                //    .IsUnicode(false);
 
                 entity.Property(e => e.Password)
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Role)
-                    .HasMaxLength(20)
-                    .IsUnicode(false);
+                //entity.Property(e => e.RoleID)
+                //    .HasMaxLength(20)
+                //    .IsUnicode(false);
             });
 
             OnModelCreatingPartial(modelBuilder);

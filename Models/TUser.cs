@@ -5,10 +5,28 @@ namespace Minimart_Api.Models
 {
     public partial class TUser
     {
-        public string? Name { get; set; }
-        public string? EmailAddress { get; set; }
-        public string? Role { get; set; }
+        public TUser()
+        {
+            TCarts = new HashSet<TCart>();
+            TOrders = new HashSet<TOrder>();
+            TReviews = new HashSet<TReview>();
+        }
+
+        public string? UserName { get; set; }
+        public string? PhoneNumber { get; set; }
+        public bool? IsLoggedIn { get; set; }
         public string? Password { get; set; }
-        public bool? IsloggedIn { get; set; }
+        public bool? IsAdmin { get; set; }
+        public DateTime? LastLogin { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? PasswordChangesOn { get; set; }
+        public int? FailedAttempts { get; set; }
+        public string? RoleId { get; set; }
+        public int UserId { get; set; }
+        public string? Email { get; set; }
+
+        public virtual ICollection<TCart> TCarts { get; set; }
+        public virtual ICollection<TOrder> TOrders { get; set; }
+        public virtual ICollection<TReview> TReviews { get; set; }
     }
 }
