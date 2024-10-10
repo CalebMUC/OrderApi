@@ -8,15 +8,17 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Minimart_Api.Models;
+using Minimart_Api.TempModels;
 using Microsoft.AspNetCore.Identity;
-using static Minimart_Api.Models.MinimartDBContext;
+using static Minimart_Api.TempModels.MinimartDBContext;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Minimart_Api.DTOS;
 using Authentication_and_Authorization_Api.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Extensions.FileProviders;
+using Minimart_Api.Mappings;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +31,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IMyService, MyService>();
 builder.Services.AddScoped<IRepository, MyRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IorderRepository, OrderRepository>();
 builder.Services.AddScoped<CoreLibraries>();
+builder.Services.AddScoped<OrderMapper>();
 //configure Serilog
 
 Log.Logger = new LoggerConfiguration()
@@ -44,10 +49,13 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 builder.Services.AddDbContext<MinimartDBContext>(options =>
+{
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-    .LogTo(message => Log.Information(message), LogLevel.Information) // Log to Serilog
-    .EnableSensitiveDataLogging()
-    ) ;
+           .LogTo(message => Log.Information(message), LogLevel.Information) // Log to Serilog
+           .EnableSensitiveDataLogging(); // Enable logging of sensitive data (like parameters)
+},
+ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
+
 
 //builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 //    .AddEntityFrameworkStores<MinimartDBContext>()
@@ -133,38 +141,37 @@ builder.Services.AddCors(options => options.AddPolicy("AllowAllOrigins",builder 
 
 var app = builder.Build();
 
-
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI(c => {
+    app.UseSwaggerUI(c =>
+    {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
         c.RoutePrefix = "Swagger"; // Serve Swagger UI at the app's root
-
-
     });
 }
 
 app.UseHttpsRedirection();
 
-//app.UseAuthorization();
-// Enable serving of static files
-app.UseStaticFiles();
+// Enable serving of static files from the "Uploads" directory
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "Uploads")),
+    RequestPath = "/uploads" // URL path to access the uploads
+});
+
+// Enable CORS if you're accessing the API from different origins
+app.UseCors("AllowAllOrigins");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
 app.UseExceptionHandler("/error");
 
-app.UseAuthentication();
-
-app.UseAuthorization();
-
-// Use Identity API endpoints
-//app.MapIdentityApi<MinimartDBContext>();
-
-app.UseCors("AllowAllOrigins");
-
 app.Run();
+

@@ -1,4 +1,4 @@
-﻿using Authentication_and_Authorization_Api.Models;
+﻿using Minimart_Api.TempModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
