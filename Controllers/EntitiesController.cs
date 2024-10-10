@@ -1,12 +1,12 @@
 ﻿using Authentication_and_Authorization_Api.Core;
-using Authentication_and_Authorization_Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Win32;
 using Minimart_Api.DTOS;
-using Minimart_Api.Models;
+using Minimart_Api.TempModels;
+using Minimart_Api.Mappings;
 using Minimart_Api.Services;
 using Newtonsoft.Json;
 using Serilog;
@@ -14,6 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using Minimart_Api.Mappings;
 
 namespace Minimart_Api.Controllers
 {
@@ -27,15 +28,18 @@ namespace Minimart_Api.Controllers
 
         private readonly CoreLibraries _coreLibraries;
 
+        private readonly OrderMapper _orderMapper;
+
 
 
         
-        public EntitiesController(IMyService myService, IConfiguration config, CoreLibraries coreLibraries)
+        public EntitiesController(IMyService myService, IConfiguration config, CoreLibraries coreLibraries,OrderMapper oderMapper)
         {
             _myService = myService;
             _config = config;
             
             _coreLibraries = coreLibraries;
+            _orderMapper = oderMapper;
         }
 
         [HttpGet]
@@ -128,7 +132,7 @@ namespace Minimart_Api.Controllers
 
             try
             {
-                var Response = await _myService.GetProductsByCategory(categoryName.CategoryName);
+                var Response = await _myService.GetProductsByCategory(categoryName.CategoryID);
 
                 return Ok(Response);
             }
@@ -282,6 +286,119 @@ namespace Minimart_Api.Controllers
 
 
 
+        }
+
+        //[HttpPost("Orders")]
+        //public async Task<IActionResult> Orders([FromBody] OrderDTO orders)
+        //{
+        //    //var jsonSrting = JsonConvert.SerializeObject(cartitems);
+
+        //    try
+        //    {
+        //        //var Response = await _myService.AddProducts(products);
+
+        //        var order = _orderMapper.MapToEntity(orders);
+
+        //        var response = _myService.CreateOrder(order);
+
+        //        return Ok(response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+
+
+
+        //}
+
+        //[HttpPost("GetOrders")]
+        //public async Task<IActionResult> GetOrders([FromBody] string orderID)
+        //{
+        //    //var jsonSrting = JsonConvert.SerializeObject(cartitems);
+
+        //    try
+        //    {
+        //        var order = await _myService.GetOrderByIdAsync(orderID); // Fetch from service/repo
+
+        //        if (order == null)
+
+        //        {
+        //            return NotFound();
+        //        }
+
+        //        // Map the Order entity to OrderDto
+        //        var orderDto = _orderMapper.MapToDto(order);
+
+        //        return Ok(orderDto);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+
+
+
+        //}
+
+        [HttpGet("counties")]
+        public async Task<IActionResult> GetCounties()
+        {
+            var counties = await _myService.GetCountiesAsync();
+            return Ok(counties);
+        }
+
+        [HttpGet("towns")]
+        public async Task<IActionResult> GetTowns(int countyId)
+        {
+            var towns = await _myService.GetTownsByCountyAsync(countyId);
+            return Ok(towns);
+        }
+
+        [HttpGet("deliveryStations")]
+        public async Task<IActionResult> GetDeliveryStations(int townId)
+        {
+            var deliveryStations = await _myService.GetDeliveryStationsByTownAsync(townId);
+            return Ok(deliveryStations);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAddressById(int id)
+        {
+            var address = await _myService.GetAddressByIdAsync(id);
+            if (address == null)
+            {
+                return NotFound();
+            }
+            return Ok(address);
+        }
+
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetAddressesByUserId(int userId)
+        {
+            var addresses = await _myService.GetAddressesByUserIdAsync(userId);
+            return Ok(addresses);
+        }
+
+        [HttpPost("AddAddress")]
+        public async Task<IActionResult> AddAddress([FromBody] AddressDTO address)
+        {
+            await _myService.AddAddressAsync(address);
+            return CreatedAtAction(nameof(GetAddressesByUserId), new { userId = address.UserID }, address);
+
+        }
+        [HttpPost("EditAddress")]
+        public async Task<IActionResult> EditAddress([FromBody] EditAddressDTO address)
+        {
+            try
+            {
+                await _myService.EditAddressAsync(address);
+                return CreatedAtAction(nameof(GetAddressesByUserId), new { userId = address.UserID }, address);
+            }catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         //[AllowAnonymous]
@@ -548,31 +665,40 @@ namespace Minimart_Api.Controllers
 
         }
         [HttpPost("UploadImages")]
-        public async Task<IActionResult> UploadImages(IFormFile file) {
-
-            if (file == null) {
-                return BadRequest("No files TO upload");
+        public async Task<IActionResult> UploadImages(IFormFile file)
+        {
+            if (file == null)
+            {
+                return BadRequest("No file uploaded");
             }
-            //check if directory exists
-            var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
 
-            if (!Directory.Exists(uploadsDir)) { 
+            // Define the path to the 'uploads' folder within the 'wwwroot' directory
+            //var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+
+
+            var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+
+            // Check if directory exists; if not, create it
+            if (!Directory.Exists(uploadsDir))
+            {
                 Directory.CreateDirectory(uploadsDir);
             }
 
-            //Generate a unique file
-
+            // Generate a unique filename to avoid collisions
             var filename = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
             var filepath = Path.Combine(uploadsDir, filename);
 
-            //save files to the uploads Directory
-            using (var stream = new FileStream(filepath,FileMode.Create)) { 
+            // Save the file to the uploads directory
+            using (var stream = new FileStream(filepath, FileMode.Create))
+            {
                 await file.CopyToAsync(stream);
             }
 
-            var fileUrl = $"/uploads/{filename}";
+            // Generate the absolute URL to access the file
+            var fileUrl = $"{Request.Scheme}://{Request.Host}/uploads/{filename}";
 
             return Ok(new { Url = fileUrl });
         }
+
     }
 }

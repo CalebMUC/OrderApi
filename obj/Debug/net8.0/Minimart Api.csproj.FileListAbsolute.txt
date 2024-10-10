@@ -156,3 +156,84 @@ D:\OrderApi\obj\Debug\net8.0\refint\Minimart Api.dll
 D:\OrderApi\obj\Debug\net8.0\Minimart Api.pdb
 D:\OrderApi\obj\Debug\net8.0\Minimart Api.genruntimeconfig.cache
 D:\OrderApi\obj\Debug\net8.0\ref\Minimart Api.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Relational.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\appsettings.Development.json
+F:\Caleb\OrderApi\bin\Debug\net8.0\appsettings.json
+F:\Caleb\OrderApi\bin\Debug\net8.0\Minimart Api.exe
+F:\Caleb\OrderApi\bin\Debug\net8.0\Minimart Api.deps.json
+F:\Caleb\OrderApi\bin\Debug\net8.0\Minimart Api.runtimeconfig.json
+F:\Caleb\OrderApi\bin\Debug\net8.0\Minimart Api.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Minimart Api.pdb
+F:\Caleb\OrderApi\bin\Debug\net8.0\Humanizer.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.AspNetCore.Mvc.Versioning.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.Data.SqlClient.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Design.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.SqlServer.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.Extensions.DependencyModel.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.Identity.Client.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.OpenApi.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Newtonsoft.Json.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Serilog.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Serilog.AspNetCore.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Serilog.Extensions.Hosting.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Serilog.Extensions.Logging.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Serilog.Formatting.Compact.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Serilog.Settings.Configuration.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Serilog.Sinks.Console.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Serilog.Sinks.Debug.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Serilog.Sinks.File.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\System.Configuration.ConfigurationManager.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\System.Drawing.Common.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\System.Runtime.Caching.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\System.Security.Cryptography.ProtectedData.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\System.Security.Permissions.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\System.Windows.Extensions.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\runtimes\unix\lib\netcoreapp3.1\Microsoft.Data.SqlClient.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\runtimes\win\lib\netcoreapp3.1\Microsoft.Data.SqlClient.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\runtimes\win-arm\native\Microsoft.Data.SqlClient.SNI.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\runtimes\win\lib\netcoreapp3.0\Microsoft.Win32.SystemEvents.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\runtimes\win\lib\netstandard2.0\System.Runtime.Caching.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
+F:\Caleb\OrderApi\bin\Debug\net8.0\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
+F:\Caleb\OrderApi\obj\Debug\net8.0\Minimart Api.csproj.AssemblyReference.cache
+F:\Caleb\OrderApi\obj\Debug\net8.0\Minimart Api.GeneratedMSBuildEditorConfig.editorconfig
+F:\Caleb\OrderApi\obj\Debug\net8.0\Minimart Api.AssemblyInfoInputs.cache
+F:\Caleb\OrderApi\obj\Debug\net8.0\Minimart Api.AssemblyInfo.cs
+F:\Caleb\OrderApi\obj\Debug\net8.0\Minimart Api.csproj.CoreCompileInputs.cache
+F:\Caleb\OrderApi\obj\Debug\net8.0\Minimart Api.MvcApplicationPartsAssemblyInfo.cs
+F:\Caleb\OrderApi\obj\Debug\net8.0\Minimart Api.MvcApplicationPartsAssemblyInfo.cache
+F:\Caleb\OrderApi\obj\Debug\net8.0\Minimart Api.sourcelink.json
+F:\Caleb\OrderApi\obj\Debug\net8.0\staticwebassets.build.json
+F:\Caleb\OrderApi\obj\Debug\net8.0\staticwebassets.development.json
+F:\Caleb\OrderApi\obj\Debug\net8.0\staticwebassets\msbuild.Minimart Api.Microsoft.AspNetCore.StaticWebAssets.props
+F:\Caleb\OrderApi\obj\Debug\net8.0\staticwebassets\msbuild.build.Minimart Api.props
+F:\Caleb\OrderApi\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.Minimart Api.props
+F:\Caleb\OrderApi\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.Minimart Api.props
+F:\Caleb\OrderApi\obj\Debug\net8.0\staticwebassets.pack.json
+F:\Caleb\OrderApi\obj\Debug\net8.0\scopedcss\bundle\Minimart Api.styles.css
+F:\Caleb\OrderApi\obj\Debug\net8.0\Minimart.2BBE30B5.Up2Date
+F:\Caleb\OrderApi\obj\Debug\net8.0\Minimart Api.dll
+F:\Caleb\OrderApi\obj\Debug\net8.0\refint\Minimart Api.dll
+F:\Caleb\OrderApi\obj\Debug\net8.0\Minimart Api.pdb
+F:\Caleb\OrderApi\obj\Debug\net8.0\Minimart Api.genruntimeconfig.cache
+F:\Caleb\OrderApi\obj\Debug\net8.0\ref\Minimart Api.dll

@@ -1,6 +1,6 @@
-﻿using Authentication_and_Authorization_Api.Models;
+﻿//using Authentication_and_Authorization_Api.Models;
 using Minimart_Api.DTOS;
-using Minimart_Api.Models;
+using Minimart_Api.TempModels;
 using System.Collections;
 
 namespace Minimart_Api.Services
@@ -27,13 +27,31 @@ namespace Minimart_Api.Services
         Task<IEnumerable<CategoryDTO>> GetDashBoardCategories();
 
 
-        Task<IEnumerable<CartResults>> GetProductsByCategory(string CategoryID);
+        Task<IEnumerable<CartResults>> GetProductsByCategory(int CategoryID);
+
+        Task<IEnumerable<County>> GetCountiesAsync();
+        Task<IEnumerable<Town>> GetTownsByCountyAsync(int countyId);
+        Task<IEnumerable<DeliveryStation>> GetDeliveryStationsByTownAsync(int townId);
+
+        //Task<ResponseStatus> CreateOrder(Order order);
+
+        public Task<ResponseStatus> AddOrder(OrderListDto orderDTO);
+
+        //Task<Order> GetOrderByIdAsync(string OrderID);
+
+        Task<Address> GetAddressByIdAsync(int addressId);
+        Task<IEnumerable<GetAddressDTO>> GetAddressesByUserIdAsync(int userId);
+        Task AddAddressAsync(AddressDTO address);
+        Task EditAddressAsync(EditAddressDTO address);
+
+
+
 
 
 
         Task <UserInfo> GetRefreshToken(string JsonData);
 
-        Task<IEnumerable<TProduct>> LoadProductImages(int ProductID);
+        Task<IEnumerable<TProduct>> LoadProductImages(string ProductID);
 
         Task <UserInfo> Login(string JsonData);
 

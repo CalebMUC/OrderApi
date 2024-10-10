@@ -1,7 +1,8 @@
-﻿using Authentication_and_Authorization_Api.Models;
+﻿//using Authentication_and_Authorization_Api.Models;
 using Microsoft.IdentityModel.Tokens;
 using Minimart_Api.DTOS;
-using Minimart_Api.Models;
+using Minimart_Api.TempModels;
+using Minimart_Api.Mappings;
 using Minimart_Api.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -12,16 +13,60 @@ namespace Minimart_Api.Services
     public class MyService:  IMyService
     {
         private readonly IRepository _repository;
+        private readonly OrderMapper _orderMapper;
 
-        public MyService(IRepository repository)
+        public MyService(IRepository repository,OrderMapper orderMapper)
         {
             _repository = repository;
+            _orderMapper = orderMapper;
         }
         public async Task<IEnumerable<TUser>> GetEntitiesAsync()
         {
             return await _repository.GetAllAsync();
         }
+        public async Task<ResponseStatus> CreateOrder(Order order) {
 
+            return await _repository.CreateOrder(order);
+        }
+        public async Task<ResponseStatus> AddOrder(OrderListDto orderDTO)
+        {
+            return await _repository.AddOrder(orderDTO);
+        }
+        public async Task<IEnumerable<County>> GetCountiesAsync()
+        {
+            return await _repository.GetAllCountiesAsync();
+        }
+
+        public async Task<IEnumerable<Town>> GetTownsByCountyAsync(int countyId)
+        {
+            return await _repository.GetTownsByCountyAsync(countyId);
+        }
+
+        public async Task<IEnumerable<DeliveryStation>> GetDeliveryStationsByTownAsync(int townId)
+        {
+            return await _repository.GetDeliveryStationsByTownAsync(townId);
+        }
+
+        public async Task<Address> GetAddressByIdAsync(int addressId)
+        {
+            return await _repository.GetAddressByIdAsync(addressId);
+        }
+
+        public async Task<IEnumerable<GetAddressDTO>> GetAddressesByUserIdAsync(int userId)
+        {
+            return await _repository.GetAddressesByUserIdAsync(userId);
+        }
+
+        public async Task AddAddressAsync(AddressDTO address)
+        {
+            await _repository.AddAddressAsync(address);
+            await _repository.SaveChangesAsync();
+        }
+        public async Task EditAddressAsync(EditAddressDTO address)
+        {
+            await _repository.EditAddressAsync(address);
+            //await _repository.SaveChangesAsync();
+        }
         public async Task<IEnumerable<TUser>> GetAsyncUserName(string UserName)
         {
             return await _repository.GetAsyncUserName(UserName);
@@ -53,7 +98,7 @@ namespace Minimart_Api.Services
             return await _repository.GetSubCategory(Categoryname);
         }
 
-        public async Task<IEnumerable<CartResults>> GetProductsByCategory(string CategoryID)
+        public async Task<IEnumerable<CartResults>> GetProductsByCategory(int CategoryID)
         {
             return await _repository.GetProductsByCategory(CategoryID);
         }
@@ -63,7 +108,7 @@ namespace Minimart_Api.Services
             return await _repository.GetRefreshToken(JsonData);
         }
 
-        public async Task<IEnumerable<TProduct>> LoadProductImages(int productID)
+        public async Task<IEnumerable<TProduct>> LoadProductImages(string productID)
         {
             return await _repository.LoadProductImages(productID);
         }
