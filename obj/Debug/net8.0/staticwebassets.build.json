@@ -1,11 +1,12 @@
 {
   "Version": 1,
-  "Hash": "SJqK9m2SfHuqqUijwkyUVo5DieSMiFMMxdpRvv2OYck=",
+  "Hash": "v8DiJXNhnWRRsPBFwZs+duqAU48IYhBYmdNCTos7/c4=",
   "Source": "Minimart Api",
   "BasePath": "_content/Minimart Api",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": []
+  "Assets": [],
+  "Endpoints": []
 }

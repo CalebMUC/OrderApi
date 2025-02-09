@@ -7,10 +7,10 @@ namespace Minimart_Api.TempModels
 {
     public class ResponseStatus
     {
-        public int ResponseStatusId { get; set; } // Primary Key
+        public int ResponseStatusId { get; set; }
         public bool ResponseCode { get; set; }
         public string ResponseMessage { get; set; }
-        public virtual ICollection<UserInfo> Users { get; set; } // Navigation Property
+        public virtual ICollection<UserInfo> Users { get; set; }
     }
 
 }

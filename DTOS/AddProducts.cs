@@ -4,7 +4,9 @@
     {
         public string productName { get; set; } = string.Empty;
         public string productID { get; set; } = string.Empty;
-        public int CategoryID { get; set; } 
+        public int CategoryID { get; set; }
+
+        public string SearchKeyWord { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
 
         public string subcategory { get; set; } = string.Empty;

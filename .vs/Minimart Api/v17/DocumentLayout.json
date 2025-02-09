@@ -1,100 +1,156 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "F:\\Caleb\\OrderApi\\",
+  "WorkspaceRootPath": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|f:\\caleb\\orderapi\\repositories\\orderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:repositories\\orderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\services\\opensearchservice\\opensearchservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:services\\opensearchservice\\opensearchservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\dtos\\getordersdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:dtos\\getordersdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\services\\opensearchservice\\syncproductstoopensearch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:services\\opensearchservice\\syncproductstoopensearch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\tempmodels\\order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:tempmodels\\order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\services\\rabbitmq\\ordereventconsumer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:services\\rabbitmq\\ordereventconsumer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Caleb.Muchiri\\AppData\\Local\\Temp\\.vsdbgsrc\\4dcf567db33b8407e8e7e85491df71d46c06985d33f5ad8d904e52c3b325c6c5\\ExecutionContext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\tempmodels\\tproduct.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:tempmodels\\tproduct.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\controllers\\searchcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:controllers\\searchcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|f:\\caleb\\orderapi\\mappings\\ordermapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:mappings\\ordermapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\dtos\\orderdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:dtos\\orderdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Caleb.Muchiri\\AppData\\Local\\Temp\\.vsdbgsrc\\5b2b96d2eb65af4150e0f82168592a943724848254a627f05d933d2cad7bffcb\\TdsParserStateObject.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\services\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:services\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\dtos\\orderrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:dtos\\orderrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\services\\iorderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:services\\iorderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\controllers\\entitiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:controllers\\entitiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\repositories\\iorderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:repositories\\iorderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\repositories\\irepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:repositories\\irepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\repositories\\myrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\minimart api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:minimart api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\dtos\\opensearchproducts.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:dtos\\opensearchproducts.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\services\\opensearchservice\\iopensearchservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:services\\opensearchservice\\iopensearchservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\repositories\\iauthrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:repositories\\iauthrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\repositories\\myrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:repositories\\myrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\services\\myservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:services\\myservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\dtos\\opensearchsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:dtos\\opensearchsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\services\\imyservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:services\\imyservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\repositories\\orderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:repositories\\orderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\tempmodels\\ordertracking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:tempmodels\\ordertracking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\controllers\\errorcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:controllers\\errorcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\services\\notificationservice\\notificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:services\\notificationservice\\notificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\tempmodels\\minimartdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Notification Project\\SmsService\\Services\\SmsService\\SendSmsService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\dtos\\celcomafrica.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:dtos\\celcomafrica.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\dtos\\paymentdetailsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:dtos\\paymentdetailsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\dtos\\cartitemsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:dtos\\cartitemsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\dtos\\orderevent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:dtos\\orderevent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\dtos\\productdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:dtos\\productdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\dtos\\productdetails.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:dtos\\productdetails.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\repositories\\authrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:repositories\\authrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\repositories\\irepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:repositories\\irepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\controllers\\authenticationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:controllers\\authenticationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\controllers\\entitiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:controllers\\entitiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\tempmodels\\minimartdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:tempmodels\\minimartdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\tempmodels\\orderstatustracking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\services\\ireportservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:services\\ireportservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\tempmodels\\order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:tempmodels\\order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\services\\authenticationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:services\\authenticationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\services\\imyservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:services\\imyservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\controllers\\reportcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:controllers\\reportcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\core\\corelibraries.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:core\\corelibraries.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\tempmodels\\userinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:tempmodels\\userinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\services\\iauthentication.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:services\\iauthentication.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|c:\\users\\admin\\downloads\\caleb\\orderapi\\tempmodels\\orderstatustracking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:tempmodels\\orderstatustracking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\migrations\\20241007014047_yetanothermigration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:migrations\\20241007014047_yetanothermigration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|F:\\Caleb\\OrderApi\\dtos\\productdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|Minimart Api.csproj|solutionrelative:dtos\\productdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -103,58 +159,57 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedHeight": 226,
-          "SelectedChildIndex": 8,
+          "DockedHeight": 220,
+          "SelectedChildIndex": 20,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 32,
               "Title": "IMyService.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\Services\\IMyService.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\IMyService.cs",
               "RelativeDocumentMoniker": "Services\\IMyService.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\Services\\IMyService.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\IMyService.cs",
               "RelativeToolTip": "Services\\IMyService.cs",
-              "ViewState": "AQIAACsAAAAAAAAAAAAlwC4AAAAAAAAA",
+              "ViewState": "AgIAACoAAAAAAAAAAAAcwDAAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-14T02:56:54.431Z",
               "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 22,
               "Title": "ProductDto.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\DTOS\\ProductDto.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\ProductDto.cs",
               "RelativeDocumentMoniker": "DTOS\\ProductDto.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\DTOS\\ProductDto.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\ProductDto.cs",
               "RelativeToolTip": "DTOS\\ProductDto.cs",
-              "ViewState": "AQIAAAYAAAAAAAAAAAA1wAIAAAAbAAAA",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-09-15T03:39:35.954Z",
               "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 30,
               "Title": "Order.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\TempModels\\Order.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\TempModels\\Order.cs",
               "RelativeDocumentMoniker": "TempModels\\Order.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\TempModels\\Order.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\TempModels\\Order.cs",
               "RelativeToolTip": "TempModels\\Order.cs",
-              "ViewState": "AQIAAAwAAAAAAAAAAAAowBIAAAAsAAAA",
+              "ViewState": "AgIAABMAAAAAAAAAAADwvxAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-09-15T01:56:17.516Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 12,
               "Title": "MyRepository.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\Repositories\\MyRepository.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Repositories\\MyRepository.cs",
               "RelativeDocumentMoniker": "Repositories\\MyRepository.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\Repositories\\MyRepository.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Repositories\\MyRepository.cs",
               "RelativeToolTip": "Repositories\\MyRepository.cs",
-              "ViewState": "AQIAAA4AAAAAAAAAAAAtwA0AAAAgAAAA",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAABQAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-14T05:07:43.089Z",
               "IsPinned": true,
@@ -162,278 +217,436 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 37,
               "Title": "OrderStatusTracking.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\TempModels\\OrderStatusTracking.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\TempModels\\OrderStatusTracking.cs",
               "RelativeDocumentMoniker": "TempModels\\OrderStatusTracking.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\TempModels\\OrderStatusTracking.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\TempModels\\OrderStatusTracking.cs",
               "RelativeToolTip": "TempModels\\OrderStatusTracking.cs",
-              "ViewState": "AQIAAAUAAAAAAAAAAAAAwAcAAAAnAAAA",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAAwAcAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-06T12:35:03.629Z",
               "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "OrderMapper.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\Mappings\\OrderMapper.cs",
-              "RelativeDocumentMoniker": "Mappings\\OrderMapper.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\Mappings\\OrderMapper.cs",
-              "RelativeToolTip": "Mappings\\OrderMapper.cs",
-              "ViewState": "AQIAABIAAAAAAAAAAAAAABQAAAAOAAAA",
+              "DocumentIndex": 28,
+              "Title": "MinimartDBContext.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\TempModels\\MinimartDBContext.cs",
+              "RelativeDocumentMoniker": "TempModels\\MinimartDBContext.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\TempModels\\MinimartDBContext.cs",
+              "RelativeToolTip": "TempModels\\MinimartDBContext.cs",
+              "ViewState": "AgIAAKQAAAAAAAAAAAAmwLEAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-10T06:00:56.923Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-06T13:47:10.202Z",
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "TdsParserStateObject.cs",
-              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\AppData\\Local\\Temp\\.vsdbgsrc\\5b2b96d2eb65af4150e0f82168592a943724848254a627f05d933d2cad7bffcb\\TdsParserStateObject.cs",
-              "ToolTip": "C:\\Users\\Caleb.Muchiri\\AppData\\Local\\Temp\\.vsdbgsrc\\5b2b96d2eb65af4150e0f82168592a943724848254a627f05d933d2cad7bffcb\\TdsParserStateObject.cs [Read Only]",
-              "ViewState": "AQIAAJwIAAAAAAAAAAAqwJgIAAADAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-10T05:03:10.433Z",
-              "EditorCaption": " [Read Only]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "OrderRequest.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\DTOS\\OrderRequest.cs",
-              "RelativeDocumentMoniker": "DTOS\\OrderRequest.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\DTOS\\OrderRequest.cs",
-              "RelativeToolTip": "DTOS\\OrderRequest.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAuwAYAAAAFAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-08T01:58:04.3Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "OrderRepository.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\Repositories\\OrderRepository.cs",
-              "RelativeDocumentMoniker": "Repositories\\OrderRepository.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\Repositories\\OrderRepository.cs",
-              "RelativeToolTip": "Repositories\\OrderRepository.cs",
-              "ViewState": "AQIAACYAAAAAAAAAAAAAACoAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-08T01:49:59.416Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "IorderRepository.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\Repositories\\IorderRepository.cs",
-              "RelativeDocumentMoniker": "Repositories\\IorderRepository.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\Repositories\\IorderRepository.cs",
-              "RelativeToolTip": "Repositories\\IorderRepository.cs",
-              "ViewState": "AQIAAAMAAAAAAAAAAAAAAAYAAABDAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-08T01:49:05.961Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "OrderService.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\Services\\OrderService.cs",
-              "RelativeDocumentMoniker": "Services\\OrderService.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\Services\\OrderService.cs",
-              "RelativeToolTip": "Services\\OrderService.cs",
-              "ViewState": "AQIAAAgAAAAAAAAAAAAswBAAAAAMAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-08T01:48:26.272Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "IOrderService.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\Services\\IOrderService.cs",
-              "RelativeDocumentMoniker": "Services\\IOrderService.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\Services\\IOrderService.cs",
-              "RelativeToolTip": "Services\\IOrderService.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAABOAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-08T01:47:53.422Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 27,
               "Title": "EntitiesController.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\Controllers\\EntitiesController.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Controllers\\EntitiesController.cs",
               "RelativeDocumentMoniker": "Controllers\\EntitiesController.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\Controllers\\EntitiesController.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Controllers\\EntitiesController.cs",
               "RelativeToolTip": "Controllers\\EntitiesController.cs",
-              "ViewState": "AQIAAAkBAAAAAAAAAAAuwDcBAAAAAAAA",
+              "ViewState": "AgIAAD8CAAAAAAAAAAAewDoCAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-07T03:11:21.548Z",
+              "IsPinned": true,
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "MyService.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\Services\\MyService.cs",
-              "RelativeDocumentMoniker": "Services\\MyService.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\Services\\MyService.cs",
-              "RelativeToolTip": "Services\\MyService.cs",
-              "ViewState": "AQIAAB4AAAAAAAAAAAApwCYAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-07T02:29:05.252Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "GetOrdersDTO.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\DTOS\\GetOrdersDTO.cs",
-              "RelativeDocumentMoniker": "DTOS\\GetOrdersDTO.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\DTOS\\GetOrdersDTO.cs*",
-              "RelativeToolTip": "DTOS\\GetOrdersDTO.cs*",
-              "ViewState": "AQIAAAgAAAAAAAAAAAAgwAwAAAA3AAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-07T02:23:10.438Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "OrderController.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\Controllers\\OrderController.cs",
-              "RelativeDocumentMoniker": "Controllers\\OrderController.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\Controllers\\OrderController.cs",
-              "RelativeToolTip": "Controllers\\OrderController.cs",
-              "ViewState": "AQIAABQAAAAAAAAAAAAswBIAAAAJAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-07T02:11:20.181Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "20241007014047_yetAnotherMigration.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\Migrations\\20241007014047_yetAnotherMigration.cs",
-              "RelativeDocumentMoniker": "Migrations\\20241007014047_yetAnotherMigration.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\Migrations\\20241007014047_yetAnotherMigration.cs",
-              "RelativeToolTip": "Migrations\\20241007014047_yetAnotherMigration.cs",
-              "ViewState": "AQIAAC4AAAAAAAAAAAAQwDkAAAAlAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-07T01:41:43.546Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "IRepository.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\Repositories\\IRepository.cs",
-              "RelativeDocumentMoniker": "Repositories\\IRepository.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\Repositories\\IRepository.cs",
-              "RelativeToolTip": "Repositories\\IRepository.cs",
-              "ViewState": "AQIAABwAAAAAAAAAAIA5wCIAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-14T04:58:28.815Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "Program.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AQIAABoAAAAAAAAAAAAUwCEAAAA6AAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-14T03:00:38.141Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "OrderTracking.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\TempModels\\OrderTracking.cs",
-              "RelativeDocumentMoniker": "TempModels\\OrderTracking.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\TempModels\\OrderTracking.cs",
-              "RelativeToolTip": "TempModels\\OrderTracking.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABUAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-06T12:20:50.953Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 20,
-              "Title": "MinimartDBContext.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\TempModels\\MinimartDBContext.cs",
-              "RelativeDocumentMoniker": "TempModels\\MinimartDBContext.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\TempModels\\MinimartDBContext.cs",
-              "RelativeToolTip": "TempModels\\MinimartDBContext.cs",
-              "ViewState": "AQIAADQAAAAAAAAAAAAlwDoAAABPAAAA",
+              "Title": "CartItemsDTO.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\CartItemsDTO.cs",
+              "RelativeDocumentMoniker": "DTOS\\CartItemsDTO.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\CartItemsDTO.cs",
+              "RelativeToolTip": "DTOS\\CartItemsDTO.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAuwAcAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-06T13:47:10.202Z"
+              "WhenOpened": "2024-12-19T06:53:54.396Z",
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "ErrorController.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\Controllers\\ErrorController.cs",
-              "RelativeDocumentMoniker": "Controllers\\ErrorController.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\Controllers\\ErrorController.cs",
-              "RelativeToolTip": "Controllers\\ErrorController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAxAAAA",
+              "DocumentIndex": 29,
+              "Title": "IReportService.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\IReportService.cs",
+              "RelativeDocumentMoniker": "Services\\IReportService.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\IReportService.cs",
+              "RelativeToolTip": "Services\\IReportService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-05T05:36:39.871Z",
+              "WhenOpened": "2024-12-26T08:36:51.763Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "ReportController.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Controllers\\ReportController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ReportController.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Controllers\\ReportController.cs",
+              "RelativeToolTip": "Controllers\\ReportController.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAADwvyYAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-26T08:33:37.299Z",
+              "IsPinned": true,
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "OrderDTO.cs",
-              "DocumentMoniker": "F:\\Caleb\\OrderApi\\DTOS\\OrderDTO.cs",
-              "RelativeDocumentMoniker": "DTOS\\OrderDTO.cs",
-              "ToolTip": "F:\\Caleb\\OrderApi\\DTOS\\OrderDTO.cs",
-              "RelativeToolTip": "DTOS\\OrderDTO.cs",
-              "ViewState": "AQIAAAUAAAAAAAAAAAAAAAkAAAAEAAAA",
+              "DocumentIndex": 36,
+              "Title": "IAuthentication.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\IAuthentication.cs",
+              "RelativeDocumentMoniker": "Services\\IAuthentication.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\IAuthentication.cs",
+              "RelativeToolTip": "Services\\IAuthentication.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-29T05:20:25.219Z",
+              "WhenOpened": "2025-01-25T05:53:14.519Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "AuthenticationService.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\AuthenticationService.cs",
+              "RelativeDocumentMoniker": "Services\\AuthenticationService.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\AuthenticationService.cs",
+              "RelativeToolTip": "Services\\AuthenticationService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-25T05:53:40.27Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "AuthRepository.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Repositories\\AuthRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\AuthRepository.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Repositories\\AuthRepository.cs",
+              "RelativeToolTip": "Repositories\\AuthRepository.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAIBJwLgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-25T06:01:47.571Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "AuthenticationController.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Controllers\\AuthenticationController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AuthenticationController.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Controllers\\AuthenticationController.cs",
+              "RelativeToolTip": "Controllers\\AuthenticationController.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAYwB8AAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-25T05:46:42.795Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "IAuthRepository.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Repositories\\IAuthRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\IAuthRepository.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Repositories\\IAuthRepository.cs",
+              "RelativeToolTip": "Repositories\\IAuthRepository.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAcAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-25T05:59:25.965Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "UserInfo.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\TempModels\\UserInfo.cs",
+              "RelativeDocumentMoniker": "TempModels\\UserInfo.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\TempModels\\UserInfo.cs",
+              "RelativeToolTip": "TempModels\\UserInfo.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAuwBQAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-24T15:27:12.468Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "CoreLibraries.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Core\\CoreLibraries.cs",
+              "RelativeDocumentMoniker": "Core\\CoreLibraries.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Core\\CoreLibraries.cs",
+              "RelativeToolTip": "Core\\CoreLibraries.cs",
+              "ViewState": "AgIAAD4AAAAAAAAAAAAUwFEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-25T07:32:13.856Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Microsoft.Common.CurrentVersion.targets",
+              "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "ToolTip": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "RelativeToolTip": "..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "ViewState": "AgIAAOQTAAAAAAAAAAAswNUTAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2025-02-09T08:17:54.875Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "ExecutionContext.cs",
-              "DocumentMoniker": "C:\\Users\\Caleb.Muchiri\\AppData\\Local\\Temp\\.vsdbgsrc\\4dcf567db33b8407e8e7e85491df71d46c06985d33f5ad8d904e52c3b325c6c5\\ExecutionContext.cs",
-              "ToolTip": "C:\\Users\\Caleb.Muchiri\\AppData\\Local\\Temp\\.vsdbgsrc\\4dcf567db33b8407e8e7e85491df71d46c06985d33f5ad8d904e52c3b325c6c5\\ExecutionContext.cs [Read Only]",
-              "ViewState": "AQIAAH0AAAAAAAAAAAAowIkAAAADAAAA",
+              "Title": "TProduct.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\TempModels\\TProduct.cs",
+              "RelativeDocumentMoniker": "TempModels\\TProduct.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\TempModels\\TProduct.cs",
+              "RelativeToolTip": "TempModels\\TProduct.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAYwCAAAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-01T02:24:04.251Z",
-              "EditorCaption": " [Read Only]"
-            }
-          ]
-        },
-        {
-          "DockedHeight": 163,
-          "SelectedChildIndex": -1,
-          "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
+              "WhenOpened": "2025-02-09T06:08:31.652Z",
+              "EditorCaption": ""
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SyncProductsToOpenSearch.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\OpenSearchService\\SyncProductsToOpenSearch.cs",
+              "RelativeDocumentMoniker": "Services\\OpenSearchService\\SyncProductsToOpenSearch.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\OpenSearchService\\SyncProductsToOpenSearch.cs",
+              "RelativeToolTip": "Services\\OpenSearchService\\SyncProductsToOpenSearch.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAvwBIAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-09T05:37:40.892Z",
+              "EditorCaption": ""
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
-            }
-          ]
-        },
-        {
-          "DockedHeight": 121,
-          "SelectedChildIndex": -1,
-          "Children": [
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "OpenSearchService.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\OpenSearchService\\OpenSearchService.cs",
+              "RelativeDocumentMoniker": "Services\\OpenSearchService\\OpenSearchService.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\OpenSearchService\\OpenSearchService.cs",
+              "RelativeToolTip": "Services\\OpenSearchService\\OpenSearchService.cs",
+              "ViewState": "AgIAAEkAAAAAAAAAAAAAwDUAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-09T04:44:12.694Z",
+              "EditorCaption": ""
+            },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{a80febb4-e7e0-4147-b476-21aaf2453969}"
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "IOpenSearchService.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\OpenSearchService\\IOpenSearchService.cs",
+              "RelativeDocumentMoniker": "Services\\OpenSearchService\\IOpenSearchService.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\OpenSearchService\\IOpenSearchService.cs",
+              "RelativeToolTip": "Services\\OpenSearchService\\IOpenSearchService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-09T04:43:50.659Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "OpenSearchProducts.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\OpenSearchProducts.cs",
+              "RelativeDocumentMoniker": "DTOS\\OpenSearchProducts.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\OpenSearchProducts.cs",
+              "RelativeToolTip": "DTOS\\OpenSearchProducts.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAYwAEAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-09T04:41:07.466Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "OpenSearchSettings.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\OpenSearchSettings.cs",
+              "RelativeDocumentMoniker": "DTOS\\OpenSearchSettings.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\OpenSearchSettings.cs",
+              "RelativeToolTip": "DTOS\\OpenSearchSettings.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-09T04:27:39.074Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Minimart Api.csproj",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Minimart Api.csproj",
+              "RelativeDocumentMoniker": "Minimart Api.csproj",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Minimart Api.csproj",
+              "RelativeToolTip": "Minimart Api.csproj",
+              "ViewState": "AgIAACIAAAAAAAAAAAAAADAAAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-02-09T04:16:20.918Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "PaymentDetailsDto.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\PaymentDetailsDto.cs",
+              "RelativeDocumentMoniker": "DTOS\\PaymentDetailsDto.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\PaymentDetailsDto.cs",
+              "RelativeToolTip": "DTOS\\PaymentDetailsDto.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAAAAIAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-08T05:42:13.889Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "OrderController.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Controllers\\OrderController.cs",
+              "RelativeDocumentMoniker": "Controllers\\OrderController.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Controllers\\OrderController.cs",
+              "RelativeToolTip": "Controllers\\OrderController.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAAewCsAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-08T05:28:57.388Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "SearchController.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Controllers\\SearchController.cs",
+              "RelativeDocumentMoniker": "Controllers\\SearchController.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Controllers\\SearchController.cs",
+              "RelativeToolTip": "Controllers\\SearchController.cs",
+              "ViewState": "AgIAACkAAAAAAAAAAAAAwCsAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-08T05:28:57.412Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "SendSmsService.cs",
+              "DocumentMoniker": "D:\\Notification Project\\SmsService\\Services\\SmsService\\SendSmsService.cs",
+              "ToolTip": "D:\\Notification Project\\SmsService\\Services\\SmsService\\SendSmsService.cs",
+              "ViewState": "AgIAADkAAAAAAAAAAAAAAEwAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-08T05:28:33.924Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "ProductDetails.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\ProductDetails.cs",
+              "RelativeDocumentMoniker": "DTOS\\ProductDetails.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\ProductDetails.cs",
+              "RelativeToolTip": "DTOS\\ProductDetails.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-08T04:36:28.775Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "IRepository.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Repositories\\IRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\IRepository.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Repositories\\IRepository.cs",
+              "RelativeToolTip": "Repositories\\IRepository.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAIBQwAcAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-08T03:26:34.057Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "CelcomAfrica.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\CelcomAfrica.cs",
+              "RelativeDocumentMoniker": "DTOS\\CelcomAfrica.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\CelcomAfrica.cs",
+              "RelativeToolTip": "DTOS\\CelcomAfrica.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-08T03:22:57.775Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "OrderEventConsumer.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\RabbitMQ\\OrderEventConsumer.cs",
+              "RelativeDocumentMoniker": "Services\\RabbitMQ\\OrderEventConsumer.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\RabbitMQ\\OrderEventConsumer.cs",
+              "RelativeToolTip": "Services\\RabbitMQ\\OrderEventConsumer.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAAAAACAAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-02T05:37:04.968Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "OrderRepository.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Repositories\\OrderRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\OrderRepository.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Repositories\\OrderRepository.cs",
+              "RelativeToolTip": "Repositories\\OrderRepository.cs",
+              "ViewState": "AgIAAG8AAAAAAAAAAAAjwHoAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-02T09:13:31.044Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "NotificationService.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\NotificationService\\NotificationService.cs",
+              "RelativeDocumentMoniker": "Services\\NotificationService\\NotificationService.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Services\\NotificationService\\NotificationService.cs",
+              "RelativeToolTip": "Services\\NotificationService\\NotificationService.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAYwCUAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-02T06:50:12.847Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAACYAAAAAAAAAAAAYwCoAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-02-04T01:36:07.762Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAHQAAAAAAAAAAAAUwHcAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-02T05:48:42.748Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "OrderEvent.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\OrderEvent.cs",
+              "RelativeDocumentMoniker": "DTOS\\OrderEvent.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Caleb\\OrderApi\\DTOS\\OrderEvent.cs",
+              "RelativeToolTip": "DTOS\\OrderEvent.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAA9wAYAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-02T04:47:29.774Z"
             }
           ]
         }

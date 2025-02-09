@@ -62,7 +62,7 @@ namespace Authentication_and_Authorization_Api.Core
 
         //}
 
-        public  string GenerateToken(UserInfo userInfo)
+        public  string GenerateToken(TUser user)
         {
             //var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:key"]));
             //var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -89,8 +89,8 @@ namespace Authentication_and_Authorization_Api.Core
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, userInfo.Name),
-                    new Claim(ClaimTypes.Email, userInfo.Email)
+                    new Claim(ClaimTypes.NameIdentifier, user.UserName),
+                    new Claim(ClaimTypes.Email, user.Email)
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
@@ -103,6 +103,8 @@ namespace Authentication_and_Authorization_Api.Core
 
             return tokenString;
         }
+
+
 
 
         public static CookieOptions SetRefreshToken(RefreshTokens newrefreshToken)

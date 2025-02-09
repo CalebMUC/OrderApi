@@ -4,8 +4,12 @@
     {
         
             public int PaymentID { get; set; }
-            public string PaymentReference { get; set; }
-            public double Amount { get; set; }
+            public long PaymentReference { get; set; }
+
+            public string PaymentMethod { get; set; }
+
+            public long Phonenumber { get; set; }
+            public decimal Amount { get; set; }
             public DateTime PaymentDate { get; set; }
         
 

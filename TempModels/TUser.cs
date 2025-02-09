@@ -10,6 +10,7 @@ namespace Minimart_Api.TempModels
             TCarts = new HashSet<TCart>();
             TOrders = new HashSet<TOrder>();
             TReviews = new HashSet<TReview>();
+            Addresses = new HashSet<Address>();
         }
 
         public string? UserName { get; set; }
@@ -24,11 +25,12 @@ namespace Minimart_Api.TempModels
         public string? RoleId { get; set; }
         public int UserId { get; set; }
         public string? Email { get; set; }
-
+        public string? Salt { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
         public virtual ICollection<TCart> TCarts { get; set; }
         public virtual ICollection<TOrder> TOrders { get; set; }
         public virtual ICollection<TReview> TReviews { get; set; }
-        // A user can have multiple addresses
         public virtual ICollection<Address> Addresses { get; set; }
     }
 }

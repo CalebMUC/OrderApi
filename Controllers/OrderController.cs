@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Minimart_Api.DTOS;
 using Minimart_Api.Services;
+using Minimart_Api.Services.RabbitMQ;
 
 namespace Minimart_Api.Controllers
 {
@@ -8,13 +9,15 @@ namespace Minimart_Api.Controllers
     [Route("api/[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly IMyService _myService;
+        //private readonly IMyService _myService;
         private readonly IOrderService _orderService;
+        private readonly IOrderEventPublisher _orderEventPublisher;
 
 
-        public OrderController(IMyService myService,IOrderService orderService) { 
-            _myService = myService;
+        public OrderController(IOrderService orderService, IOrderEventPublisher orderEventPublisher) { 
+
             _orderService = orderService;
+            _orderEventPublisher = orderEventPublisher;
 
         }
         [HttpPost("GetOrders")]
@@ -38,8 +41,10 @@ namespace Minimart_Api.Controllers
             }
             try
             {
-                var response = await _myService.AddOrder(orderDTO);
+                var response = await _orderService.AddOrder(orderDTO);
                 return Ok(response);
+
+                //call react page here for printing by passing the response
 
             }
             catch (Exception ex)

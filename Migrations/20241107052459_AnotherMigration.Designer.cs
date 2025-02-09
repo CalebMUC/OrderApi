@@ -12,8 +12,8 @@ using Minimart_Api.TempModels;
 namespace Minimart_Api.Migrations
 {
     [DbContext(typeof(MinimartDBContext))]
-    [Migration("20241007014047_yetAnotherMigration")]
-    partial class yetAnotherMigration
+    [Migration("20241107052459_AnotherMigration")]
+    partial class AnotherMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -156,6 +156,27 @@ namespace Minimart_Api.Migrations
                     b.HasIndex("TownId");
 
                     b.ToTable("DeliveryStations");
+                });
+
+            modelBuilder.Entity("Minimart_Api.TempModels.Features", b =>
+                {
+                    b.Property<int>("FeatureID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FeatureID"), 1L, 1);
+
+                    b.Property<string>("FeatureName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FeatureOptions")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("FeatureID");
+
+                    b.ToTable("Features");
                 });
 
             modelBuilder.Entity("Minimart_Api.TempModels.Order", b =>
@@ -392,6 +413,29 @@ namespace Minimart_Api.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.ToTable("Statuses");
+                });
+
+            modelBuilder.Entity("Minimart_Api.TempModels.SubCategoryFeatures", b =>
+                {
+                    b.Property<int>("SubCategoryFeatureID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubCategoryFeatureID"), 1L, 1);
+
+                    b.Property<int>("FeatureID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubCategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SubCategoryFeatureID");
+
+                    b.HasIndex("FeatureID");
+
+                    b.HasIndex("SubCategoryId");
+
+                    b.ToTable("SubCategoryFeatures");
                 });
 
             modelBuilder.Entity("Minimart_Api.TempModels.TCart", b =>
@@ -778,6 +822,10 @@ namespace Minimart_Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RowId"), 1L, 1);
 
+                    b.Property<string>("SearchKeyWord")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Specification")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -1131,6 +1179,25 @@ namespace Minimart_Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Payments");
+                });
+
+            modelBuilder.Entity("Minimart_Api.TempModels.SubCategoryFeatures", b =>
+                {
+                    b.HasOne("Minimart_Api.TempModels.Features", "features")
+                        .WithMany()
+                        .HasForeignKey("FeatureID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Minimart_Api.TempModels.TSubcategoryid", "Subcategory")
+                        .WithMany()
+                        .HasForeignKey("SubCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subcategory");
+
+                    b.Navigation("features");
                 });
 
             modelBuilder.Entity("Minimart_Api.TempModels.TCart", b =>

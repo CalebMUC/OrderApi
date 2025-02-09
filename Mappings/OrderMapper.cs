@@ -6,6 +6,17 @@ namespace Minimart_Api.Mappings
 {
     public class OrderMapper
     {
+
+        public static class ReportConfiguration
+        {
+            //map report types to thier actual Parameters
+            public static readonly Dictionary<string, List<string>> ReportParameterMappings = new Dictionary<string, List<string>> {
+            {"Sales Report", new List<string>{"FromDate","ToDate" } },
+            {"Product Report", new List<string>{"fromDate","toDate","category" } },
+            {"Customer Report", new List<string>{"fromDate","toDate", "customerID" } }
+        };
+
+        }
         // Mapping Order to OrderDTO
         public OrderDTO MapToDto(Order order)
         {
@@ -46,7 +57,7 @@ namespace Minimart_Api.Mappings
                 PaymentDetailsJson = JsonConvert.SerializeObject(new PaymentDetails
                 {
                     PaymentID = orderDto.PaymentDetails.First().PaymentID, // Access the first item's PaymentID
-                    PaymentReference = orderDto.PaymentDetails.First().PaymentReference,
+                   // TrxReference = orderDto.PaymentDetails.First().PaymentReference,
                     Amount = orderDto.PaymentDetails.First().Amount,
                     PaymentDate = DateTime.UtcNow // Use the current date
                 }),

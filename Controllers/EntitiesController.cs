@@ -84,6 +84,46 @@ namespace Minimart_Api.Controllers
 
 
         }
+        [HttpPost("DeleteCartItems")]
+        public async Task<IActionResult> DeleteCartItems([FromBody] CartItemsDTO cartitems)
+        {
+            //var jsonSrting = JsonConvert.SerializeObject(cartitems);
+
+            try
+            {
+                var Response = await _myService.DeleteCartItems(cartitems);
+
+                return Ok(Response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+
+
+        }
+
+        [HttpPost("SaveItems")]
+        public async Task<IActionResult> SaveItems([FromBody] SaveItemsDTO saveItems)
+        {
+            //var jsonSrting = JsonConvert.SerializeObject(cartitems);
+
+            try
+            {
+                var Response = await _myService.SaveItems(saveItems);
+
+                return Ok(Response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+
+
+        }
+
         [HttpPost("GetCartItems")]
         public async Task<IActionResult> GetCartItems([FromBody] GetCartItems cartitems)
         {
@@ -92,6 +132,26 @@ namespace Minimart_Api.Controllers
             try
             {
                 var Response = await _myService.GetCartItems(cartitems.UserID);
+
+                return Ok(Response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+
+
+        }
+
+        [HttpGet("GetSavedItems")]
+        public async Task<IActionResult> GetSavedItems()
+        {
+            //var jsonSrting = JsonConvert.SerializeObject(cartitems);
+
+            try
+            {
+                var Response = await _myService.GetSavedItems();
 
                 return Ok(Response);
             }
@@ -373,103 +433,147 @@ namespace Minimart_Api.Controllers
             return Ok(address);
         }
 
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetAddressesByUserId(int userId)
-        {
-            var addresses = await _myService.GetAddressesByUserIdAsync(userId);
-            return Ok(addresses);
-        }
+                //[HttpGet("user/{userId}")]
+                //public async Task<IActionResult> GetAddressesByUserId(int userId)
+                //{
+                //    var addresses = await _myService.GetAddressesByUserIdAsync(userId);
+                //    return Ok(addresses);
+                //}
 
-        [HttpPost("AddAddress")]
-        public async Task<IActionResult> AddAddress([FromBody] AddressDTO address)
-        {
-            await _myService.AddAddressAsync(address);
-            return CreatedAtAction(nameof(GetAddressesByUserId), new { userId = address.UserID }, address);
 
-        }
-        [HttpPost("EditAddress")]
-        public async Task<IActionResult> EditAddress([FromBody] EditAddressDTO address)
-        {
-            try
-            {
-                await _myService.EditAddressAsync(address);
-                return CreatedAtAction(nameof(GetAddressesByUserId), new { userId = address.UserID }, address);
-            }catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            
-        }
-
-        //[AllowAnonymous]
-        [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] UserLogin userLogin)
-        {
-            //to log incoming requests
-            //logs.LogRequest($" UserName:{userLogin.UserName}, Password : {userLogin.Password}", "logRequest.txt");
-
-           // myConnectionString = _config.GetConnectionString("myConnectionString");
-
-            //serialize User Credentials
-
-            var jsonDataUserCredentials = JsonConvert.SerializeObject(userLogin);
-           
-
-            try
-            {
-                UserInfo Response = await _myService.Login(jsonDataUserCredentials);
-
-                if (Response.StatusId == 1)
+                [HttpGet("GetAddressesByUserId/{userId}")]
+                public async Task<IActionResult> GetAddressesByUserId(int userId)
                 {
-                    var token = _coreLibraries.GenerateToken(Response);
-
-                    var refreshToken = CoreLibraries.GenerateRefreshToken(Response.Name);
-
-                    var UserID = Response.UserInfoId;
-
-                    var UserName = Response.Name;
-
-
-                    //Save RefreshToken to dataBase
-
-
-
-                    //Serialize RefreshToken
-
-                    var jsonData = JsonConvert.SerializeObject(refreshToken);
-
-                    _myService.SaveRefreshToken(jsonData);
-
-
-                    //Set Refresh Token
-
-                    CoreLibraries.SetRefreshToken(refreshToken);
-
-
-
-                    return Ok(new
+                    try
                     {
-                        accessToken = token,
-                        refreshToken = refreshToken.RefreshToken,
-                        userID = UserID,
-                        UserName = UserName,
 
-                    });
-
-                    //Generate a RefreshToken
-
-
+                        var addresses = await _myService.GetAddressesByUserIdAsync(userId);
+                        return Ok(addresses);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(new
+                        {
+                            responseCode = 500,
+                            responseMessage = "An error occurred while fetching addresses.",
+                            error = ex.Message
+                        });
+                    }
                 }
 
-                return NotFound("Invalid Credentials");
+
+        [HttpPost("AddAddress")]
+                public async Task<IActionResult> AddAddress([FromBody] AddressDTO address)
+                {
+                    try
+                    {
+                        await _myService.AddAddressAsync(address);
+
+                        // Fetch the updated list of addresses for the user
+                        var updatedAddresses = await _myService.GetAddressesByUserIdAsync(address.UserID);
+
+                        return Ok(new
+                        {
+                            responseCode = 200,
+                            responseMessage = "Address added successfully.",
+                            addresses = updatedAddresses
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(new
+                        {
+                            responseCode = 500,
+                            responseMessage = "An error occurred while adding the address.",
+                            error = ex.Message
+                        });
+                    }
+                }
+
+        
+                [HttpPost("EditAddress")]
+                public async Task<IActionResult> EditAddress([FromBody] EditAddressDTO address)
+                {
+                    try
+                    {
+                        await _myService.EditAddressAsync(address);
+
+                        // Fetch the updated list of addresses for the user
+                        var updatedAddresses = await _myService.GetAddressesByUserIdAsync(address.UserID);
+
+                        return Ok(new
+                        {
+                            responseCode = 200,
+                            responseMessage = "Address updated successfully.",
+                            addresses = updatedAddresses
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(new
+                        {
+                            responseCode = 500,
+                            responseMessage = "An error occurred while updating the address.",
+                            error = ex.Message
+                        });
+                    }
+                }
 
 
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        //[AllowAnonymous]
+        //[HttpPost("Login")]
+        //public async Task<IActionResult> Login([FromBody] UserLogin userLogin)
+        //{
+        //    // Serialize User Credentials
+        //    var jsonDataUserCredentials = JsonConvert.SerializeObject(userLogin);
+
+        //    try
+        //    {
+        //        // Call the service to authenticate user
+        //        var response = await _myService.Login(jsonDataUserCredentials);
+
+        //        if ( Convert.ToBoolean(response.Status.ResponseCode))
+        //        {
+        //            // Generate access and refresh tokens
+        //            var token = _coreLibraries.GenerateToken(response);
+        //            var refreshToken = CoreLibraries.GenerateRefreshToken(response.Name);
+
+        //            // Save refresh token
+        //            _myService.SaveRefreshToken(JsonConvert.SerializeObject(refreshToken));
+
+        //            // Return success response
+        //            return Ok(new
+        //            {
+        //                responseCode = true,
+        //                responseMessage = "Login successful",
+        //                accessToken = token,
+        //                refreshToken = refreshToken.RefreshToken,
+        //                userID = response.UserInfoId,
+        //                userName = response.Name,
+        //                roleID = response.RoleID
+        //            });
+        //        }
+
+        //        // Invalid credentials or user not found
+        //        return NotFound(new
+        //        {
+        //            responseCode = false,
+        //            responseMessage = response.Status.ResponseMessage
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Handle unexpected errors
+        //        return BadRequest(new
+        //        {
+        //            responseCode = false,
+        //            responseMessage = "An error occurred during login.",
+        //            exceptionMessage = ex.Message
+        //        });
+        //    }
+        //}
+
+
 
         //[AllowAnonymous]
         [HttpPost("Register")]
@@ -578,7 +682,7 @@ namespace Minimart_Api.Controllers
 
                 //return response;
 
-                if (response.Status.ResponseCode)//--true
+                if (Convert.ToBoolean(response.Status.ResponseCode))//--true
                 {
                     //Generate a new Json Web Token
 
@@ -591,7 +695,8 @@ namespace Minimart_Api.Controllers
                     //    Role = "Adminstrator"
                     //};
 
-                    var token = _coreLibraries.GenerateToken(response);
+                    //var token = _coreLibraries.GenerateToken(response);
+                    var token = "";
 
                     newToken = token;
 
