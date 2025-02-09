@@ -1,10 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Minimart_Api.DTOS;
+using Minimart_Api.Services.RabbitMQ;
 using Minimart_Api.TempModels;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Linq.Dynamic.Core.Tokenizer;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks.Dataflow;
 using System.Transactions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -15,9 +20,18 @@ namespace Minimart_Api.Repositories
     {
         private readonly MinimartDBContext _dbContext;
 
-        public MyRepository(MinimartDBContext myDBContext)
+        private readonly IConfiguration _configuration;
+
+        private readonly MpesaSandBox _mpesaSandBox;
+
+        private readonly IOrderEventPublisher _orderEventPublisher;
+
+        public MyRepository(MinimartDBContext myDBContext,IConfiguration configuration,IOptions<MpesaSandBox> mpesaSandBox, IOrderEventPublisher orderEventPublisher)
         {
             _dbContext = myDBContext;
+            _configuration = configuration;
+            _mpesaSandBox = mpesaSandBox.Value;
+            _orderEventPublisher = orderEventPublisher;
         }
 
         public async Task<IEnumerable<TUser>> GetAllAsync()
@@ -41,6 +55,92 @@ namespace Minimart_Api.Repositories
             return response.FirstOrDefault();
         }
 
+        public async Task<Status> DeleteCartItems(CartItemsDTO cartItems)
+        {
+            try {
+
+                var item =  _dbContext.CartItems.FirstOrDefault(c =>
+                c.CartItemId == cartItems.CartItemID &&
+                c.CartId == cartItems.CartID &&
+                c.ProductId == cartItems.ProductID);
+
+                //check if the item Exists
+                if (item != null) {
+                    _dbContext.CartItems.Remove(item);
+                   _dbContext.SaveChanges();
+                }
+
+                var response = new Status {
+                    ResponseCode = 200,
+                    ResponseMessage = "Item Removed Successfully"
+                };
+
+                return response;
+
+
+            }
+            catch (Exception ex) {
+                var response = new Status
+                {
+                    ResponseCode = 200,
+                    ResponseMessage = ex.Message
+                };
+
+                return response;
+            }
+
+         
+        }
+
+        public async Task<Status> SaveItems(SaveItemsDTO saveItems)
+        {
+            try
+            {
+                var item = _dbContext.TProducts.FirstOrDefault(c =>
+                    c.ProductId == saveItems.ProductID);
+
+                // Check if the item exists
+                if (item == null)
+                {
+                    return new Status
+                    {
+                        ResponseCode = 404,
+                        ResponseMessage = "Item not found"
+                    };
+                }
+
+                // Handle null properties
+                if (item.IsSaved == null)
+                {
+                    item.IsSaved = 0; // Set default value
+                }
+                else
+                {
+                    item.IsSaved = 1; // Update value
+                    //Exclude RowID Explicily to prevent it from beind update
+                    _dbContext.Entry(item).Property(x => x.RowId).IsModified = false;
+                    await _dbContext.SaveChangesAsync();
+                }
+
+                //_dbContext.TProducts.Update(item);
+                //await _dbContext.SaveChangesAsync();
+
+                return new Status
+                {
+                    ResponseCode = 200,
+                    ResponseMessage = "Item Saved Successfully"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Status
+                {
+                    ResponseCode = 500,
+                    ResponseMessage = ex.Message
+                };
+            }
+        }
+
         public async Task<UserRegStatus> UserRegistration(string jsonData)
         {
             var parameters = new[]
@@ -52,16 +152,16 @@ namespace Minimart_Api.Repositories
             return response.FirstOrDefault();
         }
 
-        public async Task<UserInfo> Login(string jsonData)
-        {
-            var parameters = new[]
-            {
-                new SqlParameter("@JsonData", jsonData)
-            };
+        //public async Task<LoginResponse> Login(string jsonData)
+        //{
+        //    var parameters = new[]
+        //    {
+        //        new SqlParameter("@JsonData", jsonData)
+        //    };
 
-            var response = await _dbContext.Users.FromSqlRaw("EXEC p_AuthenticateUser @JsonData", parameters).ToListAsync();
-            return response.FirstOrDefault();
-        }
+        //    var response = await _dbContext.Users.FromSqlRaw("EXEC p_AuthenticateUser @JsonData", parameters).ToListAsync();
+        //    return response.FirstOrDefault();
+        //}
 
         public async Task SaveRefreshToken(string jsonData)
         {
@@ -81,6 +181,7 @@ namespace Minimart_Api.Repositories
                 {
                     Id = tc.CategoryId,
                     Name = tc.CategoryName,
+                    Description = tc.Description,
                     Subcategoryids = tc.TSubcategoryids
                         .Select(sc => new SubCategoryDTO
                         {
@@ -152,9 +253,32 @@ namespace Minimart_Api.Repositories
                     KeyFeatures = ci.Product.KeyFeatures,
                     Specification = ci.Product.Specification,
                     Box = ci.Product.Box,
+                    CartID = ci.CartId ?? 0,
+                    CartItemID = ci.CartItemId,
                 })
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<TProduct>> GetSavedItems()
+        {
+            return await _dbContext.TProducts.Where(P=> P.IsSaved == 1)
+                .Select(ci => new TProduct
+                {
+                    ProductId = ci.ProductId,
+                    ImageUrl = ci.ImageUrl,
+                    ProductName = ci.ProductName,
+                    //Quantity = ci.InStock,
+                    Price = ci.Price,
+                    InStock = ci.InStock,
+                    ProductDescription = ci.ProductDescription,
+                    KeyFeatures = ci.KeyFeatures,
+                    Specification = ci.Specification,
+                    Box = ci.Box
+                })
+                .ToListAsync();
+        }
+
+     
 
         public async Task<IEnumerable<TProduct>> FetchAllProducts()
         {
@@ -185,6 +309,9 @@ namespace Minimart_Api.Repositories
         {
             using var transactionScope = await _dbContext.Database.BeginTransactionAsync();
 
+            int paymentMethodID = 0;
+            var newOrder = new Order();
+
             try
             {
                 // Iterate through each order in the transaction
@@ -202,24 +329,39 @@ namespace Minimart_Api.Repositories
                             throw new Exception($"PaymentID {paymentDetailDto.PaymentID} does not exist in the Payments table.");
                         }
 
-                        // Insert new PaymentDetails records for audit purposes
-                        var newPayment = new PaymentDetails
+                        if (paymentDetailDto.PaymentMethod == "Mpesa")
                         {
-                            PaymentID = paymentDetailDto.PaymentID,
-                            PaymentReference = paymentDetailDto.PaymentReference,
-                            Amount = paymentDetailDto.Amount,
-                            PaymentDate = DateTime.UtcNow // Always use the current date for audits
-                        };
+                            var stkPushResponse = await InitiateMpesaSTKPush(paymentDetailDto);
 
-                        // Add the new payment details record
-                        _dbContext.paymentDetails.Add(newPayment);
-                        await _dbContext.SaveChangesAsync(); // Save to get the auto-generated PaymentMethodID
+                            if (stkPushResponse.ResponseCode == "1" )
+                            {
+                                return new ResponseStatus
+                                {
+                                    ResponseStatusId = 400,
+                                    ResponseMessage = "M-Pesa STK Push failed: " + stkPushResponse.CustomerMessage
+                                };
+                            }
 
-                        // Fetch the PaymentMethodID for use in the order
-                        var paymentMethodID = newPayment.PaymentMethodID;
+                            // Save STK Push details for auditing
+                            var newPayment = new PaymentDetails
+                            {
+                                PaymentID = paymentDetailDto.PaymentID,
+                                TrxReference = stkPushResponse.CheckoutRequestID, // Use CheckoutRequestID from the response
+                                Amount = paymentDetailDto.Amount,
+                                PaymentDate = DateTime.UtcNow,
+                                Phonenumber = paymentDetailDto.Phonenumber,
+                                
+                            };
+
+                            _dbContext.paymentDetails.Add(newPayment);
+                            await _dbContext.SaveChangesAsync();
+
+                            // Fetch the PaymentMethodID for use in the order
+                            paymentMethodID = newPayment.PaymentMethodID;
+                        }
 
                         // Proceed with the order creation
-                        var newOrder = new Order
+                        newOrder = new Order
                         {
                             OrderID = orderDto.OrderID,
                             UserID = orderDto.UserID,
@@ -232,7 +374,7 @@ namespace Minimart_Api.Repositories
                             TotalOrderAmount = orderDto.TotalOrderAmount,
                             TotalPaymentAmount = orderDto.TotalPaymentAmount,
                             TotalDeliveryFees = orderDto.TotalDeliveryFees,
-                            TotalTax = orderDto.TotalTax,
+                            TotalTax = 0,
 
                             // Map PaymentDetails JSON
                             PaymentDetailsJson = JsonConvert.SerializeObject(new
@@ -319,6 +461,8 @@ namespace Minimart_Api.Repositories
                 await _dbContext.SaveChangesAsync();
                 await transactionScope.CommitAsync();
 
+               //await  PublishOrderEvent(newOrder);
+
                 return new ResponseStatus
                 {
                     ResponseStatusId = 200,
@@ -336,6 +480,129 @@ namespace Minimart_Api.Repositories
                 };
             }
         }
+
+        private async Task<STKPushResponse> InitiateMpesaSTKPush(PaymentDetailsDto paymentDetails)
+        {
+            string token = string.Empty;
+
+            try
+            {
+                var newSTKPushRequest = new STKPushRequest
+                {
+                    BusinessShortCode = "174379",
+                    Password = GeneratePassword(),
+                    Timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss"),
+                    TransactionType = "CustomerPayBillOnline",
+                    Amount = paymentDetails.Amount,
+                    PartyA = Convert.ToString(paymentDetails.PaymentReference),
+                    PartyB = "174379",
+                    PhoneNumber = Convert.ToString(paymentDetails.PaymentReference),
+                    CallBackURL = "https://ce19-102-213-49-29.ngrok-free.app/mpesa/callback",
+                    AccountReference = $"Order{paymentDetails.PaymentID}",
+                    TransactionDesc = $"Payment For {paymentDetails.PaymentID}",
+                    //PassKey = "bfb279f9aa9bdbcf158e97dd71a467cd2f54f2a74b1cfcfc9e68d8f7cbe72956
+
+                };
+
+                var json = JsonConvert.SerializeObject(newSTKPushRequest);
+
+                var ConsumerKey = _mpesaSandBox.ConsumerKey;
+                var ConsumerSecret = _mpesaSandBox.ConsumerSecret;
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
+                    "Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ConsumerKey}:{ConsumerSecret}"))
+                );
+
+                var Authresponse = await client.GetAsync(_mpesaSandBox.MpesaSandboxUrl);
+
+                if (Authresponse.IsSuccessStatusCode)
+                {
+                    var content = await Authresponse.Content.ReadAsStringAsync();
+
+                    var data = JsonConvert.DeserializeObject<dynamic>(content);
+
+                    token = data?["access_token"]?.ToString() ?? throw new InvalidOperationException();
+                }
+                else
+                {
+                    throw new HttpRequestException($"Failed to get access token. Status Code: {Authresponse.StatusCode}");
+                }
+
+                // Send STK PUSH REQUEST
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.PostAsJsonAsync(_mpesaSandBox.STKPushUrl, newSTKPushRequest);
+                var responseData = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return new STKPushResponse
+                    {
+                        MerchantRequestID = responseData.MerchantRequestID,
+                        CheckoutRequestID = responseData.CheckoutRequestID,
+                        ResponseCode = responseData.ResponseCode,
+                        ResponseDescription = responseData.ResponseDescription,
+                        CustomerMessage = responseData.CustomerMessage,
+                    };
+                }
+                else
+                {
+                    // Return a failure response if the API call fails
+                    return new STKPushResponse
+                    {
+                        MerchantRequestID = "",
+                        CheckoutRequestID = "",
+                        ResponseCode = responseData?.ResponseCode ?? "1",
+                        ResponseDescription = responseData?.ResponseDescription ?? "Failed to initiate STK push.",
+                        CustomerMessage = responseData?.CustomerMessage ?? "Failed to initiate STK push.",
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception by returning a generic error response
+                return new STKPushResponse
+                {
+                    MerchantRequestID = "",
+                    CheckoutRequestID = "",
+                    ResponseCode = "1",
+                    ResponseDescription = "An error occurred while initiating the STK push.",
+                    CustomerMessage = "An error occurred while initiating the STK push.",
+                };
+            }
+        }
+
+
+        private string GeneratePassword()
+        {
+            var shortcode = "174379"; // Replace with your shortcode
+            var passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2f54f2a74b1cfcfc9e68d8f7cbe72956"; // Replace with your passkey
+            var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+            var dataToEncode = shortcode + passkey + timestamp;
+
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(dataToEncode));
+        }
+
+        //PUBLISH TO ORDEREVENT
+        //public async Task PublishOrderEvent(Order order) {
+
+        //    //create an order Event Object
+        //    var orderEvent = new OrderEvent
+        //    {
+        //        OrderID = order.OrderID,
+        //        OrderDate = order.OrderDate,
+        //        UserID = order.UserID,
+        //        products = order.ProductsJson,
+        //        UserEmail = "user@gmail.com",
+        //        MerchantEmail = "merchant@gmail.com",
+        //        UserPhoneNumber = order.PaymentDetails.Phonenumber.ToString(),
+        //        MerchantPhoneNumber = order.PaymentDetails.Phonenumber.ToString(),
+        //        addresses = order.ShippingAddress,
+        //        Amount = order.TotalPaymentAmount
+        //    };
+
+        //    await _orderEventPublisher.PublishOrderEvent(orderEvent);
+        //}
 
 
         public async Task<Address> GetAddressByIdAsync(int addressId)
@@ -567,6 +834,7 @@ namespace Minimart_Api.Repositories
                 ProductType = "P",
                 CategoryId = product.CategoryID,
                 SubCategoryId = product.subcategory,
+                SearchKeyWord = product.SearchKeyWord,
                 Price = product.price,
                 InStock = product.Quantity,
                 Discount = product.discount,

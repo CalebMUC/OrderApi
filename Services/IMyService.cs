@@ -13,7 +13,13 @@ namespace Minimart_Api.Services
 
         Task<Status> AddToCart(string CartItems);
 
+        Task<Status> DeleteCartItems(CartItemsDTO CartItems);
+
+        Task<Status> SaveItems(SaveItemsDTO saveItems);
+
         Task<IEnumerable<CartResults>> GetCartItems(int UserID);
+
+        Task<IEnumerable<TProduct>> GetSavedItems();
 
         Task<IEnumerable<TProduct>> FetchAllProducts();
 
@@ -53,7 +59,7 @@ namespace Minimart_Api.Services
 
         Task<IEnumerable<TProduct>> LoadProductImages(string ProductID);
 
-        Task <UserInfo> Login(string JsonData);
+        //Task <LoginResponse> Login(string JsonData);
 
         public void SaveRefreshToken(string JsonData);
 

@@ -12,6 +12,10 @@ namespace Minimart_Api.Repositories
 
         Task<Status> AddToCart(string CartItems);
 
+        Task<Status> DeleteCartItems(CartItemsDTO CartItems);
+
+        Task<Status> SaveItems(SaveItemsDTO saveItems);
+
         Task<UserRegStatus> UserRegistration(string CartItems);
         
         Task<IEnumerable<TSubcategoryid>> GetDashBoardName(DashBoardName Dashboardname);
@@ -32,6 +36,8 @@ namespace Minimart_Api.Repositories
 
         Task<IEnumerable<CartResults>> GetCartItems(int UserID);
 
+        Task<IEnumerable<TProduct>> GetSavedItems();
+
 
         Task<ResponseStatus> CreateOrder(Order order);
 
@@ -48,7 +54,7 @@ namespace Minimart_Api.Repositories
         Task<ResponseStatus> AddProducts(AddProducts product);
 
 
-        Task <UserInfo> Login(string JsonData);
+        //Task <LoginResponse> Login(string JsonData);
 
         public Task SaveRefreshToken(string JsonData);
     }

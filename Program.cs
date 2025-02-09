@@ -19,6 +19,17 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.FileProviders;
 using Minimart_Api.Mappings;
+using Minimart_Api.Services.RabbitMQ;
+using Minimart_Api.Services.NotificationService;
+using OpenSearch.Client;
+using OpenSearch.Net;
+using Microsoft.Extensions.Options;
+using Minimart_Api.Services.OpenSearchService;
+using Elasticsearch.Net;
+using Elasticsearch.Net.Aws;
+using Amazon.Runtime;
+using Amazon;
+using Amazon.Extensions.NETCore.Setup;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,8 +44,33 @@ builder.Services.AddScoped<IMyService, MyService>();
 builder.Services.AddScoped<IRepository, MyRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IorderRepository, OrderRepository>();
+
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
+
+builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<ISearchRepo,SearchRepo>();
+
+builder.Services.AddScoped<IMerchantService, MerchantService>();
+builder.Services.AddScoped<IMerchantRepo, MerchantRepo>();
+
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IReportRepo, ReportRepo>();
+
+builder.Services.AddScoped<IAuthentication, AuthenticationService>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+
+builder.Services.AddScoped<IOrderEventPublisher, OrderEventPublisher>();
+builder.Services.AddHostedService<OrderEventConsumer>();
+
+builder.Services.AddScoped<INotfication, NotificationService>();
+
+builder.Services.AddScoped<IOpenSearchService, OpenSearchService>();
+
 builder.Services.AddScoped<CoreLibraries>();
 builder.Services.AddScoped<OrderMapper>();
+
+builder.Services.AddSingleton<IRabbitMqConnection>(new RabbitMqConnection());
 //configure Serilog
 
 Log.Logger = new LoggerConfiguration()
@@ -51,10 +87,48 @@ builder.Logging.AddDebug();
 builder.Services.AddDbContext<MinimartDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-           .LogTo(message => Log.Information(message), LogLevel.Information) // Log to Serilog
+           .LogTo(message => Log.Information(message),Microsoft.Extensions.Logging.LogLevel.Information) // Log to Serilog
            .EnableSensitiveDataLogging(); // Enable logging of sensitive data (like parameters)
 },
 ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
+
+builder.Services.AddScoped<MpesaSandBox>();
+
+builder.Services.AddHostedService<SyncProductsToOpenSearch>();
+
+
+builder.Services.Configure<MpesaSandBox>(builder.Configuration.GetSection("MpesaSandBox"));
+
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+builder.Services.Configure<CelcomAfrica>(builder.Configuration.GetSection("CelcomAfrica"));
+
+builder.Services.Configure<OpenSearchSettings>(builder.Configuration.GetSection("OpenSearchSettings"));
+
+//builder.Services.AddSingleton<IElasticClient>(sp =>
+//{
+//    var settings = sp.GetRequiredService<IOptions<OpenSearchSettings>>().Value;
+//    var uri = new Uri(settings.Endpoint);
+
+//    var connectionSettings = new ConnectionSettings(uri)
+//        .BasicAuthentication("CalebMuchiri", "Caleb@2543")
+//        .EnableApiVersioningHeader()  // Ensure compatibility with OpenSearch
+//        .ServerCertificateValidationCallback(CertificateValidations.AllowAll); // Disable strict SSL checks for testing purposes
+
+//    var client = new ElasticClient(connectionSettings);
+//    return client;
+//});
+
+//Configure OpenSearch client
+builder.Services.AddSingleton<IOpenSearchClient>(sp =>
+{
+    var settings = sp.GetRequiredService<IOptions<OpenSearchSettings>>().Value;
+    var uri = new Uri(settings.Endpoint);
+    var connectionSettings = new ConnectionSettings(uri)
+        .BasicAuthentication("CalebMuchiri", "Caleb@2543"); // Add username/password if required
+    return new OpenSearchClient(connectionSettings);
+});
+
 
 
 //builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -139,6 +213,9 @@ builder.Services.AddCors(options => options.AddPolicy("AllowAllOrigins",builder 
 .AllowAnyMethod()
 .AllowAnyHeader()));
 
+builder.Services.AddHttpClient();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -149,7 +226,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-        c.RoutePrefix = "Swagger"; // Serve Swagger UI at the app's root
+        c.RoutePrefix = "Swagger"; // Serve Swagger UI at the app's rootMpesaSandBox
     });
 }
 

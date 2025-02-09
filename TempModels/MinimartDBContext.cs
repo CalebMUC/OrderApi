@@ -52,6 +52,13 @@ namespace Minimart_Api.TempModels
 
         public DbSet<Address> Addresses { get; set; }
 
+        public DbSet<Features> Features { get; set; }
+        public DbSet<SubCategoryFeatures> SubCategoryFeatures { get; set; }
+
+        public DbSet<Merchants> Merchants { get; set; }
+
+        public DbSet<BusinessTypes> BusinessTypes { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

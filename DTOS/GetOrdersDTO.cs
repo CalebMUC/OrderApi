@@ -8,7 +8,7 @@
         public double TotalOrderAmount { get; set; }
         public DateTime DeliveryScheduleDate { get; set; }
         public string? OrderedBy { get; set; }
-        public PaymentDetailsDto PaymentDetails { get; set; }
+        public List<PaymentDetailsDto> PaymentDetails { get; set; }
         public List<OrderProductsDTO> Products { get; set; }
         public string PaymentConfirmation { get; set; }
         public double TotalPaymentAmount { get; set; }

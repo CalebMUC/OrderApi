@@ -15,5 +15,9 @@
         public decimal? price { get; set; } 
 
         public int Instock { get; set; }
+
+        public int CartID { get; set; }
+
+        public int CartItemID { get; set; }
     }
 }

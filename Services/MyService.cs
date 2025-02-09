@@ -77,6 +77,17 @@ namespace Minimart_Api.Services
             return await _repository.AddToCart(CartItems); 
         }
 
+
+        public async Task<Status> DeleteCartItems(CartItemsDTO CartItems)
+        {
+            return await _repository.DeleteCartItems(CartItems);
+        }
+
+        public async Task<Status> SaveItems(SaveItemsDTO saveItems)
+        {
+            return await _repository.SaveItems(saveItems);
+        }
+
         public async Task<UserRegStatus> UserRegistration(string JsonData)
         {
             return await _repository.UserRegistration(JsonData);
@@ -118,6 +129,11 @@ namespace Minimart_Api.Services
             return await _repository.GetCartItems(UserID);
         }
 
+        public async Task<IEnumerable<TProduct>> GetSavedItems()
+        {
+            return await _repository.GetSavedItems();
+        }
+
 
         public async Task<IEnumerable<TProduct>> FetchAllProducts()
         {
@@ -129,10 +145,10 @@ namespace Minimart_Api.Services
             return await _repository.AddProducts(product);
         }
 
-        public async Task<UserInfo> Login(string JsonData)
-        {
-            return await _repository.Login(JsonData);
-        }
+        //public async Task<LoginResponse> Login(string JsonData)
+        //{
+        //    return await _repository.Login(JsonData);
+        //}
 
         public async void SaveRefreshToken(string JsonData)
         {
