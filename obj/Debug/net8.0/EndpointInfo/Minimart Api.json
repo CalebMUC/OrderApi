@@ -1010,6 +1010,18 @@
         }
       }
     },
+    "/api/Product/GetAllProducts": {
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Report/Generate": {
       "post": {
         "tags": [
@@ -1155,6 +1167,167 @@
         "parameters": [
           {
             "name": "queryname",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SystemMerchant/GetAllMerchants": {
+      "get": {
+        "tags": [
+          "SystemMerchant"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SystemMerchant/GetMerchantById": {
+      "get": {
+        "tags": [
+          "SystemMerchant"
+        ],
+        "parameters": [
+          {
+            "name": "merchantID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SystemMerchant/AddMerchantsAsync": {
+      "post": {
+        "tags": [
+          "SystemMerchant"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemMerchantsDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemMerchantsDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemMerchantsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SystemMerchant/UpdateMerchantsAsync": {
+      "post": {
+        "tags": [
+          "SystemMerchant"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemMerchantsDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemMerchantsDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemMerchantsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SystemMerchant/DeleteMerchantAsync": {
+      "post": {
+        "tags": [
+          "SystemMerchant"
+        ],
+        "parameters": [
+          {
+            "name": "merchantId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SystemSecurity/submodule-categories": {
+      "get": {
+        "tags": [
+          "SystemSecurity"
+        ],
+        "parameters": [
+          {
+            "name": "subModuleID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SystemSecurity/role-modules": {
+      "get": {
+        "tags": [
+          "SystemSecurity"
+        ],
+        "parameters": [
+          {
+            "name": "RoleID",
             "in": "query",
             "schema": {
               "type": "string"
@@ -1902,6 +2075,106 @@
           "categoryID": {
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SystemMerchantsDto": {
+        "type": "object",
+        "properties": {
+          "merchantID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "businessName": {
+            "type": "string",
+            "nullable": true
+          },
+          "businessType": {
+            "type": "string",
+            "nullable": true
+          },
+          "businessRegistrationNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "krapin": {
+            "type": "string",
+            "nullable": true
+          },
+          "businessNature": {
+            "type": "string",
+            "nullable": true
+          },
+          "businessCategory": {
+            "type": "string",
+            "nullable": true
+          },
+          "merchantName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "socialMedia": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankName": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankAccountNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "bankAccountName": {
+            "type": "string",
+            "nullable": true
+          },
+          "mpesaPaybill": {
+            "type": "string",
+            "nullable": true
+          },
+          "mpesaTillNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "preferredPaymentChannel": {
+            "type": "string",
+            "nullable": true
+          },
+          "krapinCertificate": {
+            "type": "string",
+            "nullable": true
+          },
+          "businessRegistrationCertificate": {
+            "type": "string",
+            "nullable": true
+          },
+          "termsAndCondition": {
+            "type": "boolean"
+          },
+          "deliveryMethod": {
+            "type": "string",
+            "nullable": true
+          },
+          "returnPolicy": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

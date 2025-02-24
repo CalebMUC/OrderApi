@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Minimart_Api.DTOS;
+using OpenSearch.Client;
 
 namespace Minimart_Api.TempModels
 {
@@ -59,6 +63,16 @@ namespace Minimart_Api.TempModels
 
         public DbSet<BusinessTypes> BusinessTypes { get; set; }
 
+        public DbSet<Modules> Modules { get; set; }
+        public DbSet<SubModules> Submodules { get; set; }
+        public DbSet<Roles> Roles { get; set; }
+        public DbSet<RolePermissions> RolePermissions { get; set; }
+
+        public DbSet<SubModuleCategories> SubModuleCategories { get; set; }
+
+        public DbSet<SystemMerchants> SystemMerchants { get; set; }
+
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -91,6 +105,67 @@ namespace Minimart_Api.TempModels
             //modelBuilder.Ignore<Status>();
             //modelBuilder.Ignore<UserRegStatus>();
             //modelBuilder.Ignore<UserInfo>();
+
+            //Merchants
+            modelBuilder.Entity<SystemMerchants>(entity =>
+            {
+                entity.HasKey(sm => sm.MerchantID);
+                entity.Property(sm => sm.Status).HasDefaultValue("Active");
+            });
+                
+                
+            //Merchants
+
+            //System Security
+            // Configure Module Entity
+            modelBuilder.Entity<SubModuleCategories>()
+                .HasKey(sc => sc.SubModuleID);
+
+            modelBuilder.Entity<SubModuleCategories>()
+                .HasOne(sc => sc.Submodule)
+                .WithMany(sm => sm.SubModuleCategories)
+                .HasForeignKey(sc => sc.SubModuleID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Modules>()
+                .HasKey(m => m.ModuleID); // Primary Key
+
+            // Configure Submodule Entity
+            modelBuilder.Entity<SubModules>()
+                .HasKey(sm => sm.SubModuleID); // Primary Key
+
+            modelBuilder.Entity<SubModules>()
+                .HasOne(sm => sm.Module)
+                .WithMany(m => m.Submodules)
+                .HasForeignKey(sm => sm.ModuleID)
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete if Module is deleted
+
+            // Configure Role Entity
+            modelBuilder.Entity<Roles>()
+                .HasKey(r => r.RoleID); // Primary Key
+
+            // Configure RolePermission Entity
+            modelBuilder.Entity<RolePermissions>()
+                .HasKey(rp => rp.RolePermissionID); // Primary Key
+
+            modelBuilder.Entity<RolePermissions>()
+                .HasOne(rp => rp.Role)
+                .WithMany(r => r.RolePermissions)
+                .HasForeignKey(rp => rp.RoleID)
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete if Role is deleted
+
+            modelBuilder.Entity<RolePermissions>()
+                .HasOne(rp => rp.Module)
+                .WithMany(m => m.RolePermissions)
+                .HasForeignKey(rp => rp.ModuleID)
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete if Module is deleted
+
+            modelBuilder.Entity<RolePermissions>()
+                .HasOne(rp => rp.Submodule)
+                .WithMany(sm => sm.RolePermissions)
+                .HasForeignKey(rp => rp.SubModuleID)
+                .OnDelete(DeleteBehavior.Cascade); // 
+            //End System Security
 
             modelBuilder.Entity<TUser>()
             .HasMany(u => u.Addresses)

@@ -14,5 +14,10 @@ namespace Minimart_Api.Services.SystemSecurity
         public async Task<List<ModuleDto>> GetRoleModules(string RoleID) {
             return await _repo.GetRoleModules(RoleID);
         }
+
+        public async Task<List<SubModuleCategoriesDto>> GetSubModuleCategories(int subModuleID)
+        {
+            return await _repo.GetSubModuleCategories(subModuleID);
+        }
     }
 }
