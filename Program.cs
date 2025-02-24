@@ -30,6 +30,12 @@ using Elasticsearch.Net.Aws;
 using Amazon.Runtime;
 using Amazon;
 using Amazon.Extensions.NETCore.Setup;
+using Minimart_Api.Services.SystemSecurity;
+using Minimart_Api.Repositories.SystemSecurityRepo;
+using Minimart_Api.Services.SystemMerchantService;
+using Minimart_Api.Repositories.SystemMerchantsRepository;
+using Minimart_Api.Services.ProductService;
+using Minimart_Api.Repositories.ProductRepository;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -59,6 +65,15 @@ builder.Services.AddScoped<IReportRepo, ReportRepo>();
 
 builder.Services.AddScoped<IAuthentication, AuthenticationService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+
+builder.Services.AddScoped<ISystemSecurity, SystemSecurity>();
+builder.Services.AddScoped<ISystemSecurityRepo, SystemSecurityRepo>();
+
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+builder.Services.AddScoped<ISystemMerchants, MerchantsService>();
+builder.Services.AddScoped<ISystemMerchantRepo, SystemMerchantRepo>();
 
 builder.Services.AddScoped<IOrderEventPublisher, OrderEventPublisher>();
 builder.Services.AddHostedService<OrderEventConsumer>();

@@ -566,6 +566,16 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Minimart_Api.Controllers.ProductController",
+    "Method": "GetAllProducts",
+    "RelativePath": "api/Product/GetAllProducts",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Minimart_Api.Controllers.ReportController",
     "Method": "Export",
     "RelativePath": "api/Report/Export",
@@ -666,6 +676,112 @@
       {
         "Name": "query",
         "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.SystemMerchantController",
+    "Method": "AddMerchantsAsync",
+    "RelativePath": "api/SystemMerchant/AddMerchantsAsync",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "systemMerchantsDto",
+        "Type": "Minimart_Api.DTOS.SystemMerchantsDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.SystemMerchantController",
+    "Method": "DeleteMerchantAsync",
+    "RelativePath": "api/SystemMerchant/DeleteMerchantAsync",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "merchantId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.SystemMerchantController",
+    "Method": "GetAllMerchantsAsync",
+    "RelativePath": "api/SystemMerchant/GetAllMerchants",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.SystemMerchantController",
+    "Method": "GetMerchantByIdAsync",
+    "RelativePath": "api/SystemMerchant/GetMerchantById",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "merchantID",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.SystemMerchantController",
+    "Method": "UpdateMerchantsAsync",
+    "RelativePath": "api/SystemMerchant/UpdateMerchantsAsync",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "systemMerchantsDto",
+        "Type": "Minimart_Api.DTOS.SystemMerchantsDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.SystemSecurityController",
+    "Method": "GetModules",
+    "RelativePath": "api/SystemSecurity/role-modules",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "RoleID",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.SystemSecurityController",
+    "Method": "GetSubModuleCategories",
+    "RelativePath": "api/SystemSecurity/submodule-categories",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "subModuleID",
+        "Type": "System.Int32",
         "IsRequired": false
       }
     ],
