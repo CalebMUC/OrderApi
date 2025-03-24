@@ -13,6 +13,8 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Authentication_and_Authorization_Api.Core;
+using Microsoft.AspNetCore.SignalR;
+using Minimart_Api.Services.SignalR;
 
 namespace Minimart_Api.Repositories
 {
@@ -22,11 +24,14 @@ namespace Minimart_Api.Repositories
         private readonly JwtSettings _jwtSettings;
         private readonly IConfiguration _configuration;
         private readonly CoreLibraries _coreLibraries;
-        public AuthRepository(MinimartDBContext dbContext, IOptions<JwtSettings> jwtsettings, CoreLibraries coreLibraries)
+        private readonly IHubContext<ActivityHub> _hubContext;
+        public AuthRepository(MinimartDBContext dbContext, IOptions<JwtSettings> jwtsettings, CoreLibraries coreLibraries,
+            IHubContext<ActivityHub> hubContext)
         {
             _dbContext = dbContext;
             _jwtSettings = jwtsettings.Value;
             _coreLibraries = coreLibraries;
+            _hubContext = hubContext;
 
         }
 
@@ -84,6 +89,9 @@ namespace Minimart_Api.Repositories
                 await _dbContext.SaveChangesAsync();
 
                 var UserID = user.UserId;
+
+                _hubContext.Clients.All.SendAsync("ReceiveNewUser", $"New User has Registered : {register.UserName} UserID : {UserID}");
+
 
 
                 return new RegisterResponse

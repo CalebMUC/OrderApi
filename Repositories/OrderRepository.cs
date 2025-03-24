@@ -1,8 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using Minimart_Api.DTOS;
+using Minimart_Api.DTOS.Merchants;
+using Minimart_Api.DTOS.Orders;
 using Minimart_Api.Repositories;
 using Minimart_Api.Services.RabbitMQ;
+using Minimart_Api.Services.SignalR;
+using Minimart_Api.Services.SystemMerchantService;
 using Minimart_Api.TempModels;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -22,6 +30,10 @@ public class OrderRepository : IorderRepository
 
     private readonly MpesaSandBox _mpesaSandBox;
 
+    private readonly IHubContext<ActivityHub> _hubContext;
+
+    private readonly ISystemMerchants _systemMerchants;
+
     private readonly IHttpClientFactory _clientFactory;
     private const string ConsumerKey = "vM5KjasAGTVzdddzpP8tENa1Z9us6G6CDjeZzEAHQKzVbQu4";
     private const string ConsumerSecret = "BZQ2uAq84LIzonV6uaXBo7ofYGTHvhhvFD5vVd8EuTwnsd0n0b9ewQ8ExNMKuOnn";
@@ -30,7 +42,9 @@ public class OrderRepository : IorderRepository
     public OrderRepository(MinimartDBContext dbContext,
         IOrderEventPublisher orderEventPublisher,
         IOptions<MpesaSandBox> mpesaSandBox,
-        IHttpClientFactory clientFactory
+        IHttpClientFactory clientFactory,
+        IHubContext<ActivityHub> hubContext,
+        ISystemMerchants systemMerchants
         /*IConfiguration configuration*/)
     {
         _dbContext = dbContext;
@@ -38,6 +52,7 @@ public class OrderRepository : IorderRepository
         //_configuration = configuration;
         _mpesaSandBox = mpesaSandBox.Value;
         _clientFactory = clientFactory;
+        _systemMerchants = systemMerchants;
 
     }
 
@@ -45,19 +60,145 @@ public class OrderRepository : IorderRepository
     {
         try
         {
+            // Step 1: Fetch orders with status messages
+            var ordersWithStatus = await _dbContext.orders
+                .Where(o => o.Status == status && o.UserID == userID)
+                .Join(_dbContext.orderStatus,
+                    o => o.Status, // Join condition for order status
+                    os => os.StatusId,
+                    (o, os) => new { Order = o, StatusMessage = os.Status })
+                .ToListAsync();
+
+            // Step 2: Map the result to GetOrdersDTO and fetch product images
+            var orders = new List<GetOrdersDTO>();
+
+            foreach (var orderWithStatus in ordersWithStatus)
+            {
+                var order = orderWithStatus.Order;
+                var products = JsonConvert.DeserializeObject<List<OrderProductsDTO>>(order.ProductsJson);
+
+                // Fetch ImageUrl for each product
+                var productsWithImages = products.Select(p => new OrderProductsDTO
+                {
+                    ProductID = p.ProductID,
+                    ProductName = p.ProductName,
+                    Quantity = p.Quantity,
+                    Price = p.Price,
+                    ImageUrl = _dbContext.TProducts
+                        .FirstOrDefault(tp => tp.ProductId == p.ProductID)?.ImageUrl // Fetch ImageUrl for each product
+                }).ToList();
+
+                // Map to GetOrdersDTO
+                var getOrderDTO = new GetOrdersDTO
+                {
+                    OrderID = order.OrderID,
+                    OrderDate = order.OrderDate,
+                    TotalOrderAmount = order.TotalOrderAmount,
+                    Status = orderWithStatus.StatusMessage,
+
+                    PaymentConfirmation = order.PaymentConfirmation,
+                    TotalPaymentAmount = order.TotalPaymentAmount,
+                    TotalDeliveryFees = order.TotalDeliveryFees,
+                    TotalTax = order.TotalTax,
+                    ShippingAddress = JsonConvert.DeserializeObject<ShippingAddress>(order.ShippingAddress),
+                    Products = productsWithImages, // Include products with ImageUrl
+
+                    PickUpLocation = JsonConvert.DeserializeObject<PickUpLocation>(order.PickupLocation),
+                    PaymentDetails = JsonConvert.DeserializeObject<List<PaymentDetailsDto>>(order.PaymentDetailsJson)
+                };
+
+                orders.Add(getOrderDTO);
+            }
+
+            return orders;
+        }
+        catch (Exception ex)
+        {
+            // Log the exception (ex) here if needed
+            return [];
+        }
+    }
+
+    public async Task<List<OrderStatus>> GetOrderStatusAsync()
+    {
+        try
+        {
+            // Execute the query asynchronously and materialize the results into a list
+            var orderStatusList = await _dbContext.orderStatus
+                .Select(o => new OrderStatus
+                {
+                    StatusId = o.StatusId,
+                    Status = o.Status,
+                    Order = o.Order,
+                    Description = o.Description,
+                    CreatedBy = o.CreatedBy,
+                    CreatedOn = o.CreatedOn,
+                    UpdatedBy = o.UpdatedBy,
+                    UpdatedOn = o.UpdatedOn,
+                })
+                .ToListAsync(); // Use ToListAsync to execute the query asynchronously
+
+            return orderStatusList;
+        }
+        catch (Exception ex)
+        {
+            // Log the exception (optional)
+            // _logger.LogError(ex, "An error occurred while fetching order statuses.");
+
+            // Return an empty list in case of an error
+            return new List<OrderStatus>();
+        }
+    }
+
+
+    public async Task<List<OrderTracking>> GetOrderTrackingAsync(GetOrderTrackingStatus trackingStatus)
+    {
+        try
+        {
+            var tracking = await _dbContext.orderTracking
+                .Where(ot => ot.ProductID == trackingStatus.ProductID)
+                .Select(ot => new OrderTracking
+                {
+                    TrackingID = ot.TrackingID,
+                    OrderID = ot.OrderID,
+                    ProductID = ot.ProductID,
+                    CurrentStatus = ot.CurrentStatus,
+                    PreviousStatus = ot.PreviousStatus,
+                    TrackingDate = ot.TrackingDate,
+                    ExpectedDeliveryDate = ot.ExpectedDeliveryDate, // Update this if needed
+                    Carrier = ot.Carrier,
+                    CreatedOn = ot.CreatedOn,
+                    CreatedBy = ot.CreatedBy,
+                    UpdatedBy = ot.UpdatedBy,
+                    UpdatedOn = ot.UpdatedOn,
+                }).ToListAsync();
+
+            return tracking;
+        }
+        catch (Exception ex) { 
+            return new List<OrderTracking>();
+        }
+    }
+
+
+
+    public async Task<List<GetOrdersDTO>> GetOrdersByIdAsync(string OrderId)
+    {
+        try
+        {
             // Use a join query to get the orders and their status messages
             var orders = await _dbContext.orders
-                .Where(o => o.Status == status
-                    && o.UserID == userID)
+                .Where(o => o.OrderID == OrderId
+)
                 .Join(_dbContext.orderStatus,
                       o => o.Status,
-                      os => os.Status,
+                      os => os.StatusId,
                       (o, os) => new GetOrdersDTO
                       {
                           OrderID = o.OrderID,
                           OrderDate = o.OrderDate,
                           TotalOrderAmount = o.TotalOrderAmount,
-                          Status = os.StatusMessage,
+                          Status = os.Status,
 
                           PaymentConfirmation = o.PaymentConfirmation,
                           TotalPaymentAmount = o.TotalPaymentAmount,
@@ -80,6 +221,196 @@ public class OrderRepository : IorderRepository
         }
     }
 
+    public async Task<List<MerchantOrderDto>> GetAdminOrdersAsync()
+    {
+        try
+        {
+            var merchantOrders = _dbContext.orders
+                .Join(
+                    _dbContext.orderStatus,
+                    o => o.Status,
+                    os => os.StatusId,
+                    (o, os) => new { Order = o, StatusName = os.Status }
+                )
+                .AsEnumerable() // Forces execution of the query in memory
+                .SelectMany(joined =>
+                    JsonConvert.DeserializeObject<List<OrderProductsDTO>>(joined.Order.ProductsJson)
+                    .Select(p => new MerchantOrderDto
+                    {
+                        OrderId = joined.Order.OrderID,
+                        ProductName = p.ProductName,
+                        Quantity = p.Quantity,
+                        Price = p.Price,
+                        Status = joined.StatusName
+                    })
+                )
+                .ToList(); // Use synchronous ToList()
+
+            return merchantOrders;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return new List<MerchantOrderDto>(); // Return an empty list instead of throwing
+        }
+    }
+
+
+    public async Task<List<MerchantOrderDto>> GetMerchantOrdersAsync(MerchantRequestDto requestDto)
+    {
+
+        try
+        {
+            // Apply filtering at the database level
+            var query = _dbContext.orders
+                .Join(
+                    _dbContext.orderStatus,
+                    o => o.Status,
+                    os => os.StatusId,
+                    (o, os) => new { Order = o, StatusName = os.Status }
+                )
+                .Where(joined => joined.Order.ProductsJson != null); // Ensure ProductsJson is not null before processing
+
+            if (!string.IsNullOrEmpty(requestDto.OrderId))
+            {
+                query = query.Where(joined => joined.Order.OrderID == requestDto.OrderId);
+            }
+
+            var rawOrders = await query.ToListAsync(); // Fetch filtered orders from DB
+
+            var merchantOrders = rawOrders
+                .SelectMany(joined =>
+                    JsonConvert.DeserializeObject<List<OrderProductsDTO>>(joined.Order.ProductsJson ?? "[]") // Handle null JSON
+                    .Where(p => p.merchantId == requestDto.MerchantId) // Filter by merchantId
+                    .Select(p => new MerchantOrderDto
+                    {
+                        OrderId = joined.Order.OrderID,
+                        Quantity = p.Quantity,
+                        ProductName = p.ProductName,
+                        Price = p.Price,
+                        Status = joined.StatusName,
+                        ProductID = p.ProductID
+                    })
+                )
+                .ToList(); // Convert to list in memory
+
+            return merchantOrders;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return new List<MerchantOrderDto>(); // Return an empty list instead of throwing
+        }
+    }
+
+    public async Task<ResponseStatus> UpdateOrderStatusAsync(OrderTrackingDTO orderTracking)
+    {
+        try
+        {
+            // Get Existing Tracking Record
+            var existingProductTracker = await _dbContext.orderTracking
+                .Where(ot => ot.OrderID == orderTracking.OrderId && ot.ProductID == orderTracking.ProductId)
+                .FirstOrDefaultAsync();
+
+            // Check if the record exists
+            if (existingProductTracker == null)
+            {
+                return new ResponseStatus
+                {
+                    ResponseStatusId = 404,
+                    ResponseMessage = "Order tracking record not found."
+                };
+            }
+
+            // Update Existing Tracking Record
+            existingProductTracker.PreviousStatus = existingProductTracker.CurrentStatus;
+            existingProductTracker.CurrentStatus = orderTracking.StatusId; // Assuming DTO has NewStatusId
+            existingProductTracker.UpdatedBy = orderTracking.UpdatedBy; // Assuming DTO has UpdatedBy
+            existingProductTracker.UpdatedOn = DateTime.Now;
+
+            // Save Changes
+            _dbContext.orderTracking.Update(existingProductTracker);
+            await _dbContext.SaveChangesAsync();
+
+            return new ResponseStatus
+            {
+                ResponseStatusId = 200,
+                ResponseMessage = "Order Tracking Updated Successfully"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ResponseStatus
+            {
+                ResponseStatusId = 500,
+                ResponseMessage = ex.Message
+            };
+        }
+    }
+
+
+    public async Task<ResponseStatus> TrackOrderAsync(Order order)
+    {
+        try
+        {
+            var statusId = await _dbContext.orderStatus
+                .Where(os => os.Status == "Processing")
+                .Select(os => os.StatusId)
+                .FirstOrDefaultAsync();
+
+            var createdBy = await _dbContext.TUsers
+                .Where(u => u.UserId == order.UserID)
+                .Select(u => u.UserName)
+                .FirstOrDefaultAsync();
+
+            // Loop through each product in the order
+            foreach (var product in order.OrderProducts)
+            {
+                var trackingId = $"TRK-{Guid.NewGuid().ToString().Substring(0, 4)}";
+
+                var newOrderTrack = new OrderTracking
+                {
+                    TrackingID = trackingId,
+                    OrderID = order.OrderID,
+                    ProductID = product.ProductID,
+                    CurrentStatus = statusId,
+                    PreviousStatus = statusId,
+                    TrackingDate = DateTime.Now,
+                    ExpectedDeliveryDate = DateTime.Now, // Update this if needed
+                    Carrier = "ABC Delivery Company",
+                    CreatedOn = DateTime.UtcNow,
+                    CreatedBy = createdBy,
+                    UpdatedBy = "",
+                    UpdatedOn = DateTime.Now
+                };
+
+                // Add each tracking record to the DbContext
+                _dbContext.orderTracking.Add(newOrderTrack);
+            }
+
+            // Save all tracking records after the loop
+            await _dbContext.SaveChangesAsync();
+
+            return new ResponseStatus
+            {
+                ResponseStatusId = 200,
+                ResponseMessage = "Order Tracking Created Successfully for All Products"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ResponseStatus
+            {
+                ResponseStatusId = 500,
+                ResponseMessage = ex.Message
+            };
+        }
+    }
+
+
+
+
+
     //Create Order
     public async Task<ResponseStatus> AddOrder(OrderListDto transaction)
     {
@@ -99,10 +430,16 @@ public class OrderRepository : IorderRepository
                 _dbContext.orders.Add(newOrder);
                 await _dbContext.SaveChangesAsync();
 
+                await TrackOrderAsync(newOrder);
+
                 await PublishOrderEvent(newOrder);
+
+                //_hubContext.Clients.All.SendAsync("ReceiveNewOrder", $"New OrderId {newOrder.OrderID} has been created");
             }
 
             await transactionScope.CommitAsync();
+
+            
 
             return new ResponseStatus
             {
@@ -169,8 +506,9 @@ public class OrderRepository : IorderRepository
         return new Order
         {
             OrderID = orderDto.OrderID,
+            MerchantId = orderDto.MerchantId,
             UserID = orderDto.UserID,
-            OrderDate = orderDto.OrderDate,
+            OrderDate = DateTime.Now,
             DeliveryScheduleDate = orderDto.DeliveryScheduleDate,
             OrderedBy = orderDto.OrderedBy,
             Status = orderDto.Status,
@@ -188,7 +526,8 @@ public class OrderRepository : IorderRepository
                 Quantity = p.Quantity
             }).ToList(),
             ShippingAddress = JsonConvert.SerializeObject(orderDto.ShippingAddress),
-            PickupLocation = JsonConvert.SerializeObject(orderDto.PickUpLocation)
+            PickupLocation = JsonConvert.SerializeObject(orderDto.PickUpLocation),
+            
         };
     }
     private async Task UpdateProductStock(List<OrderProductsDTO> products)
@@ -413,31 +752,74 @@ public class OrderRepository : IorderRepository
     }
 
     //PUBLISH TO ORDEREVENT
+    //public async Task PublishOrderEvent(Order order)
+    //{
+    //    // Deserialize the ProductsJson into a List<Product>
+    //    var products = System.Text.Json.JsonSerializer.Deserialize<List<ProductDto>>(order.ProductsJson);
+
+    //    // Create an OrderEvent object
+    //    var orderEvent = new OrderEvent
+    //    {
+    //        OrderID = order.OrderID,
+    //        OrderDate = order.OrderDate,
+    //        MerchantName = "MinimartKe",
+    //        UserID = order.UserID,
+    //        products = products, // Assign the deserialized products
+    //        UserEmail = "user@gmail.com",
+    //        MerchantEmail = "merchant@gmail.com",
+    //        //UserPhoneNumber = order.PaymentDetails.Phonenumber.ToString(),
+    //        UserPhoneNumber = "254794129559",
+    //        //MerchantPhoneNumber = order.PaymentDetails.Phonenumber.ToString(),
+    //        MerchantPhoneNumber = "254794129559",
+    //        addresses = order.ShippingAddress,
+    //        Amount = order.TotalPaymentAmount
+    //    };
+
+    //    // Publish the order event
+    //    await _orderEventPublisher.PublishOrderEvent(orderEvent);
+    //}
+
     public async Task PublishOrderEvent(Order order)
     {
-        // Deserialize the ProductsJson into a List<Product>
+        // Deserialize the ProductsJson into a List<ProductDto>
         var products = System.Text.Json.JsonSerializer.Deserialize<List<ProductDto>>(order.ProductsJson);
 
-        // Create an OrderEvent object
-        var orderEvent = new OrderEvent
-        {
-            OrderID = order.OrderID,
-            OrderDate = order.OrderDate,
-            MerchantName = "MinimartKe",
-            UserID = order.UserID,
-            products = products, // Assign the deserialized products
-            UserEmail = "user@gmail.com",
-            MerchantEmail = "merchant@gmail.com",
-            //UserPhoneNumber = order.PaymentDetails.Phonenumber.ToString(),
-            UserPhoneNumber = "254794129559",
-            //MerchantPhoneNumber = order.PaymentDetails.Phonenumber.ToString(),
-            MerchantPhoneNumber = "254794129559",
-            addresses = order.ShippingAddress,
-            Amount = order.TotalPaymentAmount
-        };
+        // Group products by MerchantId
+        var productsByMerchant = products.GroupBy(p => p.merchantId);
 
-        // Publish the order event
-        await _orderEventPublisher.PublishOrderEvent(orderEvent);
+        // Loop through each merchant's products
+        foreach (var merchantGroup in productsByMerchant)
+        {
+            var merchantId = Convert.ToInt16(merchantGroup.Key);
+
+            // Fetch merchant details dynamically (e.g., from a database or service)
+            var merchant = await _systemMerchants.GetMerchantByIdAsync(merchantId); // Assuming you have a service to fetch merchant details
+
+            if (merchant == null)
+            {
+                // Handle case where merchant is not found
+                continue;
+            }
+
+            // Create an OrderEvent object for this merchant
+            var orderEvent = new OrderEvent
+            {
+                OrderID = order.OrderID,
+                OrderDate = order.OrderDate,
+                MerchantName = merchant.MerchantName, // Dynamically loaded merchant name
+                UserID = order.UserID,
+                products = merchantGroup.ToList(), // Assign products for this merchant
+                UserEmail = "user@gmail.com", // Replace with dynamic user email if available
+                MerchantEmail = merchant.Email, // Dynamically loaded merchant email
+                UserPhoneNumber = "254794129559", // Replace with dynamic user phone number if available
+                MerchantPhoneNumber = merchant.Phone, // Dynamically loaded merchant phone number
+                addresses = order.ShippingAddress,
+                Amount = merchantGroup.Sum(p => p.Price * p.Quantity) // Calculate total amount for this merchant's products
+            };
+
+            // Publish the order event for this merchant
+            await _orderEventPublisher.PublishOrderEvent(orderEvent);
+        }
     }
 
 

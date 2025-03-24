@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Minimart_Api.DTOS;
+using Minimart_Api.Services.SignalR;
 using Minimart_Api.TempModels;
 
 namespace Minimart_Api.Repositories
@@ -7,9 +9,11 @@ namespace Minimart_Api.Repositories
     public class MerchantRepo:IMerchantRepo
     {
         private readonly MinimartDBContext _dbContext;
-        public MerchantRepo(MinimartDBContext dBContext) {
+        private readonly IHubContext<ActivityHub> _hubContext;
+        public MerchantRepo(MinimartDBContext dBContext, IHubContext<ActivityHub> hubContext) {
 
             _dbContext = dBContext;
+            _hubContext = hubContext;
         }
 
         public async Task<IList<Merchants>> GetMerchantsAsync() {
@@ -54,6 +58,8 @@ namespace Minimart_Api.Repositories
                 await _dbContext.AddAsync(newMerchant); 
 
                 await _dbContext.SaveChangesAsync();
+
+                _hubContext.Clients.All.SendAsync("ReceiveNewMerchant", $"New Merchant MerchantName : {newMerchant.Name} BusinessName : {newMerchant.BusinessType}");
 
                 return new ResponseStatus
                 {

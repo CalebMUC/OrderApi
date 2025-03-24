@@ -31,6 +31,9 @@ namespace Minimart_Api.Services
             return await _categoryRepo.GetFilteredProducts(filteredProducts);
         }
 
+        public async Task<IEnumerable<Features>> GetAllFeatures() { 
+            return await _categoryRepo.GetAllFeatures();
+        }
         public async Task<List<FeatureDTO>> GetFeatures(FeatureRequestDTO feature)
         {
 

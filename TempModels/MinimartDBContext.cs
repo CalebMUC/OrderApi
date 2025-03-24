@@ -52,7 +52,7 @@ namespace Minimart_Api.TempModels
 
         public DbSet<OrderTracking> orderTracking { get; set; }
 
-        public DbSet<OrderStatusTracking> orderStatus { get; set; }
+        public DbSet<OrderStatus> orderStatus { get; set; }
 
         public DbSet<Address> Addresses { get; set; }
 
@@ -71,6 +71,7 @@ namespace Minimart_Api.TempModels
         public DbSet<SubModuleCategories> SubModuleCategories { get; set; }
 
         public DbSet<SystemMerchants> SystemMerchants { get; set; }
+        public DbSet<Categories> categories { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -105,6 +106,17 @@ namespace Minimart_Api.TempModels
             //modelBuilder.Ignore<Status>();
             //modelBuilder.Ignore<UserRegStatus>();
             //modelBuilder.Ignore<UserInfo>();
+
+            //Categories
+            modelBuilder.Entity<Categories>(entity =>
+            {
+                entity.HasMany(c => c.SubCategories)
+                       .WithOne(c => c.ParentCategory)
+                       .HasForeignKey(c => c.ParentCategoryId)
+                       .OnDelete(DeleteBehavior.Restrict);
+
+                       
+            });
 
             //Merchants
             modelBuilder.Entity<SystemMerchants>(entity =>
@@ -178,13 +190,13 @@ namespace Minimart_Api.TempModels
 
             // OrderTracking and OrderStatusTracking relationship
             modelBuilder.Entity<OrderTracking>()
-                .HasOne<OrderStatusTracking>()  // One-to-one relationship for PreviousStatus
+                .HasOne<OrderStatus>()  // One-to-one relationship for PreviousStatus
                 .WithMany()
                 .HasForeignKey(o => o.PreviousStatus)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<OrderTracking>()
-                .HasOne<OrderStatusTracking>()  // One-to-one relationship for CurrentStatus
+                .HasOne<OrderStatus>()  // One-to-one relationship for CurrentStatus
                 .WithMany()
                 .HasForeignKey(o => o.CurrentStatus)
                 .OnDelete(DeleteBehavior.Restrict);
@@ -195,8 +207,8 @@ namespace Minimart_Api.TempModels
                 .HasForeignKey(o => o.OrderID)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<OrderStatusTracking>()
-                .HasKey(os => os.Status);
+            modelBuilder.Entity<OrderStatus>()
+                .HasKey(os => os.StatusId);
                 
             // Configuring the many-to-many relationship
             modelBuilder.Entity<OrderProducts>()

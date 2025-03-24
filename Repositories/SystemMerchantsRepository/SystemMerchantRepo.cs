@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Minimart_Api.DTOS;
+using Minimart_Api.Services.SignalR;
 using Minimart_Api.TempModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,9 +13,12 @@ namespace Minimart_Api.Repositories.SystemMerchantsRepository
     {
         private readonly MinimartDBContext _dbContext;
         private readonly ILogger<SystemMerchantRepo> _logger;
-
-        public SystemMerchantRepo(MinimartDBContext dBContext, ILogger<SystemMerchantRepo> logger)
+        private readonly IHubContext<ActivityHub> _hubContext;
+        public SystemMerchantRepo(MinimartDBContext dBContext, 
+            ILogger<SystemMerchantRepo> logger, 
+            IHubContext<ActivityHub> hubContext)
         {
+            _hubContext = hubContext;
             _dbContext = dBContext;
             _logger = logger;
         }
@@ -49,19 +54,21 @@ namespace Minimart_Api.Repositories.SystemMerchantsRepository
                 _dbContext.SystemMerchants.Add(newMerchant);
                 await _dbContext.SaveChangesAsync();
 
+                _hubContext.Clients.All.SendAsync("RecieveNewMerchant", $"New Merchant MerchantName : {newMerchant.MerchantName} BusinessName : {newMerchant.BusinessName}");
+
                 return new ResponseStatus { ResponseStatusId = 200, ResponseMessage = "Merchant Saved Successfully" };
             }
-            catch (DbUpdateException dbEx)
-            {
-                _logger.LogError(dbEx, "Database error while adding merchant.");
-                return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while adding merchant.");
-                return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Internal server error: {ex.Message}" };
-            }
-        }
+                catch (DbUpdateException dbEx)
+                {
+                    _logger.LogError(dbEx, "Database error while adding merchant.");
+                    return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" };
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error while adding merchant.");
+                    return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Internal server error: {ex.Message}" };
+                }
+           }
 
         public async Task<ResponseStatus> UpdateMerchantsAsync(SystemMerchantsDto systemMerchants)
         {
@@ -75,6 +82,8 @@ namespace Minimart_Api.Repositories.SystemMerchantsRepository
 
                 UpdateEntityFromDto(existingMerchant, systemMerchants);
                 await _dbContext.SaveChangesAsync();
+
+                _hubContext.Clients.All.SendAsync("ReceiveNewMerchant", $"New Merchant MerchantName : {existingMerchant.MerchantName} BusinessName : {existingMerchant.BusinessName}");
 
                 return new ResponseStatus { ResponseStatusId = 200, ResponseMessage = "Merchant Updated Successfully" };
             }

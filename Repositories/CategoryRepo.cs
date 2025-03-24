@@ -286,6 +286,12 @@ public async Task<List<CartResults>> GetFilteredProducts(FilteredProductsDTO fil
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Features>> GetAllFeatures()
+        {
+          
+            return await _dbContext.Features.ToListAsync();
+        }
+
         //Get Features Linked to a SubCategory
         public async Task<List<FeatureDTO>> GetFeatures(FeatureRequestDTO feature) {
 
@@ -303,7 +309,10 @@ public async Task<List<CartResults>> GetFilteredProducts(FilteredProductsDTO fil
                                 .Select(f => new FeatureDTO
                                 {
                                     FeatureName = f.FeatureName,
-                                    FeatureOptions = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(f.FeatureOptions)
+                                    FeatureOptions = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(f.FeatureOptions),
+                                    CategoryId = f.CategoryID,
+                                    SubCategoryId = f.SubCategoryID,
+
                                 }).ToListAsync();
 
             return features;   

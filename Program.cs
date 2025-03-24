@@ -36,6 +36,9 @@ using Minimart_Api.Services.SystemMerchantService;
 using Minimart_Api.Repositories.SystemMerchantsRepository;
 using Minimart_Api.Services.ProductService;
 using Minimart_Api.Repositories.ProductRepository;
+using Minimart_Api.Services.CategoriesService;
+using Minimart_Api.Repositories.CategoriesRepository;
+using Minimart_Api.Services.SignalR;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -74,6 +77,9 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 builder.Services.AddScoped<ISystemMerchants, MerchantsService>();
 builder.Services.AddScoped<ISystemMerchantRepo, SystemMerchantRepo>();
+
+builder.Services.AddScoped<ICategoriesService, CategoriesNewService>();
+builder.Services.AddScoped<ICategoryRepos, CategoryRepos>();
 
 builder.Services.AddScoped<IOrderEventPublisher, OrderEventPublisher>();
 builder.Services.AddHostedService<OrderEventConsumer>();
@@ -144,7 +150,7 @@ builder.Services.AddSingleton<IOpenSearchClient>(sp =>
     return new OpenSearchClient(connectionSettings);
 });
 
-
+builder.Services.AddSignalR();
 
 //builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 //    .AddEntityFrameworkStores<MinimartDBContext>()
@@ -224,9 +230,16 @@ builder.Services.AddSwaggerGen(c =>
     }});
 
 });
-builder.Services.AddCors(options => options.AddPolicy("AllowAllOrigins",builder => builder.AllowAnyOrigin()
-.AllowAnyMethod()
-.AllowAnyHeader()));
+// Configure CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", builder =>
+        builder.WithOrigins("http://localhost:3000") // Change this to match your frontend URL
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials()); // Important for authentication
+});
+
 
 builder.Services.AddHttpClient();
 
@@ -255,11 +268,16 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/uploads" // URL path to access the uploads
 });
 
-// Enable CORS if you're accessing the API from different origins
 app.UseCors("AllowAllOrigins");
+
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Enable CORS if you're accessing the API from different origins
+
+
+app.MapHub<ActivityHub>("/ActivityHub").RequireCors("AllowAllOrigins");
 
 app.MapControllers();
 

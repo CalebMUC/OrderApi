@@ -33,15 +33,15 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CategoryController",
-    "Method": "AddEditCategories",
-    "RelativePath": "api/Category/AddEditCategories",
+    "Method": "AddCategoriesAsync",
+    "RelativePath": "api/Category/AddCategories",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "addCategory",
-        "Type": "Minimart_Api.DTOS.AddCategoryDTO",
+        "Name": "categories",
+        "Type": "Minimart_Api.DTOS.Category.CategoriesDto",
         "IsRequired": true
       }
     ],
@@ -59,6 +59,58 @@
         "Name": "request",
         "Type": "Minimart_Api.DTOS.AddFeaturesDTO",
         "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "DeleteCategoriesByIdAsync",
+    "RelativePath": "api/Category/DeleteCategoriesById",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "CategoryId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "GetAllCategoriesAsync",
+    "RelativePath": "api/Category/GetAllCategories",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "GetAllFeatures",
+    "RelativePath": "api/Category/GetAllFeatures",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "GetCategoriesByIdAsync",
+    "RelativePath": "api/Category/GetCategoriesById",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "CategoryId",
+        "Type": "System.Int32",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -97,6 +149,16 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "GetNestedCategoriesAsync",
+    "RelativePath": "api/Category/GetNestedCategories",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
     "Method": "GetSearchProducts",
     "RelativePath": "api/Category/GetSearchProducts/{subcategoryId}",
     "HttpMethod": "GET",
@@ -106,6 +168,22 @@
       {
         "Name": "subcategoryId",
         "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "UpdateCategoriesAsync",
+    "RelativePath": "api/Category/UpdateCategories",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "categories",
+        "Type": "Minimart_Api.DTOS.Category.CategoriesDto",
         "IsRequired": true
       }
     ],
@@ -551,6 +629,32 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.OrderController",
+    "Method": "GetAdminOrdersAsync",
+    "RelativePath": "api/Order/GetAdminOrders",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.OrderController",
+    "Method": "GetMerchantOrdersAsync",
+    "RelativePath": "api/Order/GetMerchantOrders",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "requestDto",
+        "Type": "Minimart_Api.DTOS.Merchants.MerchantRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.OrderController",
     "Method": "GetOrders",
     "RelativePath": "api/Order/GetOrders",
     "HttpMethod": "POST",
@@ -560,6 +664,64 @@
       {
         "Name": "request",
         "Type": "Minimart_Api.DTOS.OrderRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.OrderController",
+    "Method": "GetOrdersByIdAsync",
+    "RelativePath": "api/Order/GetOrdersById",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "OrderId",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.OrderController",
+    "Method": "GetOrderStatus",
+    "RelativePath": "api/Order/GetOrderStatus",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.OrderController",
+    "Method": "UpdateOrderStatusAsync",
+    "RelativePath": "api/Order/UpdateOrderStatus",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderTracking",
+        "Type": "Minimart_Api.DTOS.Merchants.OrderTrackingDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.ProductController",
+    "Method": "EditProducts",
+    "RelativePath": "api/Product/EditProducts",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "products",
+        "Type": "Minimart_Api.DTOS.AddProducts",
         "IsRequired": true
       }
     ],
