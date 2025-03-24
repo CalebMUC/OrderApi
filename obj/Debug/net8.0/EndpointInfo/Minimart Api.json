@@ -98,7 +98,53 @@
         }
       }
     },
-    "/api/Category/AddEditCategories": {
+    "/api/Category/GetAllCategories": {
+      "get": {
+        "tags": [
+          "Category"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Category/GetNestedCategories": {
+      "get": {
+        "tags": [
+          "Category"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Category/GetCategoriesById": {
+      "get": {
+        "tags": [
+          "Category"
+        ],
+        "parameters": [
+          {
+            "name": "CategoryId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Category/AddCategories": {
       "post": {
         "tags": [
           "Category"
@@ -107,21 +153,74 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddCategoryDTO"
+                "$ref": "#/components/schemas/CategoriesDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddCategoryDTO"
+                "$ref": "#/components/schemas/CategoriesDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/AddCategoryDTO"
+                "$ref": "#/components/schemas/CategoriesDto"
               }
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Category/UpdateCategories": {
+      "post": {
+        "tags": [
+          "Category"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoriesDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoriesDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoriesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Category/DeleteCategoriesById": {
+      "get": {
+        "tags": [
+          "Category"
+        ],
+        "parameters": [
+          {
+            "name": "CategoryId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -175,6 +274,18 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Category/GetAllFeatures": {
+      "get": {
+        "tags": [
+          "Category"
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -979,6 +1090,113 @@
         }
       }
     },
+    "/api/Order/GetOrderStatus": {
+      "get": {
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Order/UpdateOrderStatus": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderTrackingDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderTrackingDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderTrackingDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Order/GetOrdersById": {
+      "get": {
+        "tags": [
+          "Order"
+        ],
+        "parameters": [
+          {
+            "name": "OrderId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Order/GetAdminOrders": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Order/GetMerchantOrders": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MerchantRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MerchantRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MerchantRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Order/AddOrder": {
       "post": {
         "tags": [
@@ -1015,6 +1233,37 @@
         "tags": [
           "Product"
         ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Product/EditProducts": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProducts"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProducts"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProducts"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success"
@@ -1383,35 +1632,6 @@
   },
   "components": {
     "schemas": {
-      "AddCategoryDTO": {
-        "type": "object",
-        "properties": {
-          "categoryID": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "categoryName": {
-            "type": "string",
-            "nullable": true
-          },
-          "productName": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "subCategoryName": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "AddFeaturesDTO": {
         "type": "object",
         "properties": {
@@ -1436,6 +1656,10 @@
       "AddProducts": {
         "type": "object",
         "properties": {
+          "merchantID": {
+            "type": "integer",
+            "format": "int32"
+          },
           "productName": {
             "type": "string",
             "nullable": true
@@ -1457,6 +1681,10 @@
             "nullable": true
           },
           "subcategory": {
+            "type": "string",
+            "nullable": true
+          },
+          "subcategoryName": {
             "type": "string",
             "nullable": true
           },
@@ -1577,6 +1805,40 @@
         },
         "additionalProperties": false
       },
+      "CategoriesDto": {
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "categoryName": {
+            "type": "string",
+            "nullable": true
+          },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "parentCategoryId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "DateOnly": {
         "type": "object",
         "properties": {
@@ -1683,6 +1945,14 @@
               }
             },
             "nullable": true
+          },
+          "categoryId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "subCategoryId": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -1781,11 +2051,30 @@
         },
         "additionalProperties": false
       },
+      "MerchantRequestDto": {
+        "type": "object",
+        "properties": {
+          "merchantId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "orderId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "OrderDTO": {
         "type": "object",
         "properties": {
           "orderID": {
             "type": "string",
+            "nullable": true
+          },
+          "merchantId": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "userID": {
@@ -1873,6 +2162,10 @@
             "type": "string",
             "nullable": true
           },
+          "merchantId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "productName": {
             "type": "string",
             "nullable": true
@@ -1892,6 +2185,10 @@
           "discount": {
             "type": "number",
             "format": "double"
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1906,6 +2203,32 @@
           "userID": {
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OrderTrackingDTO": {
+        "type": "object",
+        "properties": {
+          "statusId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "orderId": {
+            "type": "string",
+            "nullable": true
+          },
+          "productId": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedBy": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

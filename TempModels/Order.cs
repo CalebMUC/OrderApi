@@ -5,6 +5,7 @@ namespace Minimart_Api.TempModels
     public class Order
     {
         public string? OrderID { get; set; }
+        public int? MerchantId { get; set; }
         public int UserID { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime DeliveryScheduleDate { get; set; }

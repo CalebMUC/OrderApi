@@ -4,7 +4,7 @@ using OpenSearch.Client;
 
 public class TProduct
 {
-    //public string? ProductID { get; set; }
+    public int merchantID { get; set; }
     public string? ProductName { get; set; }
     public string? Description { get; set; }
     public decimal? Price { get; set; }
@@ -23,6 +23,9 @@ public class TProduct
     public string Specification { get; set; } = null!;
     public string Box { get; set; } = null!;
     public string? SubCategoryId { get; set; }
+
+    public string? SubCategoryName { get; set; }
+
     public string? ProductType { get; set; }
     public DateTime? CreatedOn { get; set; }
     public string? CreatedBy { get; set; }

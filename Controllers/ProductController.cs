@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Minimart_Api.DTOS;
 using Minimart_Api.Services.ProductService;
 
 namespace Minimart_Api.Controllers
@@ -21,7 +22,22 @@ namespace Minimart_Api.Controllers
                 var products = await _productService.GetAllProducts();
                 return Ok(products);
             }
-            catch (Exception ex) { 
+            catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("EditProducts")]
+        public async Task<IActionResult> EditProducts([FromBody] AddProducts products)
+        {
+            try
+            {
+                var response = await _productService.EditProductsAsync(products);
+
+                return Ok(response);
+
+
+            }
+            catch (Exception ex) {
                 return BadRequest(ex.Message);
             }
         }

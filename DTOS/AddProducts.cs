@@ -2,6 +2,7 @@
 {
     public class AddProducts
     {
+        public int merchantID { get; set; }
         public string productName { get; set; } = string.Empty;
         public string productID { get; set; } = string.Empty;
         public int CategoryID { get; set; }
@@ -10,6 +11,8 @@
         public string Category { get; set; } = string.Empty;
 
         public string subcategory { get; set; } = string.Empty;
+
+        public string subcategoryName { get; set; } = string.Empty;
 
         public string CreatedBy { get; set; } = string.Empty;
 

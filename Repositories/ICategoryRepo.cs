@@ -10,6 +10,8 @@ namespace Minimart_Api.Repositories
         Task<ResponseStatus> AddFeatures(AddFeaturesDTO addFeatures);
 
         Task<ResponseStatus> AddCategories(AddCategoryDTO categories);
+
+        Task<IEnumerable<Features>> GetAllFeatures();
         Task<List<FeatureDTO>> GetFeatures(FeatureRequestDTO feature);
 
         Task<IEnumerable<CartResults>> GetSearchProducts(string subCategoryID);

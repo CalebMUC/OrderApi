@@ -246,6 +246,7 @@ namespace Minimart_Api.Repositories
                     productID = ci.Product.ProductId,
                     ProductImage = ci.Product.ImageUrl,
                     ProductName = ci.Product.ProductName,
+                    MerchantId = ci.Product.merchantID,
                     Quantity = ci.Quantity,
                     price = ci.Product.Price,
                     Instock = ci.Product.InStock,
@@ -828,6 +829,7 @@ namespace Minimart_Api.Repositories
             // Create a new product entity
             var newProduct = new TProduct
             {
+                merchantID = product.merchantID,
                 ProductId = product.productID,
                 ProductName = product.productName,
                 ProductDescription = product.productDetails,
@@ -845,7 +847,8 @@ namespace Minimart_Api.Repositories
                 CreatedOn = DateTime.Now,
                 CreatedBy = product.CreatedBy,
                 ImageType = "Image/Jpeg",
-               Category = product.Category
+               Category = product.Category,
+               SubCategoryName = product.subcategoryName
 
             };
 

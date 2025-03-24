@@ -3,6 +3,7 @@
     public class CartResults
     {
         public string productID { get; set; }
+        public int MerchantId { get; set; }
         public string ProductName { get; set; } = string.Empty;
         public string ProductImage { get; set; } = string.Empty;
 

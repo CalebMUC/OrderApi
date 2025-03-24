@@ -11,6 +11,10 @@ namespace Minimart_Api.Services
         Task<List<CartResults>> GetFilteredProducts(FilteredProductsDTO filteredProducts);
         Task<List<FeatureDTO>> GetFeatures(FeatureRequestDTO feature);
 
+        //Task<List<FeatureDTO>> FeatureSearchFilter(FeatureSe feature);
+
+         Task<IEnumerable<Features>> GetAllFeatures();
+
         Task<IEnumerable<CartResults>> GetSearchProducts(string subCategoryID);
 
     }

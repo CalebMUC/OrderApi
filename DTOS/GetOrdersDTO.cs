@@ -16,5 +16,6 @@
         public double TotalTax { get; set; }
         public ShippingAddress ShippingAddress { get; set; }
         public PickUpLocation PickUpLocation { get; set; }
+        public string ImageUrl { get; set; }
     }
 }
