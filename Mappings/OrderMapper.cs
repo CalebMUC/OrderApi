@@ -1,5 +1,6 @@
-﻿using Minimart_Api.DTOS;
-using Minimart_Api.TempModels;
+﻿using Minimart_Api.DTOS.Address;
+using Minimart_Api.DTOS.Orders;
+using Minimart_Api.Models;
 using Newtonsoft.Json;
 
 namespace Minimart_Api.Mappings
@@ -18,7 +19,7 @@ namespace Minimart_Api.Mappings
 
         }
         // Mapping Order to OrderDTO
-        public OrderDTO MapToDto(Order order)
+        public OrderDTO MapToDto(Orders order)
         {
             return new OrderDTO
             {
@@ -43,9 +44,9 @@ namespace Minimart_Api.Mappings
         }
 
         // Mapping OrderDTO back to Order
-        public Order MapToEntity(OrderDTO orderDto)
+        public Orders MapToEntity(OrderDTO orderDto)
         {
-            return new Order
+            return new Orders
             {
                 OrderID = orderDto.OrderID,
                 UserID = orderDto.UserID,

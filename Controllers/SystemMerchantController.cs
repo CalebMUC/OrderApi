@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Minimart_Api.DTOS;
+using Minimart_Api.DTOS.Merchants;
 using Minimart_Api.Services.SystemMerchantService;
 
 namespace Minimart_Api.Controllers

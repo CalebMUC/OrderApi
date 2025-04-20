@@ -1,5 +1,6 @@
-﻿using Minimart_Api.DTOS;
-using Minimart_Api.TempModels;
+﻿using Minimart_Api.DTOS.General;
+using Minimart_Api.DTOS.Merchants;
+using Minimart_Api.Models;
 
 namespace Minimart_Api.Services.SystemMerchantService
 {
@@ -7,11 +8,11 @@ namespace Minimart_Api.Services.SystemMerchantService
     {
         Task<IEnumerable<SystemMerchants>> GetAllMerchantsAsync();
         Task<SystemMerchants> GetMerchantByIdAsync(int  merchantId);
-        Task<ResponseStatus> AddMerchantsAsync(SystemMerchantsDto merchant);
+        Task<Status> AddMerchantsAsync(SystemMerchantsDto merchant);
 
-        Task<ResponseStatus> UpdateMerchantsAsync(SystemMerchantsDto merchant);
+        Task<Status> UpdateMerchantsAsync(SystemMerchantsDto merchant);
 
-        Task<ResponseStatus> DeleteMerchantAsync(int merchantId);
+        Task<Status> DeleteMerchantAsync(int merchantId);
 
     }
 }

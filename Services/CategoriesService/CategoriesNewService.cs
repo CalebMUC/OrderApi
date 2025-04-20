@@ -1,6 +1,8 @@
-﻿using Minimart_Api.DTOS.Category;
+﻿using Minimart_Api.DTOS.Cart;
+using Minimart_Api.DTOS.Category;
 using Minimart_Api.Repositories.CategoriesRepository;
-using Minimart_Api.TempModels;
+using Minimart_Api.Models;
+using Minimart_Api.DTOS.General;
 
 namespace Minimart_Api.Services.CategoriesService
 {
@@ -22,14 +24,18 @@ namespace Minimart_Api.Services.CategoriesService
 
             return await _categoryRepos.GetCategoryByIdAsync(CategorId);
         }
-        public async Task<ResponseStatus> AddCategoriesAsync(CategoriesDto categories) { 
+        public async Task<Status> AddCategoriesAsync(CategoriesDto categories) { 
             return await _categoryRepos.AddCategoriesAsync(categories);
         }
-        public async Task<ResponseStatus> UpdateCategoriesAsync(CategoriesDto categories)
+        public async Task<Status> UpdateCategoriesAsync(CategoriesDto categories)
         {
             return await _categoryRepos.UpdateCategoriesAsync(categories);
         }
-        public async Task<ResponseStatus> DeleteCategoryAsync(int categoryId) { 
+        public async Task<IEnumerable<CartResults>> GetSubCategory(int CategoryId)
+        {
+            return await _categoryRepos.GetSubCategory(CategoryId);
+        }
+        public async Task<Status> DeleteCategoryAsync(int categoryId) { 
             return await _categoryRepos.DeleteCategoryAsync(categoryId);
         }
     }

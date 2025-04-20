@@ -1,6 +1,7 @@
-﻿ using Microsoft.AspNetCore.Mvc;
-using Minimart_Api.Services;
+﻿using Microsoft.AspNetCore.Mvc;
+using Minimart_Api.DTOS.Products;
 using Minimart_Api.Services.OpenSearchService;
+using Minimart_Api.Services.SearchService.SearchService;
 
 namespace Minimart_Api.Controllers
 {
@@ -109,6 +110,36 @@ namespace Minimart_Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
-       
+
+        [HttpGet("GetSearchProducts/{subcategoryId}")]
+        public async Task<IActionResult> GetSearchProducts(int categoryId)
+        {
+            var products = await _searchService.GetSearchProducts(categoryId);
+
+            if (products == null || !products.Any())
+            {
+                return NotFound("No features found for this subcategory.");
+            }
+
+            return Ok(products);
+        }
+
+        // POST
+        [HttpPost("GetFilteredProducts")]
+        public async Task<IActionResult> GetFilteredProducts(FilteredProductsDTO filteredProducts)
+        {
+            var products = await _searchService.GetFilteredProducts(filteredProducts);
+
+
+
+
+            if (products == null || !products.Any())
+            {
+                return NotFound("No features found for this subcategory.");
+            }
+
+            return Ok(products);
+        }
+
     }
 }

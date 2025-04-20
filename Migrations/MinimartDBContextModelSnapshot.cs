@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Minimart_Api.TempModels;
+using Minimart_Api.Data;
 
 #nullable disable
 
@@ -22,7 +22,7 @@ namespace Minimart_Api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Minimart_Api.TempModels.Address", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Addresses", b =>
                 {
                     b.Property<int>("AddressID")
                         .ValueGeneratedOnAdd()
@@ -32,72 +32,149 @@ namespace Minimart_Api.Migrations
 
                     b.Property<string>("County")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime");
 
                     b.Property<string>("ExtraInformation")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("LastUpdatedOn")
+                        .HasColumnType("datetime");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Phonenumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(15)");
 
                     b.Property<string>("PostalAddress")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(10)");
 
                     b.Property<string>("Town")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
-                    b.Property<int>("isDefault")
+                    b.Property<int?>("UsersUserId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("isDefault")
+                        .HasColumnType("bit");
 
                     b.HasKey("AddressID");
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Addresses");
+                    b.HasIndex("UsersUserId");
+
+                    b.ToTable("Addresses", (string)null);
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.CartItem", b =>
+            modelBuilder.Entity("Minimart_Api.Models.BuyAgain", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("PurchasedOn")
+                        .HasColumnType("datetime");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("BuyAgain", (string)null);
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.Cart", b =>
+                {
+                    b.Property<int>("CartId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartId"), 1L, 1);
+
+                    b.Property<string>("CartName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<int?>("UserId")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsersUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CartId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UsersUserId");
+
+                    b.ToTable("Cart", (string)null);
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.CartItem", b =>
                 {
                     b.Property<int>("CartItemId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("cartItemID");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartItemId"), 1L, 1);
 
                     b.Property<int?>("CartId")
-                        .HasColumnType("int")
-                        .HasColumnName("cartID");
+                        .IsRequired()
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("Datetime");
 
                     b.Property<string>("ProductId")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("productID");
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ProductsProductId1")
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("int")
-                        .HasColumnName("quantity");
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("Datetime");
 
                     b.HasKey("CartItemId");
 
@@ -105,10 +182,65 @@ namespace Minimart_Api.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItems");
+                    b.HasIndex("ProductsProductId1");
+
+                    b.ToTable("CartItem", (string)null);
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.County", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Categories", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"), 1L, 1);
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ParentCategoryId")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("CategoryId");
+
+                    b.HasIndex("ParentCategoryId");
+
+                    b.ToTable("Categories", (string)null);
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.Counties", b =>
                 {
                     b.Property<int>("CountyId")
                         .ValueGeneratedOnAdd()
@@ -121,17 +253,18 @@ namespace Minimart_Api.Migrations
 
                     b.Property<string>("CountyName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
                     b.HasKey("CountyId");
 
                     b.ToTable("Counties");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.DeliveryStation", b =>
+            modelBuilder.Entity("Minimart_Api.Models.DeliveryStations", b =>
                 {
                     b.Property<int>("DeliveryStationId")
                         .ValueGeneratedOnAdd()
@@ -140,11 +273,12 @@ namespace Minimart_Api.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeliveryStationId"), 1L, 1);
 
                     b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
                     b.Property<string>("DeliveryStationName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<int>("TownId")
                         .HasColumnType("int");
@@ -156,7 +290,7 @@ namespace Minimart_Api.Migrations
                     b.ToTable("DeliveryStations");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.Features", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Features", b =>
                 {
                     b.Property<int>("FeatureID")
                         .ValueGeneratedOnAdd()
@@ -164,47 +298,159 @@ namespace Minimart_Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FeatureID"), 1L, 1);
 
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("int");
+
                     b.Property<string>("FeatureName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("FeatureOptions")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("SubCategoryID")
+                        .HasColumnType("int");
+
                     b.HasKey("FeatureID");
 
-                    b.ToTable("Features");
+                    b.HasIndex("CategoryID");
+
+                    b.HasIndex("SubCategoryID");
+
+                    b.ToTable("Features", (string)null);
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.Order", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Modules", b =>
+                {
+                    b.Property<int>("ModuleID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ModuleID"), 1L, 1);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("MenuUrl")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("ModuleName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("ModuleID");
+
+                    b.ToTable("Modules");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.OrderItem", b =>
+                {
+                    b.Property<int>("OrderItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderItemId"), 1L, 1);
+
+                    b.Property<string>("OrderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ProductId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ProductsProductId")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderItemId");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ProductsProductId");
+
+                    b.ToTable("OrderItems", (string)null);
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.OrderProducts", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("OrderID")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ProductID")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderID");
+
+                    b.HasIndex("ProductID");
+
+                    b.ToTable("OrderProducts");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.Orders", b =>
                 {
                     b.Property<string>("OrderID")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("DeliveryScheduleDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
                     b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
                     b.Property<string>("OrderedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PaymentConfirmation")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PaymentDetailsJson")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PaymentMethodID")
+                    b.Property<int>("PaymentID")
                         .HasColumnType("int");
 
                     b.Property<string>("PickupLocation")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("ProductsJson")
                         .IsRequired()
@@ -231,89 +477,109 @@ namespace Minimart_Api.Migrations
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UsersUserId")
+                        .HasColumnType("int");
+
                     b.HasKey("OrderID");
 
-                    b.HasIndex("PaymentMethodID");
+                    b.HasIndex("PaymentID");
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("orders");
+                    b.HasIndex("UsersUserId");
+
+                    b.ToTable("Orders", (string)null);
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.OrderProducts", b =>
+            modelBuilder.Entity("Minimart_Api.Models.OrderStatus", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("StatusId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StatusId"), 1L, 1);
 
-                    b.Property<string>("OrderID")
+                    b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("ProductID")
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Description")
                         .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrdersOrderID")
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderID");
-
-                    b.HasIndex("ProductID");
-
-                    b.ToTable("OrderProducts");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.OrderStatusTracking", b =>
-                {
-                    b.Property<int>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Status"), 1L, 1);
-
-                    b.Property<string>("OrderTrackingTrackingID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("StatusMessage")
+                    b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("Status");
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.HasIndex("OrderTrackingTrackingID");
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime");
 
-                    b.ToTable("orderStatus");
+                    b.HasKey("StatusId");
+
+                    b.HasIndex("OrdersOrderID");
+
+                    b.ToTable("OrderStatuses");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.OrderTracking", b =>
+            modelBuilder.Entity("Minimart_Api.Models.OrderTracking", b =>
                 {
                     b.Property<string>("TrackingID")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Carrier")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime");
 
                     b.Property<int>("CurrentStatus")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ExpectedDeliveryDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
                     b.Property<string>("OrderID")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("PreviousStatus")
                         .HasColumnType("int");
 
+                    b.Property<string>("ProductID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<DateTime>("TrackingDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime");
 
                     b.HasKey("TrackingID");
 
@@ -323,38 +589,12 @@ namespace Minimart_Api.Migrations
 
                     b.HasIndex("PreviousStatus");
 
-                    b.ToTable("orderTracking");
+                    b.HasIndex("ProductID");
+
+                    b.ToTable("OrderTracking", (string)null);
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.PaymentDetails", b =>
-                {
-                    b.Property<int>("PaymentMethodID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentMethodID"), 1L, 1);
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("PaymentID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PaymentReference")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("PaymentMethodID");
-
-                    b.HasIndex("PaymentID");
-
-                    b.ToTable("paymentDetails");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.Payments", b =>
+            modelBuilder.Entity("Minimart_Api.Models.PaymentDetails", b =>
                 {
                     b.Property<int>("PaymentID")
                         .ValueGeneratedOnAdd()
@@ -362,362 +602,411 @@ namespace Minimart_Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentID"), 1L, 1);
 
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<int>("PaymentMethodID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PaymentMethodsPaymentMethodID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PaymentReference")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<long>("Phonenumber")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("TrxReference")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("PaymentID");
+
+                    b.HasIndex("PaymentMethodID");
+
+                    b.HasIndex("PaymentMethodsPaymentMethodID");
+
+                    b.ToTable("PaymentDetails");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.PaymentMethods", b =>
+                {
+                    b.Property<int>("PaymentMethodID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentMethodID"), 1L, 1);
+
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("PaymentID");
+                    b.HasKey("PaymentMethodID");
 
-                    b.ToTable("payments");
+                    b.ToTable("PaymentMethods");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.ResponseStatus", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Reviews", b =>
                 {
-                    b.Property<int>("ResponseStatusId")
+                    b.Property<int>("ReviewId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResponseStatusId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"), 1L, 1);
 
-                    b.Property<bool>("ResponseCode")
+                    b.Property<string>("AdminResponse")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsVerifiedBuyer")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ResponseMessage")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ResponseStatusId");
-
-                    b.ToTable("ResponseStatus");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.Status", b =>
-                {
-                    b.Property<int>("ResponseCode")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ResponseMessage")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable("Statuses");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.SubCategoryFeatures", b =>
-                {
-                    b.Property<int>("SubCategoryFeatureID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubCategoryFeatureID"), 1L, 1);
-
-                    b.Property<int>("FeatureID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SubCategoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("SubCategoryFeatureID");
-
-                    b.HasIndex("FeatureID");
-
-                    b.HasIndex("SubCategoryId");
-
-                    b.ToTable("SubCategoryFeatures");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TCart", b =>
-                {
-                    b.Property<int>("CartId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("cartID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartId"), 1L, 1);
-
-                    b.Property<string>("CartName")
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("cartName");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("userID");
-
-                    b.HasKey("CartId")
-                        .HasName("PK__t_Carts__415B03D8762A75C5");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("t_Carts", (string)null);
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TCategory", b =>
-                {
-                    b.Property<int>("CategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("categoryID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"), 1L, 1);
-
-                    b.Property<string>("CategoryName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)")
-                        .HasColumnName("categoryName");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.HasKey("CategoryId")
-                        .HasName("PK__t_Catego__23CAF1F8AFEA0E02");
-
-                    b.ToTable("t_Categories", (string)null);
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TDashboarditem", b =>
-                {
-                    b.Property<int>("DashBoardId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("DashBoardID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DashBoardId"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("DashBoardId")
-                        .HasName("PK_t_dashboarditems_DashBoardID");
-
-                    b.ToTable("t_dashboarditems", (string)null);
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TFeature", b =>
-                {
-                    b.Property<int>("ProductId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("productID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"), 1L, 1);
-
-                    b.Property<string>("AdaptiveSync")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Brand")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Color")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("color");
-
-                    b.Property<string>("ConnectiveTechnology")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("connectiveTechnology");
-
-                    b.Property<string>("DisplayResolution")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("DisplayType")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ImageBrightness")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ItemWeight")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("MainCategory")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("MountingType")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ProductName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("productName");
-
-                    b.Property<int?>("RefreshRate")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Resolution")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ResponseTime")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ScreenSize")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ScreenSurface")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("SpecialFeatures")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("WarrantyType")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("ProductId")
-                        .HasName("PK_t_features_productID");
-
-                    b.ToTable("t_features", (string)null);
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.THelpsetting", b =>
-                {
-                    b.Property<int>("Rowid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("ROWID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Rowid"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Rowid")
-                        .HasName("PK_t_helpsettings_ROWID");
-
-                    b.ToTable("t_helpsettings", (string)null);
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TImage", b =>
-                {
-                    b.Property<int>("ImageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("ImageID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ImageId"), 1L, 1);
-
-                    b.Property<string>("ImageType")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<byte[]>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.HasKey("ImageId")
-                        .HasName("PK_t_image_ImageID");
-
-                    b.ToTable("t_image", (string)null);
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TOrder", b =>
-                {
-                    b.Property<int>("OrderId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("orderID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"), 1L, 1);
-
-                    b.Property<DateTime?>("OrderDate")
-                        .HasColumnType("datetime")
-                        .HasColumnName("orderDate");
-
-                    b.Property<string>("Status")
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("status");
-
-                    b.Property<decimal?>("TotalAmount")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("totalAmount");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("userID");
-
-                    b.HasKey("OrderId")
-                        .HasName("PK__t_Orders__0809337DBD766844");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("t_Orders", (string)null);
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TOrderItem", b =>
-                {
-                    b.Property<int>("OrderItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("orderItemID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderItemId"), 1L, 1);
-
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int")
-                        .HasColumnName("orderID");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("price");
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ProductId")
+                        .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("productID");
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int")
-                        .HasColumnName("quantity");
+                    b.Property<string>("ProductsProductId")
+                        .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("OrderItemId")
-                        .HasName("PK__t_OrderI__3724BD72056978F8");
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
 
-                    b.HasIndex("OrderId");
+                    b.Property<DateTime>("ReviewDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsersUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReviewId");
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("t_OrderItems", (string)null);
+                    b.HasIndex("ProductsProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UsersUserId");
+
+                    b.ToTable("Reviews", (string)null);
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.Town", b =>
+            modelBuilder.Entity("Minimart_Api.Models.RolePermissions", b =>
+                {
+                    b.Property<int>("RolePermissionID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RolePermissionID"), 1L, 1);
+
+                    b.Property<int>("ModuleID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModuleName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("RoleID")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SubModuleID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubModuleName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("RolePermissionID");
+
+                    b.HasIndex("ModuleID");
+
+                    b.HasIndex("RoleID");
+
+                    b.HasIndex("SubModuleID");
+
+                    b.ToTable("RolePermissions");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.Roles", b =>
+                {
+                    b.Property<string>("RoleID")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("AccessLevel")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("RoleID");
+
+                    b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.SavedItems", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasColumnType("nVarchar(50)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SavedOn")
+                        .HasColumnType("datetime");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SavedItems", (string)null);
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.SubModuleCategories", b =>
+                {
+                    b.Property<int>("SubModuleID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubCategoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubCategoryID"), 1L, 1);
+
+                    b.Property<string>("SubCategoryName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SubCategoryUrl")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("SubModuleID");
+
+                    b.ToTable("SubModuleCategories");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.SubModules", b =>
+                {
+                    b.Property<int>("SubModuleID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubModuleID"), 1L, 1);
+
+                    b.Property<int>("ModuleID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubModuleName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SubModuleUrl")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("SubModuleID");
+
+                    b.HasIndex("ModuleID");
+
+                    b.ToTable("SubModules");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.SystemMerchants", b =>
+                {
+                    b.Property<int>("MerchantID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MerchantID"), 1L, 1);
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("BankAccountName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("BankAccountNo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("BankName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("BusinessCategory")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("BusinessName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("BusinessNature")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("BusinessRegistrationCertificate")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("BusinessRegistrationNo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("BusinessType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("DeliveryMethod")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("KRAPIN")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("KRAPINCertificate")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("MerchantName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("MpesaPaybill")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("MpesaTillNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("PreferredPaymentChannel")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("ReturnPolicy")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SocialMedia")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("TermsAndCondition")
+                        .HasColumnType("bit");
+
+                    b.HasKey("MerchantID");
+
+                    b.ToTable("SystemMerchants");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.Towns", b =>
                 {
                     b.Property<int>("TownId")
                         .ValueGeneratedOnAdd()
@@ -729,11 +1018,12 @@ namespace Minimart_Api.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
                     b.Property<string>("TownName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("TownId");
 
@@ -742,360 +1032,260 @@ namespace Minimart_Api.Migrations
                     b.ToTable("Towns");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.TProduct", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Users", b =>
                 {
-                    b.Property<string>("ProductId")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("ProductID");
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("Box")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
 
-                    b.Property<string>("Category")
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("FailedAttempts")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsAdmin")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsLoggedIn")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastLogin")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Password")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("PasswordChangesOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("RefreshToken")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RoleId")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("Salt")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Products", b =>
+                {
+                    b.Property<string>("ProductId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Box")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("CategoryId")
-                        .HasColumnType("int")
-                        .HasColumnName("categoryID");
+                        .HasColumnType("int");
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Discount")
                         .HasColumnType("float");
 
                     b.Property<string>("ImageType")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(Max)");
 
-                    b.Property<int>("InStock")
-                        .HasColumnType("int");
+                    b.Property<bool>("InStock")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSaved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("KeyFeatures")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MerchantID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ParentCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ParentCategoryName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal?>("Price")
-                        .HasColumnType("decimal(10,0)")
-                        .HasColumnName("price");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ProductDescription")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductName")
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(max)")
-                        .HasColumnName("productName");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("ProductType")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<int>("RowId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("RowID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RowId"), 1L, 1);
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("SearchKeyWord")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Specification")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StockQuantity")
-                        .HasColumnType("int")
-                        .HasColumnName("stockQuantity");
-
-                    b.Property<string>("SubCategoryId")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("SubCategoryID");
+                        .HasColumnType("int");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
-                    b.HasKey("ProductId")
-                        .HasName("PK__t_Produc__B40CC6ED6CED5B85");
+                    b.HasKey("ProductId");
 
                     b.HasIndex("CategoryId");
-
-                    b.ToTable("t_Products", (string)null);
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TRefreshToken", b =>
-                {
-                    b.Property<DateTime?>("ExpiryDate")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("RefreshToken")
-                        .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<string>("UserId")
-                        .HasMaxLength(200)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(200)")
-                        .HasColumnName("UserID");
-
-                    b.ToTable("t_RefreshToken", (string)null);
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TReview", b =>
-                {
-                    b.Property<int>("ReviewId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("reviewID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"), 1L, 1);
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("text")
-                        .HasColumnName("comment");
-
-                    b.Property<string>("ProductId")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("productID");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int")
-                        .HasColumnName("rating");
-
-                    b.Property<byte[]>("ReviewDate")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion")
-                        .HasColumnName("review_date");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("userID");
-
-                    b.HasKey("ReviewId")
-                        .HasName("PK__t_Review__2ECD6E2451F94E4F");
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("t_Reviews", (string)null);
+                    b.ToTable("Products", (string)null);
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.TSubcategoryid", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Addresses", b =>
                 {
-                    b.Property<int>("SubCategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("SubCategoryID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubCategoryId"), 1L, 1);
-
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int")
-                        .HasColumnName("CategoryID");
-
-                    b.Property<string>("CategoryName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ProductName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ProductType")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)")
-                        .HasDefaultValueSql("(N'C')");
-
-                    b.Property<string>("SubCategory")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("SubCategoryId")
-                        .HasName("PK_t_subcategoryid_CategoryID");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("t_subcategoryid", (string)null);
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TUser", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("UserID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<int?>("FailedAttempts")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("IsAdmin")
-                        .HasColumnType("bit")
-                        .HasColumnName("isAdmin");
-
-                    b.Property<bool?>("IsLoggedIn")
-                        .HasColumnType("bit")
-                        .HasColumnName("isLoggedIn");
-
-                    b.Property<DateTime?>("LastLogin")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Password")
-                        .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<DateTime?>("PasswordChangesOn")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("RoleId")
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("RoleID");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(200)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(200)");
-
-                    b.HasKey("UserId")
-                        .HasName("PK__t_Users__1788CCAC83A2EDF9");
-
-                    b.ToTable("t_Users", (string)null);
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.UserInfo", b =>
-                {
-                    b.Property<int>("UserInfoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserInfoId"), 1L, 1);
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RoleID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("StatusId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserInfoId");
-
-                    b.HasIndex("StatusId");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.UserRegStatus", b =>
-                {
-                    b.Property<int>("ResponseCode")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ResponseMessage")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
-                    b.ToTable("UsrRegStatuses");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.Address", b =>
-                {
-                    b.HasOne("Minimart_Api.TempModels.TUser", "TUser")
-                        .WithMany("Addresses")
+                    b.HasOne("Minimart_Api.Models.Users", "users")
+                        .WithMany()
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("TUser");
+                    b.HasOne("Minimart_Api.Models.Users", null)
+                        .WithMany("Addresses")
+                        .HasForeignKey("UsersUserId");
+
+                    b.Navigation("users");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.CartItem", b =>
+            modelBuilder.Entity("Minimart_Api.Models.BuyAgain", b =>
                 {
-                    b.HasOne("Minimart_Api.TempModels.TCart", "Cart")
+                    b.HasOne("Products", "Products")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Minimart_Api.Models.Users", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Products");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.Cart", b =>
+                {
+                    b.HasOne("Minimart_Api.Models.Users", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Minimart_Api.Models.Users", null)
+                        .WithMany("Carts")
+                        .HasForeignKey("UsersUserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.CartItem", b =>
+                {
+                    b.HasOne("Minimart_Api.Models.Cart", "Cart")
                         .WithMany("CartItems")
                         .HasForeignKey("CartId")
-                        .HasConstraintName("FK__CartItems__cartI__2A164134");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Minimart_Api.TempModels.TProduct", "Product")
-                        .WithMany("CartItems")
+                    b.HasOne("Products", "Products")
+                        .WithMany()
                         .HasForeignKey("ProductId")
-                        .HasConstraintName("FK__CartItems__prod");
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Products", null)
+                        .WithMany("CartItems")
+                        .HasForeignKey("ProductsProductId1");
 
                     b.Navigation("Cart");
 
-                    b.Navigation("Product");
+                    b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.DeliveryStation", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Categories", b =>
                 {
-                    b.HasOne("Minimart_Api.TempModels.Town", "Town")
+                    b.HasOne("Minimart_Api.Models.Categories", "ParentCategory")
+                        .WithMany("SubCategories")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ParentCategory");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.DeliveryStations", b =>
+                {
+                    b.HasOne("Minimart_Api.Models.Towns", "Town")
                         .WithMany("DeliveryStations")
                         .HasForeignKey("TownId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1104,32 +1294,56 @@ namespace Minimart_Api.Migrations
                     b.Navigation("Town");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.Order", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Features", b =>
                 {
-                    b.HasOne("Minimart_Api.TempModels.PaymentDetails", "PaymentDetails")
-                        .WithMany("Orders")
-                        .HasForeignKey("PaymentMethodID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Minimart_Api.Models.Categories", "Category")
+                        .WithMany("CategoryFeatures")
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Minimart_Api.TempModels.TUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Minimart_Api.Models.Categories", "SubCategory")
+                        .WithMany("SubCategoryFeatures")
+                        .HasForeignKey("SubCategoryID")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("PaymentDetails");
+                    b.Navigation("Category");
+
+                    b.Navigation("SubCategory");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.OrderProducts", b =>
+            modelBuilder.Entity("Minimart_Api.Models.OrderItem", b =>
                 {
-                    b.HasOne("Minimart_Api.TempModels.Order", "order")
+                    b.HasOne("Minimart_Api.Models.Orders", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Products", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Products", null)
+                        .WithMany("OrderItems")
+                        .HasForeignKey("ProductsProductId");
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.OrderProducts", b =>
+                {
+                    b.HasOne("Minimart_Api.Models.Orders", "order")
                         .WithMany("OrderProducts")
                         .HasForeignKey("OrderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Minimart_Api.TempModels.TProduct", "Product")
+                    b.HasOne("Products", "Product")
                         .WithMany()
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1140,104 +1354,183 @@ namespace Minimart_Api.Migrations
                     b.Navigation("order");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.OrderStatusTracking", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Orders", b =>
                 {
-                    b.HasOne("Minimart_Api.TempModels.OrderTracking", null)
-                        .WithMany("orderStatusTrackings")
-                        .HasForeignKey("OrderTrackingTrackingID");
+                    b.HasOne("Minimart_Api.Models.PaymentDetails", "PaymentDetails")
+                        .WithMany("Orders")
+                        .HasForeignKey("PaymentID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Minimart_Api.Models.Users", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Minimart_Api.Models.Users", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("UsersUserId");
+
+                    b.Navigation("PaymentDetails");
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.OrderTracking", b =>
+            modelBuilder.Entity("Minimart_Api.Models.OrderStatus", b =>
                 {
-                    b.HasOne("Minimart_Api.TempModels.OrderStatusTracking", null)
+                    b.HasOne("Minimart_Api.Models.Orders", null)
+                        .WithMany("OrderStatuses")
+                        .HasForeignKey("OrdersOrderID");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.OrderTracking", b =>
+                {
+                    b.HasOne("Minimart_Api.Models.OrderStatus", "CurrentStatusNavigation")
                         .WithMany()
                         .HasForeignKey("CurrentStatus")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Minimart_Api.TempModels.Order", null)
-                        .WithMany()
+                    b.HasOne("Minimart_Api.Models.Orders", "Order")
+                        .WithMany("OrderTrackings")
                         .HasForeignKey("OrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Minimart_Api.TempModels.OrderStatusTracking", null)
+                    b.HasOne("Minimart_Api.Models.OrderStatus", "PreviousStatusNavigation")
                         .WithMany()
                         .HasForeignKey("PreviousStatus")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Products", "product")
+                        .WithMany("OrderTrackings")
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CurrentStatusNavigation");
+
+                    b.Navigation("Order");
+
+                    b.Navigation("PreviousStatusNavigation");
+
+                    b.Navigation("product");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.PaymentDetails", b =>
+            modelBuilder.Entity("Minimart_Api.Models.PaymentDetails", b =>
                 {
-                    b.HasOne("Minimart_Api.TempModels.Payments", "Payments")
-                        .WithMany("PaymentDetails")
-                        .HasForeignKey("PaymentID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Minimart_Api.Models.PaymentMethods", "Payments")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodID")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Minimart_Api.Models.PaymentMethods", null)
+                        .WithMany("PaymentDetails")
+                        .HasForeignKey("PaymentMethodsPaymentMethodID");
 
                     b.Navigation("Payments");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.SubCategoryFeatures", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Reviews", b =>
                 {
-                    b.HasOne("Minimart_Api.TempModels.Features", "features")
+                    b.HasOne("Products", "Product")
                         .WithMany()
-                        .HasForeignKey("FeatureID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Minimart_Api.TempModels.TSubcategoryid", "Subcategory")
-                        .WithMany()
-                        .HasForeignKey("SubCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Subcategory");
-
-                    b.Navigation("features");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TCart", b =>
-                {
-                    b.HasOne("Minimart_Api.TempModels.TUser", "User")
-                        .WithMany("TCarts")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("FK__t_Carts__userID__2739D489");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TOrder", b =>
-                {
-                    b.HasOne("Minimart_Api.TempModels.TUser", "User")
-                        .WithMany("TOrders")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("FK__t_Orders__userID__1BC821DD");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TOrderItem", b =>
-                {
-                    b.HasOne("Minimart_Api.TempModels.TOrder", "Order")
-                        .WithMany("TOrderItems")
-                        .HasForeignKey("OrderId")
-                        .HasConstraintName("FK__t_OrderIt__order__1EA48E88");
-
-                    b.HasOne("Minimart_Api.TempModels.TProduct", "Product")
-                        .WithMany("TOrderItems")
                         .HasForeignKey("ProductId")
-                        .HasConstraintName("FK__t_OrderItems__prod");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Order");
+                    b.HasOne("Products", null)
+                        .WithMany("Reviews")
+                        .HasForeignKey("ProductsProductId");
+
+                    b.HasOne("Minimart_Api.Models.Users", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Minimart_Api.Models.Users", null)
+                        .WithMany("Reviews")
+                        .HasForeignKey("UsersUserId");
 
                     b.Navigation("Product");
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.Town", b =>
+            modelBuilder.Entity("Minimart_Api.Models.RolePermissions", b =>
                 {
-                    b.HasOne("Minimart_Api.TempModels.County", "County")
+                    b.HasOne("Minimart_Api.Models.Modules", "Module")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("ModuleID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Minimart_Api.Models.Roles", "Role")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("RoleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Minimart_Api.Models.SubModules", "Submodule")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("SubModuleID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Module");
+
+                    b.Navigation("Role");
+
+                    b.Navigation("Submodule");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.SavedItems", b =>
+                {
+                    b.HasOne("Products", "Products")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Minimart_Api.Models.Users", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Products");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.SubModuleCategories", b =>
+                {
+                    b.HasOne("Minimart_Api.Models.SubModules", "Submodule")
+                        .WithMany("SubModuleCategories")
+                        .HasForeignKey("SubModuleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Submodule");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.SubModules", b =>
+                {
+                    b.HasOne("Minimart_Api.Models.Modules", "Module")
+                        .WithMany("Submodules")
+                        .HasForeignKey("ModuleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Module");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.Towns", b =>
+                {
+                    b.HasOne("Minimart_Api.Models.Counties", "County")
                         .WithMany("Towns")
                         .HasForeignKey("CountyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1246,124 +1539,113 @@ namespace Minimart_Api.Migrations
                     b.Navigation("County");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.TProduct", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Users", b =>
                 {
-                    b.HasOne("Minimart_Api.TempModels.TCategory", "CategoryNavigation")
-                        .WithMany("TProducts")
-                        .HasForeignKey("CategoryId")
-                        .HasConstraintName("FK__t_Product__categ__18EBB532");
-
-                    b.Navigation("CategoryNavigation");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TReview", b =>
-                {
-                    b.HasOne("Minimart_Api.TempModels.TProduct", "Product")
-                        .WithMany("TReviews")
-                        .HasForeignKey("ProductId")
-                        .HasConstraintName("FK__t_Reviews__prod");
-
-                    b.HasOne("Minimart_Api.TempModels.TUser", "User")
-                        .WithMany("TReviews")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("FK__t_Reviews__userI__245D67DE");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TSubcategoryid", b =>
-                {
-                    b.HasOne("Minimart_Api.TempModels.TCategory", "Category")
-                        .WithMany("TSubcategoryids")
-                        .HasForeignKey("CategoryId")
-                        .HasConstraintName("FK_t_subcategoryid_CategoryID");
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.UserInfo", b =>
-                {
-                    b.HasOne("Minimart_Api.TempModels.ResponseStatus", "Status")
+                    b.HasOne("Minimart_Api.Models.Roles", "Role")
                         .WithMany("Users")
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Status");
+                    b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.County", b =>
+            modelBuilder.Entity("Products", b =>
+                {
+                    b.HasOne("Minimart_Api.Models.Categories", "Categories")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Categories");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.Cart", b =>
+                {
+                    b.Navigation("CartItems");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.Categories", b =>
+                {
+                    b.Navigation("CategoryFeatures");
+
+                    b.Navigation("Products");
+
+                    b.Navigation("SubCategories");
+
+                    b.Navigation("SubCategoryFeatures");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.Counties", b =>
                 {
                     b.Navigation("Towns");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.Order", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Modules", b =>
+                {
+                    b.Navigation("RolePermissions");
+
+                    b.Navigation("Submodules");
+                });
+
+            modelBuilder.Entity("Minimart_Api.Models.Orders", b =>
                 {
                     b.Navigation("OrderProducts");
+
+                    b.Navigation("OrderStatuses");
+
+                    b.Navigation("OrderTrackings");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.OrderTracking", b =>
-                {
-                    b.Navigation("orderStatusTrackings");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.PaymentDetails", b =>
+            modelBuilder.Entity("Minimart_Api.Models.PaymentDetails", b =>
                 {
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.Payments", b =>
+            modelBuilder.Entity("Minimart_Api.Models.PaymentMethods", b =>
                 {
                     b.Navigation("PaymentDetails");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.ResponseStatus", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Roles", b =>
                 {
+                    b.Navigation("RolePermissions");
+
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.TCart", b =>
+            modelBuilder.Entity("Minimart_Api.Models.SubModules", b =>
                 {
-                    b.Navigation("CartItems");
+                    b.Navigation("RolePermissions");
+
+                    b.Navigation("SubModuleCategories");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.TCategory", b =>
-                {
-                    b.Navigation("TProducts");
-
-                    b.Navigation("TSubcategoryids");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TOrder", b =>
-                {
-                    b.Navigation("TOrderItems");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.Town", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Towns", b =>
                 {
                     b.Navigation("DeliveryStations");
                 });
 
-            modelBuilder.Entity("Minimart_Api.TempModels.TProduct", b =>
-                {
-                    b.Navigation("CartItems");
-
-                    b.Navigation("TOrderItems");
-
-                    b.Navigation("TReviews");
-                });
-
-            modelBuilder.Entity("Minimart_Api.TempModels.TUser", b =>
+            modelBuilder.Entity("Minimart_Api.Models.Users", b =>
                 {
                     b.Navigation("Addresses");
 
-                    b.Navigation("TCarts");
+                    b.Navigation("Carts");
 
-                    b.Navigation("TOrders");
+                    b.Navigation("Orders");
 
-                    b.Navigation("TReviews");
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("Products", b =>
+                {
+                    b.Navigation("CartItems");
+
+                    b.Navigation("OrderItems");
+
+                    b.Navigation("OrderTrackings");
+
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

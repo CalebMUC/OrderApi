@@ -10,13 +10,31 @@ namespace Minimart_Api.Services.RabbitMQ
         public RabbitMqConnection() {
             InitializeConnection();
         }
+        
+        public async void InitializeConnection() {
 
-        public async void InitializeConnection() { 
-            var factory = new ConnectionFactory { 
-                HostName = "localhost",
-                UserName = "guest",
-                Password = "guest",
-            };
+            //var factory = new ConnectionFactory { 
+            //    HostName = "localhost",
+            //    UserName = "guest",
+            //    Password = "guest",
+            //};
+
+
+            //var factory = new ConnectionFactory
+            //{
+            //    HostName = "172.31.90.20", // 👈 EC2's private IP
+            //    UserName = "guest",
+            //    Password = "guest",
+            //    Port = 5672,
+            //    VirtualHost = "/"
+            //};
+
+            //var factory = new ConnectionFactory
+            //{
+            //    Uri = new Uri(Environment.GetEnvironmentVariable("RABBITMQ_URI"))
+            //};
+
+            var factory = new ConnectionFactory() { HostName = "host.docker.internal" };
 
             _connection = await factory.CreateConnectionAsync();
         }

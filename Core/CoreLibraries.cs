@@ -1,4 +1,4 @@
-﻿using Minimart_Api.TempModels;
+﻿using Minimart_Api.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -7,6 +7,8 @@ using System.Data.SqlClient;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Minimart_Api.Models;
+using Minimart_Api.DTOS.Authorization;
 
 namespace Authentication_and_Authorization_Api.Core
 {
@@ -62,7 +64,7 @@ namespace Authentication_and_Authorization_Api.Core
 
         //}
 
-        public  string GenerateToken(TUser user)
+        public  string GenerateToken(Users user)
         {
             //var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:key"]));
             //var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

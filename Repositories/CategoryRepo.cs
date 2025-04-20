@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Minimart_Api.DTOS;
 using Minimart_Api.TempModels;
 using Newtonsoft.Json;
 using System.Net;
@@ -7,6 +6,10 @@ using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Runtime.CompilerServices;
 using Microsoft.Data.SqlClient;
+using Minimart_Api.DTOS.Category;
+using Minimart_Api.DTOS.Features;
+using Minimart_Api.DTOS.Cart;
+using Minimart_Api.DTOS.Products;
 
 namespace Minimart_Api.Repositories
 {

@@ -1,7 +1,7 @@
 ﻿
 using System.Text;
 using System.Text.Json;
-using Minimart_Api.DTOS;
+using Minimart_Api.DTOS.Orders;
 using Minimart_Api.Services.NotificationService;
 using RabbitMQ.Client.Events;
 
@@ -23,7 +23,7 @@ namespace Minimart_Api.Services.RabbitMQ
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Consumer is starting");
-
+            
             try
             {
                 //create a scope to resolve services
@@ -93,7 +93,8 @@ namespace Minimart_Api.Services.RabbitMQ
 
 
                     }
-                    catch (Exception ex) {
+                    catch (Exception ex)
+                    {
                         _logger.LogError($"Error processing message: {ex.Message}");
 
                         // Nack the message so it can be requeued in case of failure
@@ -114,7 +115,8 @@ namespace Minimart_Api.Services.RabbitMQ
                     );
                 _logger.LogInformation("Consumer is now listening for messages.");
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _logger.LogError($"Error in consumer initialization: {ex.Message}");
                 throw;
             }

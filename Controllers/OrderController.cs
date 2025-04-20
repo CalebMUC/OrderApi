@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Minimart_Api.DTOS;
 using Minimart_Api.DTOS.Merchants;
 using Minimart_Api.DTOS.Orders;
-using Minimart_Api.Services;
+using Minimart_Api.Services.OrderService.OrderService;
 using Minimart_Api.Services.RabbitMQ;
 
 namespace Minimart_Api.Controllers

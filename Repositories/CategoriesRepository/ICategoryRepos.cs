@@ -1,16 +1,21 @@
-﻿using Minimart_Api.DTOS.Category;
-using Minimart_Api.TempModels;
+﻿using Minimart_Api.DTOS.Cart;
+using Minimart_Api.DTOS.Category;
+using Minimart_Api.DTOS.General;
+using Minimart_Api.Models;
 
 namespace Minimart_Api.Repositories.CategoriesRepository
 {
     public interface ICategoryRepos
     {
+
         Task<IEnumerable<Categories>> GetAllCategoriesAsync();
         Task<Categories> GetCategoryByIdAsync(int CategoryId);
         Task<IEnumerable<Categories>> GetNestedCategoriesAsync();
-        Task<ResponseStatus> AddCategoriesAsync(CategoriesDto categories);
-        Task<ResponseStatus> UpdateCategoriesAsync(CategoriesDto categories);
-        Task<ResponseStatus> DeleteCategoryAsync(int CategoryId);
+        Task<Status> AddCategoriesAsync(CategoriesDto categories);
+        Task<Status> UpdateCategoriesAsync(CategoriesDto categories);
+        Task<Status> DeleteCategoryAsync(int CategoryId);
+
+        Task<IEnumerable<CartResults>> GetSubCategory(int CategoryId);
 
     }
 }

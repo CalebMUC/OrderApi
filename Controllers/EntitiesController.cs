@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Win32;
-using Minimart_Api.DTOS;
-using Minimart_Api.TempModels;
+using Minimart_Api.Models;
 using Minimart_Api.Mappings;
 using Minimart_Api.Services;
 using Newtonsoft.Json;
@@ -15,6 +14,12 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 using Minimart_Api.Mappings;
+using Minimart_Api.DTOS.Authorization;
+using Minimart_Api.DTOS.Products;
+using Minimart_Api.DTOS.Address;
+using Minimart_Api.DTOS.Cart;
+using Minimart_Api.DTOS.Notification;
+using Minimart_Api.DTOS.Category;
 
 namespace Minimart_Api.Controllers
 {
@@ -65,104 +70,7 @@ namespace Minimart_Api.Controllers
             return Ok(entities);
         }
 
-        [HttpPost("AddCartItems")]
-        public async Task<IActionResult> AddToCart([FromBody] AddToCart cartitems)
-        {
-            var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-            try
-            {
-                var Response = await _myService.AddToCart(jsonSrting);
-
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-
-
-        }
-        [HttpPost("DeleteCartItems")]
-        public async Task<IActionResult> DeleteCartItems([FromBody] CartItemsDTO cartitems)
-        {
-            //var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-            try
-            {
-                var Response = await _myService.DeleteCartItems(cartitems);
-
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-
-
-        }
-
-        [HttpPost("SaveItems")]
-        public async Task<IActionResult> SaveItems([FromBody] SaveItemsDTO saveItems)
-        {
-            //var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-            try
-            {
-                var Response = await _myService.SaveItems(saveItems);
-
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-
-
-        }
-
-        [HttpPost("GetCartItems")]
-        public async Task<IActionResult> GetCartItems([FromBody] GetCartItems cartitems)
-        {
-            //var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-            try
-            {
-                var Response = await _myService.GetCartItems(cartitems.UserID);
-
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-
-
-        }
-
-        [HttpGet("GetSavedItems")]
-        public async Task<IActionResult> GetSavedItems()
-        {
-            //var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-            try
-            {
-                var Response = await _myService.GetSavedItems();
-
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-
-
-        }
+    
 
         //[HttpPost("GetDashBoardName")]
         //public async Task<IActionResult> GetDashBoardName([FromBody] DashBoardName dashBoardName)
@@ -185,168 +93,73 @@ namespace Minimart_Api.Controllers
         //}
 
 
-        [HttpPost("GetProductsByCategory")]
-        public async Task<IActionResult> GetProductsByCategory([FromBody] SubCategory categoryName)
-        {
-            //var jsonSrting = JsonConvert.SerializeObject(cartitems);
 
-            try
-            {
-                var Response = await _myService.GetProductsByCategory(categoryName.CategoryID);
+        //[HttpGet("GetDashBoardCategories")]
+        //public async Task<IActionResult> GetDashBoardCategories()
+        //{
+        //    //var jsonSrting = JsonConvert.SerializeObject(dashBoardName);
 
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+        //    try
+        //    {
+        //        var Response = await _myService.GetDashBoardCategories();
 
-
-
-        }
-
-        [HttpGet("GetDashBoardCategories")]
-        public async Task<IActionResult> GetDashBoardCategories()
-        {
-            //var jsonSrting = JsonConvert.SerializeObject(dashBoardName);
-
-            try
-            {
-                var Response = await _myService.GetDashBoardCategories();
-
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+        //        return Ok(Response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
 
 
 
-        }
+        //}
 
-        [HttpPost("SubCategoryID")]
-        public async Task<IActionResult> SubCategoryID([FromBody] SubCategory categoryName)
-        {
-            //var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-            try
-            {
-                var Response = await _myService.GetSubCategory(categoryName.CategoryName);
-
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+     
 
 
+        //[HttpPost("GetProductFeatures")]
+        //public async Task<IActionResult> GetProductFeatures([FromBody] AddToCart cartitems)
+        //{
+        //    var jsonSrting = JsonConvert.SerializeObject(cartitems);
 
-        }
+        //    try
+        //    {
+        //        var Response = await _myService.AddToCart(jsonSrting);
 
-
-        [HttpPost("GetProductFeatures")]
-        public async Task<IActionResult> GetProductFeatures([FromBody] AddToCart cartitems)
-        {
-            var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-            try
-            {
-                var Response = await _myService.AddToCart(jsonSrting);
-
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+        //        return Ok(Response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
 
 
 
-        }
+        //}
 
-        [HttpPost("LoadProductImages")]
-        public async Task<IActionResult> LoadProductImages([FromBody] ProductDetails productDetails)
-        {
-            //var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-            try
-            {
-                var Response = await _myService.LoadProductImages(productDetails.ProductID);
-
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+        
 
 
+        //[HttpPost("GetSearchItem")]
+        //public async Task<IActionResult> GetSearchItem([FromBody] AddToCart cartitems)
+        //{
+        //    var jsonSrting = JsonConvert.SerializeObject(cartitems);
 
-        }
+        //    try
+        //    {
+        //        var Response = await _myService.AddToCart(jsonSrting);
 
-
-        [HttpPost("GetSearchItem")]
-        public async Task<IActionResult> GetSearchItem([FromBody] AddToCart cartitems)
-        {
-            var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-            try
-            {
-                var Response = await _myService.AddToCart(jsonSrting);
-
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+        //        return Ok(Response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
 
 
 
-        }
+        //}
 
-        [HttpPost("FetchAllProducts")]
-        //public async Task<IActionResult> LoadMainImages()
-        public async Task<IActionResult> FetchAllProducts()
-        {
-            
-
-            try
-            {
-                var Response = await _myService.FetchAllProducts();
-
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-
-
-        }
-
-        [HttpPost("AddProducts")]
-        public async Task<IActionResult> AddProducts([FromBody] AddProducts products)
-        {
-            //var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-            try
-            {
-                var Response = await _myService.AddProducts(products);
-
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-
-
-        }
 
         //[HttpPost("Orders")]
         //public async Task<IActionResult> Orders([FromBody] OrderDTO orders)
@@ -401,123 +214,9 @@ namespace Minimart_Api.Controllers
 
         //}
 
-        [HttpGet("counties")]
-        public async Task<IActionResult> GetCounties()
-        {
-            var counties = await _myService.GetCountiesAsync();
-            return Ok(counties);
-        }
+      
 
-        [HttpGet("towns")]
-        public async Task<IActionResult> GetTowns(int countyId)
-        {
-            var towns = await _myService.GetTownsByCountyAsync(countyId);
-            return Ok(towns);
-        }
-
-        [HttpGet("deliveryStations")]
-        public async Task<IActionResult> GetDeliveryStations(int townId)
-        {
-            var deliveryStations = await _myService.GetDeliveryStationsByTownAsync(townId);
-            return Ok(deliveryStations);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetAddressById(int id)
-        {
-            var address = await _myService.GetAddressByIdAsync(id);
-            if (address == null)
-            {
-                return NotFound();
-            }
-            return Ok(address);
-        }
-
-                //[HttpGet("user/{userId}")]
-                //public async Task<IActionResult> GetAddressesByUserId(int userId)
-                //{
-                //    var addresses = await _myService.GetAddressesByUserIdAsync(userId);
-                //    return Ok(addresses);
-                //}
-
-
-                [HttpGet("GetAddressesByUserId/{userId}")]
-                public async Task<IActionResult> GetAddressesByUserId(int userId)
-                {
-                    try
-                    {
-
-                        var addresses = await _myService.GetAddressesByUserIdAsync(userId);
-                        return Ok(addresses);
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest(new
-                        {
-                            responseCode = 500,
-                            responseMessage = "An error occurred while fetching addresses.",
-                            error = ex.Message
-                        });
-                    }
-                }
-
-
-        [HttpPost("AddAddress")]
-                public async Task<IActionResult> AddAddress([FromBody] AddressDTO address)
-                {
-                    try
-                    {
-                        await _myService.AddAddressAsync(address);
-
-                        // Fetch the updated list of addresses for the user
-                        var updatedAddresses = await _myService.GetAddressesByUserIdAsync(address.UserID);
-
-                        return Ok(new
-                        {
-                            responseCode = 200,
-                            responseMessage = "Address added successfully.",
-                            addresses = updatedAddresses
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest(new
-                        {
-                            responseCode = 500,
-                            responseMessage = "An error occurred while adding the address.",
-                            error = ex.Message
-                        });
-                    }
-                }
-
-        
-                [HttpPost("EditAddress")]
-                public async Task<IActionResult> EditAddress([FromBody] EditAddressDTO address)
-                {
-                    try
-                    {
-                        await _myService.EditAddressAsync(address);
-
-                        // Fetch the updated list of addresses for the user
-                        var updatedAddresses = await _myService.GetAddressesByUserIdAsync(address.UserID);
-
-                        return Ok(new
-                        {
-                            responseCode = 200,
-                            responseMessage = "Address updated successfully.",
-                            addresses = updatedAddresses
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest(new
-                        {
-                            responseCode = 500,
-                            responseMessage = "An error occurred while updating the address.",
-                            error = ex.Message
-                        });
-                    }
-                }
+       
 
 
         //[AllowAnonymous]
@@ -576,72 +275,72 @@ namespace Minimart_Api.Controllers
 
 
         //[AllowAnonymous]
-        [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody] Register register)
-        {
-            string userName = null;
-            string phoneNumber = null;
-            string Email = null;
-            string password = null;
-            string reEnteredPassword = null;
-            string message = null;
+        //[HttpPost("Register")]
+        //public async Task<IActionResult> Register([FromBody] Register register)
+        //{
+        //    string userName = null;
+        //    string phoneNumber = null;
+        //    string Email = null;
+        //    string password = null;
+        //    string reEnteredPassword = null;
+        //    string message = null;
 
 
-            try
-            {
-                userName = register.UserName;
-                phoneNumber = register.PhoneNumber;
-                Email = register.Email;
-                password = register.password;
-                reEnteredPassword = register.ReEnteredpassword;
+        //    try
+        //    {
+        //        userName = register.UserName;
+        //        phoneNumber = register.PhoneNumber;
+        //        Email = register.Email;
+        //        password = register.password;
+        //        reEnteredPassword = register.ReEnteredpassword;
 
-               // myConnectionString = _config.GetConnectionString("myConnectionString");
-
-
-                //message = "You can successfuly created an Account with MiniMart, you can proceed shopping with us";
-
-                //logRequests
-                //logs.LogRequest($"UserName : {userName}, phoneNumber: {phoneNumber}, password: {password}, reEnteredPassword : {reEnteredPassword}", "registerlogs.txt");
+        //       // myConnectionString = _config.GetConnectionString("myConnectionString");
 
 
-                // serialize json data
+        //        //message = "You can successfuly created an Account with MiniMart, you can proceed shopping with us";
 
-                string jsodata = JsonConvert.SerializeObject(register);
-
-                //logs.LogRequest(jsodata, "registerlogs.txt");
-
+        //        //logRequests
+        //        //logs.LogRequest($"UserName : {userName}, phoneNumber: {phoneNumber}, password: {password}, reEnteredPassword : {reEnteredPassword}", "registerlogs.txt");
 
 
+        //        // serialize json data
 
+        //        string jsodata = JsonConvert.SerializeObject(register);
 
-                // pass data for processing
-
-                var response = await  _myService.UserRegistration(jsodata);
+        //        //logs.LogRequest(jsodata, "registerlogs.txt");
 
 
 
 
-                    var jsonResponse = new
-                {
-                    message = response.ResponseMessage,
-                    username = userName,
-                    userID = response.UserID,
-                    responseCode = response.ResponseCode
 
-                };
+        //        // pass data for processing
 
-                return new OkObjectResult(jsonResponse);
+        //        var response = await  _myService.UserRegistration(jsodata);
 
 
 
 
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex);
-            }
+        //            var jsonResponse = new
+        //        {
+        //            message = response.ResponseMessage,
+        //            username = userName,
+        //            userID = response.UserID,
+        //            responseCode = response.ResponseCode
 
-        }
+        //        };
+
+        //        return new OkObjectResult(jsonResponse);
+
+
+
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return NotFound(ex);
+        //    }
+
+        //}
 
         [HttpPost("RefreshToken")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
@@ -678,7 +377,7 @@ namespace Minimart_Api.Controllers
 
             try
             {
-                UserInfo response = await _myService.GetRefreshToken(jsonData);
+                UserInfo response = await _myService.GetRefreshToken(UserID);
 
                 //return response;
 
@@ -750,25 +449,26 @@ namespace Minimart_Api.Controllers
        
 
 
-        [HttpPost("AddToCart")]
-        public async Task<IActionResult> CheckOut([FromBody] AddToCart cartitems)
-        {
-            var jsonSrting = JsonConvert.SerializeObject(cartitems);
+        //[HttpPost("AddToCart")]
+        //public async Task<IActionResult> CheckOut([FromBody] AddToCart cartitems)
+        //{
+        //    var jsonSrting = JsonConvert.SerializeObject(cartitems);
 
-            try
-            {
-                var Response = await _myService.AddToCart(jsonSrting);
+        //    try
+        //    {
+        //        var Response = await _myService.AddToCart(jsonSrting);
 
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+        //        return Ok(Response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
 
 
 
-        }
+        //}
+
         [HttpPost("UploadImages")]
         public async Task<IActionResult> UploadImages(IFormFile file)
         {

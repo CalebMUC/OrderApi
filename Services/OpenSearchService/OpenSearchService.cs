@@ -18,13 +18,13 @@ public class OpenSearchService : IOpenSearchService
     public async Task CreateIndexAsync(string indexName)
     {
         var createIndexResponse = await _client.Indices.CreateAsync(indexName, c => c
-            .Map<TProduct>(m => m
+            .Map<Products>(m => m
                 .AutoMap()
                 .Properties(p => p
                     .Text(t => t.Name(n => n.ProductName))
                     .Text(t => t.Name(n => n.Description))
                     .Number(n => n.Name(n => n.Price).Type(NumberType.Double))
-                    .Keyword(k => k.Name(n => n.Category))
+                    .Keyword(k => k.Name(n => n.CategoryName))
                     .Completion(c => c.Name(n => n.Suggest))
                 )
             )
@@ -37,7 +37,7 @@ public class OpenSearchService : IOpenSearchService
     }
 
     // Index a single product
-    public async Task IndexProductAsync(TProduct product)
+    public async Task IndexProductAsync(Products product)
     {
         product.Suggest = new CompletionField { Input = new[] { product.SearchKeyWord } };
         var indexResponse = await _client.IndexAsync(product, i => i.Index("searchproducts").Id(product.ProductId));
@@ -49,9 +49,9 @@ public class OpenSearchService : IOpenSearchService
     }
 
     // Search for products
-    public async Task<IEnumerable<TProduct>> SearchProductsAsync(string query)
+    public async Task<IEnumerable<Products>> SearchProductsAsync(string query)
     {
-        var response = await _client.SearchAsync<TProduct>(s => s
+        var response = await _client.SearchAsync<Products>(s => s
             .Index("searchproducts")
             .Query(q => q
                 .MultiMatch(m => m
@@ -71,7 +71,7 @@ public class OpenSearchService : IOpenSearchService
     // Autocomplete suggestions
     public async Task<IEnumerable<string>> AutocompleteAsync(string query)
     {
-        var response = await _client.SearchAsync<TProduct>(s => s
+        var response = await _client.SearchAsync<Products>(s => s
             .Index("searchproducts")
             .Suggest(su => su
                 .Completion("product-suggestions", c => c

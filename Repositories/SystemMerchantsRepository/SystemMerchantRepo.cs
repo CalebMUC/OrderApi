@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Minimart_Api.DTOS;
+using Minimart_Api.DTOS.Merchants;
 using Minimart_Api.Services.SignalR;
-using Minimart_Api.TempModels;
+using Minimart_Api.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Minimart_Api.Data;
+using Minimart_Api.DTOS.General;
 
 namespace Minimart_Api.Repositories.SystemMerchantsRepository
 {
@@ -33,13 +35,13 @@ namespace Minimart_Api.Repositories.SystemMerchantsRepository
             return await _dbContext.SystemMerchants.FindAsync(merchantId);
         }
 
-        public async Task<ResponseStatus> AddMerchantsAsync(SystemMerchantsDto systemMerchants)
+        public async Task<Status> AddMerchantsAsync(SystemMerchantsDto systemMerchants)
         {
             try
             {
                 if (systemMerchants == null)
                 {
-                    return new ResponseStatus { ResponseStatusId = 400, ResponseMessage = "Invalid merchant data" };
+                    return new Status { ResponseCode = 400, ResponseMessage = "Invalid merchant data" };
                 }
 
                 bool exists = await _dbContext.SystemMerchants
@@ -47,7 +49,7 @@ namespace Minimart_Api.Repositories.SystemMerchantsRepository
 
                 if (exists)
                 {
-                    return new ResponseStatus { ResponseStatusId = 400, ResponseMessage = "Merchant With the BusinessRegistrationNo and Email  Already Exists" };
+                    return new Status { ResponseCode = 400, ResponseMessage = "Merchant With the BusinessRegistrationNo and Email  Already Exists" };
                 }
 
                 var newMerchant = MapDtoToEntity(systemMerchants);
@@ -56,28 +58,28 @@ namespace Minimart_Api.Repositories.SystemMerchantsRepository
 
                 _hubContext.Clients.All.SendAsync("RecieveNewMerchant", $"New Merchant MerchantName : {newMerchant.MerchantName} BusinessName : {newMerchant.BusinessName}");
 
-                return new ResponseStatus { ResponseStatusId = 200, ResponseMessage = "Merchant Saved Successfully" };
+                return new Status { ResponseCode = 200, ResponseMessage = "Merchant Saved Successfully" };
             }
                 catch (DbUpdateException dbEx)
                 {
                     _logger.LogError(dbEx, "Database error while adding merchant.");
-                    return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" };
+                    return new Status { ResponseCode = 500, ResponseMessage = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" };
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error while adding merchant.");
-                    return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Internal server error: {ex.Message}" };
+                    return new Status { ResponseCode = 500, ResponseMessage = $"Internal server error: {ex.Message}" };
                 }
            }
 
-        public async Task<ResponseStatus> UpdateMerchantsAsync(SystemMerchantsDto systemMerchants)
+        public async Task<Status> UpdateMerchantsAsync(SystemMerchantsDto systemMerchants)
         {
             try
             {
                 var existingMerchant = await _dbContext.SystemMerchants.FindAsync(systemMerchants.MerchantID);
                 if (existingMerchant == null)
                 {
-                    return new ResponseStatus { ResponseStatusId = 400, ResponseMessage = "Merchant doesn't exist" };
+                    return new Status { ResponseCode = 400, ResponseMessage = "Merchant doesn't exist" };
                 }
 
                 UpdateEntityFromDto(existingMerchant, systemMerchants);
@@ -85,44 +87,44 @@ namespace Minimart_Api.Repositories.SystemMerchantsRepository
 
                 _hubContext.Clients.All.SendAsync("ReceiveNewMerchant", $"New Merchant MerchantName : {existingMerchant.MerchantName} BusinessName : {existingMerchant.BusinessName}");
 
-                return new ResponseStatus { ResponseStatusId = 200, ResponseMessage = "Merchant Updated Successfully" };
+                return new Status { ResponseCode = 200, ResponseMessage = "Merchant Updated Successfully" };
             }
             catch (DbUpdateException dbEx)
             {
                 _logger.LogError(dbEx, "Database error while updating merchant.");
-                return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" };
+                return new Status { ResponseCode = 500, ResponseMessage = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while updating merchant.");
-                return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Internal server error: {ex.Message}" };
+                return new Status { ResponseCode = 500, ResponseMessage = $"Internal server error: {ex.Message}" };
             }
         }
 
-        public async Task<ResponseStatus> DeleteMerchantAsync(int merchantId)
+        public async Task<Status> DeleteMerchantAsync(int merchantId)
         {
             try
             {
                 var existingMerchant = await _dbContext.SystemMerchants.FindAsync(merchantId);
                 if (existingMerchant == null)
                 {
-                    return new ResponseStatus { ResponseStatusId = 400, ResponseMessage = "Merchant doesn't exist" };
+                    return new Status { ResponseCode = 400, ResponseMessage = "Merchant doesn't exist" };
                 }
 
                 _dbContext.SystemMerchants.Remove(existingMerchant);
                 await _dbContext.SaveChangesAsync();
 
-                return new ResponseStatus { ResponseStatusId = 200, ResponseMessage = "Merchant Deleted Successfully" };
+                return new Status { ResponseCode = 200, ResponseMessage = "Merchant Deleted Successfully" };
             }
             catch (DbUpdateException dbEx)
             {
                 _logger.LogError(dbEx, "Database error while deleting merchant.");
-                return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" };
+                return new Status { ResponseCode = 500, ResponseMessage = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while deleting merchant.");
-                return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Internal server error: {ex.Message}" };
+                return new Status { ResponseCode = 500, ResponseMessage = $"Internal server error: {ex.Message}" };
             }
         }
 

@@ -8,11 +8,9 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Minimart_Api.TempModels;
+using Minimart_Api.Models;
 using Microsoft.AspNetCore.Identity;
-using static Minimart_Api.TempModels.MinimartDBContext;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Minimart_Api.DTOS;
 using Authentication_and_Authorization_Api.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -39,6 +37,21 @@ using Minimart_Api.Repositories.ProductRepository;
 using Minimart_Api.Services.CategoriesService;
 using Minimart_Api.Repositories.CategoriesRepository;
 using Minimart_Api.Services.SignalR;
+using Minimart_Api.DTOS.Notification;
+using Minimart_Api.DTOS.Payments;
+using Minimart_Api.DTOS.Authorization;
+using Minimart_Api.Repositories.Authorization;
+//using Minimart_Api.Repositories.Merchants;
+using Minimart_Api.Repositories.Order;
+using Minimart_Api.Repositories.Reports;
+using Minimart_Api.Repositories.Search;
+using Minimart_Api.Services.OrderService;
+using Minimart_Api.Services.ReportService;
+using Minimart_Api.Services.SearchService;
+using Minimart_Api.Services.OrderService.OrderService;
+using Minimart_Api.Services.SearchService.SearchService;
+using Minimart_Api.Services.ReportService.ReportService;
+using Minimart_Api.Data;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,19 +64,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IMyService, MyService>();
 builder.Services.AddScoped<IRepository, MyRepository>();
-builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderService, OrderServices>();
 builder.Services.AddScoped<IorderRepository, OrderRepository>();
 
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
+//builder.Services.AddScoped<ICategoryService, CategoryService>();
+//builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
 
-builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<ISearchService, SearchServices>();
 builder.Services.AddScoped<ISearchRepo,SearchRepo>();
 
-builder.Services.AddScoped<IMerchantService, MerchantService>();
-builder.Services.AddScoped<IMerchantRepo, MerchantRepo>();
+//builder.Services.AddScoped<IMerchantService, MerchantService>();
+//builder.Services.AddScoped<IMerchantRepo, MerchantRepo>();
 
-builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IReportService, ReportServices>();
 builder.Services.AddScoped<IReportRepo, ReportRepo>();
 
 builder.Services.AddScoped<IAuthentication, AuthenticationService>();
@@ -86,7 +99,7 @@ builder.Services.AddHostedService<OrderEventConsumer>();
 
 builder.Services.AddScoped<INotfication, NotificationService>();
 
-builder.Services.AddScoped<IOpenSearchService, OpenSearchService>();
+//builder.Services.AddScoped<IOpenSearchService, OpenSearchService>();
 
 builder.Services.AddScoped<CoreLibraries>();
 builder.Services.AddScoped<OrderMapper>();
@@ -115,7 +128,7 @@ ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
 
 builder.Services.AddScoped<MpesaSandBox>();
 
-builder.Services.AddHostedService<SyncProductsToOpenSearch>();
+//builder.Services.AddHostedService<SyncProductsToOpenSearch>();
 
 
 builder.Services.Configure<MpesaSandBox>(builder.Configuration.GetSection("MpesaSandBox"));
@@ -124,7 +137,7 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 
 builder.Services.Configure<CelcomAfrica>(builder.Configuration.GetSection("CelcomAfrica"));
 
-builder.Services.Configure<OpenSearchSettings>(builder.Configuration.GetSection("OpenSearchSettings"));
+//builder.Services.Configure<OpenSearchSettings>(builder.Configuration.GetSection("OpenSearchSettings"));
 
 //builder.Services.AddSingleton<IElasticClient>(sp =>
 //{
@@ -141,14 +154,14 @@ builder.Services.Configure<OpenSearchSettings>(builder.Configuration.GetSection(
 //});
 
 //Configure OpenSearch client
-builder.Services.AddSingleton<IOpenSearchClient>(sp =>
-{
-    var settings = sp.GetRequiredService<IOptions<OpenSearchSettings>>().Value;
-    var uri = new Uri(settings.Endpoint);
-    var connectionSettings = new ConnectionSettings(uri)
-        .BasicAuthentication("CalebMuchiri", "Caleb@2543"); // Add username/password if required
-    return new OpenSearchClient(connectionSettings);
-});
+//builder.Services.AddSingleton<IOpenSearchClient>(sp =>
+//{
+//    var settings = sp.GetRequiredService<IOptions<OpenSearchSettings>>().Value;
+//    var uri = new Uri(settings.Endpoint);
+//    var connectionSettings = new ConnectionSettings(uri)
+//        .BasicAuthentication("CalebMuchiri", "Caleb@2543"); // Add username/password if required
+//    return new OpenSearchClient(connectionSettings);
+//});
 
 builder.Services.AddSignalR();
 
@@ -247,18 +260,31 @@ builder.Services.AddHttpClient();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseDeveloperExceptionPage();
+//    app.UseSwagger();
+//    app.UseSwaggerUI(c =>
+//    {
+//        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+//        c.RoutePrefix = "Swagger"; // Serve Swagger UI at the app's rootMpesaSandBox
+//    });
+//}
+
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-        c.RoutePrefix = "Swagger"; // Serve Swagger UI at the app's rootMpesaSandBox
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+    c.RoutePrefix = "swagger"; // Ensure lowercase "swagger" for easier access
+});
+
 
 app.UseHttpsRedirection();
+
+var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+if (!Directory.Exists(uploadsPath)) { 
+    Directory.CreateDirectory(uploadsPath); 
+}
 
 // Enable serving of static files from the "Uploads" directory
 app.UseStaticFiles(new StaticFileOptions
@@ -283,5 +309,5 @@ app.MapControllers();
 
 app.UseExceptionHandler("/error");
 
-app.Run();
+ app.Run();
 
