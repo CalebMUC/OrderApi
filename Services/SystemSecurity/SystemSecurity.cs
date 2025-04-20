@@ -1,9 +1,9 @@
-﻿using Minimart_Api.DTOS;
+﻿using Minimart_Api.DTOS.Security;
 using Minimart_Api.Repositories.SystemSecurityRepo;
 
 namespace Minimart_Api.Services.SystemSecurity
 {
-    
+
     public class SystemSecurity : ISystemSecurity
     {
         private readonly ISystemSecurityRepo _repo;

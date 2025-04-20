@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Minimart_Api.DTOS;
 using Minimart_Api.DTOS.Category;
+using Minimart_Api.DTOS.Features;
+using Minimart_Api.DTOS.Products;
 using Minimart_Api.Services;
 using Minimart_Api.Services.CategoriesService;
-using Minimart_Api.TempModels;
+using Minimart_Api.Models;
 
 namespace Minimart_Api.Controllers
 {
@@ -11,32 +12,14 @@ namespace Minimart_Api.Controllers
     [Route("api/[controller]")]
     public class CategoryController : ControllerBase
     {
-        private readonly ICategoryService _categoryService;
         private readonly ICategoriesService _categoriesService;
-       public CategoryController(ICategoryService categoryService, ICategoriesService categoriesService) {
+       public CategoryController(ICategoriesService categoriesService) {
 
-            _categoryService = categoryService;
             _categoriesService = categoriesService;
         }
 
                 // POST: api/SubcategoryFeature/AddFeatures
-                [HttpPost("AddFeatures")]
-                public async Task<IActionResult> AddFeaturesToSubcategory([FromBody] AddFeaturesDTO request)
-                {
-            try
-            {
-                if (request.Features == null || !request.Features.Any())
-                {
-                    return BadRequest("No features provided.");
-                }
-
-                var Response = await _categoryService.AddFeatures(request);
-                return Ok(Response);
-            }catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-                }
+            
         //[HttpPost("AddEditCategories")]
         //public async Task<IActionResult> AddEditCategories(AddCategoryDTO addCategory)
         //{
@@ -133,67 +116,34 @@ namespace Minimart_Api.Controllers
             }
         }
 
-
-
-
-        // GET: api/SubcategoryFeature/GetFeatures/{subcategoryId}
-        [HttpGet("GetSearchProducts/{subcategoryId}")]
-        public async Task<IActionResult> GetSearchProducts(string subcategoryId)
+        [HttpPost("SubCategoryID")]
+        public async Task<IActionResult> SubCategoryID([FromBody] SubCategory categoryName)
         {
-            var products= await _categoryService.GetSearchProducts(subcategoryId);
+            //var jsonSrting = JsonConvert.SerializeObject(cartitems);
 
-            if (products == null || !products.Any())
-            {
-                return NotFound("No features found for this subcategory.");
-            }
-
-            return Ok(products);
-        }
-
-        // POST
-        [HttpPost("GetFilteredProducts")]
-        public async Task<IActionResult> GetFilteredProducts(FilteredProductsDTO filteredProducts)
-        {
-            var products = await _categoryService.GetFilteredProducts(filteredProducts);
-
-
-
-
-            if (products == null || !products.Any())
-            {
-                return NotFound("No features found for this subcategory.");
-            }
-
-            return Ok(products);
-        }
-        [HttpGet("GetAllFeatures")]
-        public async Task<IActionResult> GetAllFeatures()
-        {
             try
             {
-                var response = await _categoryService.GetAllFeatures();
-                return Ok(response);
+                var Response = await _categoriesService.GetSubCategory(categoryName.CategoryID);
+
+                return Ok(Response);
             }
-            catch (Exception ex) { 
+            catch (Exception ex)
+            {
                 return BadRequest(ex.Message);
             }
+
+
+
         }
 
+
+
+
         // GET: api/SubcategoryFeature/GetFeatures/{subcategoryId}
-        [HttpPost("GetFeatures")]
-                public async Task<IActionResult> GetFeaturesForSubcategory(FeatureRequestDTO feature)
-                {
-                    var features = await _categoryService.GetFeatures(feature);
+        
 
-                    if (features == null || !features.Any())
-                    {
-                //return NotFound("No features found for this subcategory.");
-
-                return Ok(features);
-                    }
-
-                    return Ok(features);
-                }
+  
+      
 
         //[HttpPost("SearchFilters")]
         //public async Task<IActionResult> SearchFilters(FeatureSearchQuery searchQuery)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Minimart_Api.DTOS;
-using Minimart_Api.TempModels;
+using Minimart_Api.Data;
+using Minimart_Api.DTOS.Security;
+using Minimart_Api.Models;
 
 namespace Minimart_Api.Repositories.SystemSecurityRepo
 {

@@ -1,4 +1,4 @@
-﻿using Minimart_Api.DTOS;
+﻿using Minimart_Api.DTOS.Security;
 
 namespace Minimart_Api.Services.SystemSecurity
 {

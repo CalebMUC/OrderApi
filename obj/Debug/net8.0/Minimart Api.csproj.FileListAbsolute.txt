@@ -456,7 +456,6 @@ C:\Users\ADMIN\Downloads\Caleb\OrderApi\obj\Debug\net8.0\staticwebassets\msbuild
 C:\Users\ADMIN\Downloads\Caleb\OrderApi\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.Minimart Api.props
 C:\Users\ADMIN\Downloads\Caleb\OrderApi\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.Minimart Api.props
 C:\Users\ADMIN\Downloads\Caleb\OrderApi\obj\Debug\net8.0\staticwebassets.pack.json
-C:\Users\ADMIN\Downloads\Caleb\OrderApi\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\ADMIN\Downloads\Caleb\OrderApi\obj\Debug\net8.0\Minimart Api.dll
 C:\Users\ADMIN\Downloads\Caleb\OrderApi\obj\Debug\net8.0\refint\Minimart Api.dll
 C:\Users\ADMIN\Downloads\Caleb\OrderApi\obj\Debug\net8.0\Minimart Api.pdb

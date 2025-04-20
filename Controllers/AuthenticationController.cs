@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Minimart_Api.DTOS.Authorization;
 using Minimart_Api.Services;
-using Minimart_Api.TempModels;
+using Minimart_Api.Models;
 
 namespace Minimart_Api.Controllers
 {

@@ -1,6 +1,7 @@
-﻿using Minimart_Api.DTOS;
+﻿using Minimart_Api.DTOS.Merchants;
 using Minimart_Api.Repositories.SystemMerchantsRepository;
-using Minimart_Api.TempModels;
+using Minimart_Api.Models;
+using Minimart_Api.DTOS.General;
 
 namespace Minimart_Api.Services.SystemMerchantService
 {
@@ -22,19 +23,19 @@ namespace Minimart_Api.Services.SystemMerchantService
             return await _systemMerchantRepo.GetMerchantByIdAsync(merchantId);
         }
 
-        public async Task<ResponseStatus> AddMerchantsAsync(SystemMerchantsDto merchant) {
+        public async Task<Status> AddMerchantsAsync(SystemMerchantsDto merchant) {
 
             return await _systemMerchantRepo.AddMerchantsAsync(merchant);
 
         }
 
-        public async Task<ResponseStatus> UpdateMerchantsAsync(SystemMerchantsDto merchant)
+        public async Task<Status> UpdateMerchantsAsync(SystemMerchantsDto merchant)
         {
 
             return await _systemMerchantRepo.UpdateMerchantsAsync(merchant);
 
         }
-        public async Task<ResponseStatus> DeleteMerchantAsync(int merchantId) {
+        public async Task<Status> DeleteMerchantAsync(int merchantId) {
 
             return await _systemMerchantRepo.DeleteMerchantAsync(merchantId);
         }

@@ -1,4 +1,4 @@
-﻿using Minimart_Api.DTOS;
+﻿using Minimart_Api.DTOS.Orders;
 
 namespace Minimart_Api.Services.RabbitMQ
 {

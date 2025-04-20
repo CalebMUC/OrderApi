@@ -1,4 +1,7 @@
-﻿using Minimart_Api.DTOS;
+﻿using Minimart_Api.DTOS.Cart;
+using Minimart_Api.DTOS.Category;
+using Minimart_Api.DTOS.Features;
+using Minimart_Api.DTOS.Products;
 using Minimart_Api.TempModels;
 
 namespace Minimart_Api.Repositories

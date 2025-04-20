@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Minimart_Api.Data;
+using Minimart_Api.DTOS.Cart;
 using Minimart_Api.DTOS.Category;
-using Minimart_Api.TempModels;
+using Minimart_Api.DTOS.General;
+using Minimart_Api.Models;
 using System.Linq;
 
 namespace Minimart_Api.Repositories.CategoriesRepository
@@ -18,7 +21,7 @@ namespace Minimart_Api.Repositories.CategoriesRepository
 
         public async Task<IEnumerable<Categories>> GetAllCategoriesAsync()
         {
-            return await _dbContext.categories.Select(c=>new Categories { 
+            return await _dbContext.Categories.Select(c=>new Categories { 
                 CategoryId = c.CategoryId,
                 CategoryName = c.CategoryName,
                 Slug = c.Slug,
@@ -35,9 +38,9 @@ namespace Minimart_Api.Repositories.CategoriesRepository
 
         public async Task<Categories> GetCategoryByIdAsync(int CategorId)
         {
-            //return await _dbContext.categories.FindAsync(CategorId);
+            //return await _dbContext.Categories.FindAsync(CategorId);
 
-            return await _dbContext.categories
+            return await _dbContext.Categories
                 .Where(c => c.CategoryId == CategorId)
                 .Select(c => new Categories
             {
@@ -59,8 +62,8 @@ namespace Minimart_Api.Repositories.CategoriesRepository
         {
             try
             {
-                // Step 1: Fetch all categories at once
-                var allCategories = await _dbContext.categories
+                // Step 1: Fetch all Categories at once
+                var allCategories = await _dbContext.Categories
                     .Select(c => new Categories
                     {
                         CategoryId = c.CategoryId,
@@ -89,38 +92,38 @@ namespace Minimart_Api.Repositories.CategoriesRepository
                     }
                 }
 
-                // Step 3: Return only the top-level categories (where ParentCategoryId is NULL)
+                // Step 3: Return only the top-level Categories (where ParentCategoryId is NULL)
                 return allCategories.Where(c => c.ParentCategoryId == null).ToList();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while fetching nested categories.");
+                _logger.LogError(ex, "An error occurred while fetching nested Categories.");
                 throw;
             }
         }
 
 
-        public async Task<ResponseStatus> AddCategoriesAsync(CategoriesDto categories)
+        public async Task<Status> AddCategoriesAsync(CategoriesDto categories)
         {
             try
             {
                 if (categories == null)
                 {
-                    return new ResponseStatus
+                    return new Status
                     {
-                        ResponseStatusId = 400,
+                        ResponseCode = 400,
                         ResponseMessage = "Invalid data"
                     };
                 }
 
                 // Check if the category already exists
-                var existingCategory = await _dbContext.categories.AnyAsync(c =>
+                var existingCategory = await _dbContext.Categories.AnyAsync(c =>
                     c.CategoryName == categories.CategoryName || c.Slug == categories.Slug);
                 if (existingCategory)
                 {
-                    return new ResponseStatus
+                    return new Status
                     {
-                        ResponseStatusId = 400,
+                        ResponseCode = 400,
                         ResponseMessage = "Category Already Exists"
                     };
                 }
@@ -131,16 +134,16 @@ namespace Minimart_Api.Repositories.CategoriesRepository
                 // Validate ParentCategoryId
                 if (categories.ParentCategoryId.HasValue && categories.ParentCategoryId.Value != 0)
                 {
-                    var parentCategory = await _dbContext.categories
+                    var parentCategory = await _dbContext.Categories
                         .Where(c => c.CategoryId == categories.ParentCategoryId)
                         .Select(c => new { c.CategoryId, c.Path })
                         .FirstOrDefaultAsync();
 
                     if (parentCategory == null)
                     {
-                        return new ResponseStatus
+                        return new Status
                         {
-                            ResponseStatusId = 400,
+                            ResponseCode = 400,
                             ResponseMessage = $"Parent Category with ID {categories.ParentCategoryId} Does Not Exist"
                         };
                     }
@@ -159,26 +162,26 @@ namespace Minimart_Api.Repositories.CategoriesRepository
 
 
                 // Add and save
-                _dbContext.categories.Add(newCategory);
+                _dbContext.Categories.Add(newCategory);
                 await _dbContext.SaveChangesAsync();
 
-                return new ResponseStatus
+                return new Status
                 {
-                    ResponseStatusId = 200,
+                    ResponseCode = 200,
                     ResponseMessage = "Category Saved Successfully"
                 };
             }
             catch (DbUpdateException dbEx)
             {
                 _logger.LogError(dbEx, "Database error while adding Categories.");
-                return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" };
+                return new Status { ResponseCode = 500, ResponseMessage = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" };
             }
             catch (Exception ex)
             {
                 _logger.LogInformation("System Error while adding Categories");
-                return new ResponseStatus
+                return new Status
                 {
-                    ResponseStatusId = 500,
+                    ResponseCode = 500,
                     ResponseMessage = ex.Message,
                 };
             }
@@ -187,20 +190,20 @@ namespace Minimart_Api.Repositories.CategoriesRepository
         
 
 
-        public async Task<ResponseStatus> UpdateCategoriesAsync(CategoriesDto categories)
+        public async Task<Status> UpdateCategoriesAsync(CategoriesDto categories)
         {
             if (categories == null)
             {
-                return new ResponseStatus
+                return new Status
                 {
-                    ResponseStatusId = 400,
+                    ResponseCode = 400,
                     ResponseMessage = "Invalid Categories Data"
                 };
             }
 
             try
             {
-                var existingCategory = await _dbContext.categories
+                var existingCategory = await _dbContext.Categories
                     .Where(c => c.CategoryId == categories.CategoryId)
                    .Select(c => new Categories
                    {
@@ -219,15 +222,15 @@ namespace Minimart_Api.Repositories.CategoriesRepository
                     .FirstOrDefaultAsync();
                 if (existingCategory == null)
                 {
-                    return new ResponseStatus
+                    return new Status
                     {
-                        ResponseStatusId = 400,
+                        ResponseCode = 400,
                         ResponseMessage = "Category Doesn't Exist, please pass a valid Category"
                     };
                 }
 
                 // Manually attach the entity to EF Core and mark it as modified
-                _dbContext.categories.Attach(existingCategory);
+                _dbContext.Categories.Attach(existingCategory);
                 _dbContext.Entry(existingCategory).State = EntityState.Modified;
 
                 // Check if ParentCategoryId has changed
@@ -244,57 +247,71 @@ namespace Minimart_Api.Repositories.CategoriesRepository
                 UpdateEntityFromDto(existingCategory, categories);
                 await _dbContext.SaveChangesAsync();
 
-                return new ResponseStatus
+                return new Status
                 {
-                    ResponseStatusId = 200,
+                    ResponseCode = 200,
                     ResponseMessage = "Categories Updated Successfully"
                 };
             }
             catch (DbUpdateException dbEx)
             {
                 _logger.LogError(dbEx, "Database error while updating Category.");
-                return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" };
+                return new Status { ResponseCode = 500, ResponseMessage = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "System Error while updating Category.");
-                return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Internal server error: {ex.Message}" };
+                return new Status { ResponseCode = 500, ResponseMessage = $"Internal server error: {ex.Message}" };
             }
         }
 
-        public async Task<ResponseStatus> DeleteCategoryAsync(int categoryId)
+        public async Task<Status> DeleteCategoryAsync(int categoryId)
         {
             try
             {
-                var existingCategory = await _dbContext.categories.FindAsync(categoryId);
+                var existingCategory = await _dbContext.Categories.FindAsync(categoryId);
                 if (existingCategory == null)
                 {
-                    return new ResponseStatus
+                    return new Status
                     {
-                        ResponseStatusId = 400,
+                        ResponseCode = 400,
                         ResponseMessage = "Category doesn't exist"
                     };
                 }
 
-                _dbContext.categories.Remove(existingCategory);
+                _dbContext.Categories.Remove(existingCategory);
                 await _dbContext.SaveChangesAsync();
 
-                return new ResponseStatus
+                return new Status
                 {
-                    ResponseStatusId = 200,
+                    ResponseCode = 200,
                     ResponseMessage = "Category Deleted Successfully"
                 };
             }
             catch (DbUpdateException dbEx)
             {
                 _logger.LogError(dbEx, "Database error while deleting category.");
-                return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" };
+                return new Status { ResponseCode = 500, ResponseMessage = $"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}" };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "System Error while deleting Category.");
-                return new ResponseStatus { ResponseStatusId = 500, ResponseMessage = $"Internal server error: {ex.Message}" };
+                return new Status { ResponseCode = 500, ResponseMessage = $"Internal server error: {ex.Message}" };
             }
+        }
+
+        public async Task<IEnumerable<CartResults>> GetSubCategory(int CategoryId)
+        {
+            return await _dbContext.Products
+                .Where(tp => tp.CategoryId == CategoryId)
+                .Select(tp => new CartResults
+                {
+                    ProductName = tp.ProductName,
+                    ProductImage = tp.ImageUrl,
+                    Instock = tp.StockQuantity,
+                    price = tp.Price,
+                })
+                .ToListAsync();
         }
 
         public Categories mapDtoToEntity(CategoriesDto dto)
@@ -328,7 +345,7 @@ namespace Minimart_Api.Repositories.CategoriesRepository
         {
             // Get the new parent category
             var newParentCategory = newParentCategoryId.HasValue
-                ? await _dbContext.categories.FindAsync(newParentCategoryId)
+                ? await _dbContext.Categories.FindAsync(newParentCategoryId)
                 : null;
 
             // Calculate the new Path
@@ -340,7 +357,7 @@ namespace Minimart_Api.Repositories.CategoriesRepository
             category.Path = newPath;
 
             // Update the Path for all descendants
-            var descendants = await _dbContext.categories
+            var descendants = await _dbContext.Categories
                 .Where(c => c.Path.StartsWith($"{category.Path}/{category.CategoryId}"))
                 .ToListAsync();
 

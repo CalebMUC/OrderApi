@@ -2,7 +2,8 @@
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
-using Minimart_Api.DTOS;
+using Minimart_Api.DTOS.Notification;
+using Minimart_Api.DTOS.Orders;
 
 namespace Minimart_Api.Services.NotificationService
 {

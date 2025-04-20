@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
-using Minimart_Api.DTOS;
+using Minimart_Api.DTOS.Orders;
 using RabbitMQ.Client;
 
 namespace Minimart_Api.Services.RabbitMQ

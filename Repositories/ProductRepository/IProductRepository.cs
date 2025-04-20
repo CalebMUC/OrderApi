@@ -1,13 +1,27 @@
-﻿using Minimart_Api.DTOS;
-using Minimart_Api.TempModels;
+﻿using Minimart_Api.DTOS.Cart;
+using Minimart_Api.DTOS.General;
+using Minimart_Api.DTOS.Products;
+using Minimart_Api.Models;
 
 namespace Minimart_Api.Repositories.ProductRepository
 {
     public interface IProductRepository
     {
-        Task<IEnumerable<TProduct>> GetAllProducts();
+        Task<IEnumerable<Products>> GetAllProducts();
 
-        Task<ResponseStatus> EditProductsAsync(AddProducts products);
+        Task<Status> EditProductsAsync(AddProducts products);
+
+        Task<IEnumerable<CartResults>> GetProductsByCategory(int CategoryID);
+
+
+        Task<IEnumerable<Products>> FetchAllProducts();
+
+        Task<Status> AddProducts(AddProducts product);
+
+     
+
+        Task<IEnumerable<Products>> LoadProductImages(string ProductID);
+
     }
 
 

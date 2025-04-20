@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Minimart_Api.Mappings;
-using Minimart_Api.DTOS;
-using Minimart_Api.Services;
 using System.Data;
 //using Microsoft.Reporting.WebForms;
 using AspNetCore.Reporting;
 using System.Net.Http.Headers;
 using System.Net;
+using Minimart_Api.DTOS.Reports;
+using Minimart_Api.Services.ReportService.ReportService;
 
 //using Minimart_Api.;
 

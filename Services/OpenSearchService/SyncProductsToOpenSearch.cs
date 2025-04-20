@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Minimart_Api.Data;
 using Minimart_Api.Services.OpenSearchService;
-using Minimart_Api.TempModels;
 
 public class SyncProductsToOpenSearch : BackgroundService
 {
@@ -25,7 +25,7 @@ public class SyncProductsToOpenSearch : BackgroundService
                     var openSearchService = scope.ServiceProvider.GetRequiredService<IOpenSearchService>();
                     var dbContext = scope.ServiceProvider.GetRequiredService<MinimartDBContext>();
 
-                    var products = await dbContext.TProducts.ToListAsync();
+                    var products = await dbContext.Products.ToListAsync();
                     foreach (var product in products)
                     {
                         await openSearchService.IndexProductAsync(product);
