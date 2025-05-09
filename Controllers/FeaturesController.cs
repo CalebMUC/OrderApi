@@ -4,23 +4,29 @@ using Minimart_Api.Services.Features;
 
 namespace Minimart_Api.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class FeaturesController : ControllerBase
     {
         private readonly IFeatureService _featureService;
         public FeaturesController(IFeatureService featureService) { 
             _featureService = featureService;
         }
+
+        [HttpPost("TestAdd")]
+        public IActionResult TestAdd([FromBody] string testInput)
+        {
+            return Ok($"Received: {testInput}");
+        }
+
         [HttpPost("AddFeatures")]
-        public async Task<IActionResult> AddFeaturesToSubcategory([FromBody] AddFeaturesDTO request)
+        public async Task<IActionResult> AddFeatures([FromBody] FeatureDTO request)
         {
             try
             {
-                if (request.Features == null || !request.Features.Any())
-                {
-                    return BadRequest("No features provided.");
-                }
 
                 var Response = await _featureService.AddFeatures(request);
+
                 return Ok(Response);
             }
             catch (Exception ex)
@@ -29,19 +35,19 @@ namespace Minimart_Api.Controllers
             }
         }
 
-        //[HttpGet("GetAllFeatures")]
-        //public async Task<IActionResult> GetAllFeatures()
-        //{
-        //    try
-        //    {
-        //        var response = await _featureService.GetAllFeatures();
-        //        return Ok(response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
+        [HttpGet("GetAllFeatures")]
+        public async Task<IActionResult> GetAllFeatures()
+        {
+            try
+            {
+                var response = await _featureService.GetAllFeatures();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         // GET: api/SubcategoryFeature/GetFeatures/{subcategoryId}
         [HttpPost("GetFeatures")]

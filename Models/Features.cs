@@ -18,11 +18,14 @@ namespace Minimart_Api.Models
 
         [Required]
         [Column(TypeName = "int")]
-        public int CategoryID { get; set; }
+        public int? CategoryID { get; set; }
 
         [Required]
         [Column(TypeName = "int")]
-        public int SubCategoryID { get; set; } 
+        public int? SubCategoryID { get; set; }
+
+        [Column(TypeName = "int")]
+        public int? SubSubCategoryID { get; set; }
 
         // Optionally add navigation properties if needed:
         public virtual Categories Category { get; set; }

@@ -29,26 +29,26 @@ namespace Minimart_Api.Controllers
         }
 
 
-        [HttpPost("FetchAllProducts")]
-        //public async Task<IActionResult> LoadMainImages()
-        public async Task<IActionResult> FetchAllProducts()
-        {
+        //[HttpPost("FetchAllProducts")]
+        ////public async Task<IActionResult> LoadMainImages()
+        //public async Task<IActionResult> FetchAllProducts()
+        //{
 
 
-            try
-            {
-                var Response = await _productService.FetchAllProducts();
+        //    try
+        //    {
+        //        var Response = await _productService.FetchAllProducts();
 
-                return Ok(Response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+        //        return Ok(Response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
 
 
 
-        }
+        //}
 
         [HttpPost("AddProducts")]
         public async Task<IActionResult> AddProducts([FromBody] AddProducts products)

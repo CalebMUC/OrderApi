@@ -5,7 +5,9 @@ namespace Minimart_Api.Repositories.Features
 {
     public interface IFeatureRepo
     {
-        Task<Status> AddFeatures(AddFeaturesDTO addFeatures);
+        Task<Status> AddFeatures(FeatureDTO addFeatures);
+
+        Task<IEnumerable<AddFeaturesDTO>> GetAllFeatures();
 
         Task<List<FeatureDTO>> GetFeatures(FeatureRequestDTO feature);
 

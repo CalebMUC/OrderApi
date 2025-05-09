@@ -5,6 +5,8 @@ using Minimart_Api.Services.Address;
 
 namespace Minimart_Api.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class AddressController : Controller
     {
         private readonly IAddress _addressService;

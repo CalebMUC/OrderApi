@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 
 namespace Minimart_Api.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class CartController : Controller
     {
         private readonly ICartService _cartService;

@@ -5,6 +5,114 @@
     "version": "v1"
   },
   "paths": {
+    "/api/Address/{id}": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Address/GetAddressesByUserId/{userId}": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Address/AddAddress": {
+      "post": {
+        "tags": [
+          "Address"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Address/EditAddress": {
+      "post": {
+        "tags": [
+          "Address"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditAddressDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditAddressDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditAddressDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Authentication/Register": {
       "post": {
         "tags": [
@@ -67,30 +175,290 @@
         }
       }
     },
-    "/api/Category/AddFeatures": {
+    "/api/Authentication/SendResetCode": {
       "post": {
         "tags": [
-          "Category"
+          "Authentication"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddFeaturesDTO"
+                "$ref": "#/components/schemas/PasswordResetDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddFeaturesDTO"
+                "$ref": "#/components/schemas/PasswordResetDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/AddFeaturesDTO"
+                "$ref": "#/components/schemas/PasswordResetDto"
               }
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Authentication/VerifyEmailValidationCode": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailVerificationCodeDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailVerificationCodeDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailVerificationCodeDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Authentication/VerifyResetCode": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyResetCodeDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyResetCodeDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyResetCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Authentication/ResetPassword": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Authentication/SendEmailVerificationCode": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailVerificationDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailVerificationDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailVerificationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Cart/AddCartItems": {
+      "post": {
+        "tags": [
+          "Cart"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToCart"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToCart"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToCart"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Cart/DeleteCartItems": {
+      "post": {
+        "tags": [
+          "Cart"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CartItemsDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CartItemsDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CartItemsDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Cart/SaveItems": {
+      "post": {
+        "tags": [
+          "Cart"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveItemsDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveItemsDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveItemsDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Cart/GetCartItems": {
+      "post": {
+        "tags": [
+          "Cart"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetCartItems"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetCartItems"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetCartItems"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Cart/GetSavedItems": {
+      "get": {
+        "tags": [
+          "Cart"
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -228,18 +596,61 @@
         }
       }
     },
-    "/api/Category/GetSearchProducts/{subcategoryId}": {
-      "get": {
+    "/api/Category/GetSubCategory": {
+      "post": {
         "tags": [
           "Category"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubCategory"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubCategory"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubCategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Deliveries/counties": {
+      "get": {
+        "tags": [
+          "Deliveries"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Deliveries/towns": {
+      "get": {
+        "tags": [
+          "Deliveries"
         ],
         "parameters": [
           {
-            "name": "subcategoryId",
-            "in": "path",
-            "required": true,
+            "name": "countyId",
+            "in": "query",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
             }
           }
         ],
@@ -250,73 +661,21 @@
         }
       }
     },
-    "/api/Category/GetFilteredProducts": {
-      "post": {
-        "tags": [
-          "Category"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FilteredProductsDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FilteredProductsDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/FilteredProductsDTO"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Category/GetAllFeatures": {
+    "/api/Deliveries/deliveryStations": {
       "get": {
         "tags": [
-          "Category"
+          "Deliveries"
         ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Category/GetFeatures": {
-      "post": {
-        "tags": [
-          "Category"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FeatureRequestDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FeatureRequestDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/FeatureRequestDTO"
-              }
+        "parameters": [
+          {
+            "name": "townId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -357,547 +716,6 @@
         }
       }
     },
-    "/api/Entities/AddCartItems": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddToCart"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddToCart"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddToCart"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/DeleteCartItems": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CartItemsDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CartItemsDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CartItemsDTO"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/SaveItems": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SaveItemsDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SaveItemsDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/SaveItemsDTO"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/GetCartItems": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GetCartItems"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GetCartItems"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/GetCartItems"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/GetSavedItems": {
-      "get": {
-        "tags": [
-          "Entities"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/GetProductsByCategory": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SubCategory"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SubCategory"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/SubCategory"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/GetDashBoardCategories": {
-      "get": {
-        "tags": [
-          "Entities"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/SubCategoryID": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SubCategory"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SubCategory"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/SubCategory"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/GetProductFeatures": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddToCart"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddToCart"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddToCart"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/LoadProductImages": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProductDetails"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProductDetails"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProductDetails"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/GetSearchItem": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddToCart"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddToCart"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddToCart"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/FetchAllProducts": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/AddProducts": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddProducts"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddProducts"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddProducts"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/counties": {
-      "get": {
-        "tags": [
-          "Entities"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/towns": {
-      "get": {
-        "tags": [
-          "Entities"
-        ],
-        "parameters": [
-          {
-            "name": "countyId",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/deliveryStations": {
-      "get": {
-        "tags": [
-          "Entities"
-        ],
-        "parameters": [
-          {
-            "name": "townId",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/{id}": {
-      "get": {
-        "tags": [
-          "Entities"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/GetAddressesByUserId/{userId}": {
-      "get": {
-        "tags": [
-          "Entities"
-        ],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/AddAddress": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddressDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddressDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddressDTO"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/EditAddress": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EditAddressDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EditAddressDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/EditAddressDTO"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/Register": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Register"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Register"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Register"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
     "/api/Entities/RefreshToken": {
       "post": {
         "tags": [
@@ -918,37 +736,6 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/RefreshTokenRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Entities/AddToCart": {
-      "post": {
-        "tags": [
-          "Entities"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddToCart"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddToCart"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddToCart"
               }
             }
           }
@@ -1004,50 +791,162 @@
         }
       }
     },
-    "/api/Merchant/GetMerchants": {
-      "get": {
-        "tags": [
-          "Merchant"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Merchant/GetBusinessTypes": {
-      "get": {
-        "tags": [
-          "Merchant"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Merchant/AddMerchants": {
+    "/api/Feature/TestAdd": {
       "post": {
         "tags": [
-          "Merchant"
+          "Feature"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MerchantDTO"
+                "type": "string"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/MerchantDTO"
+                "type": "string"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/MerchantDTO"
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Feature/AddFeaturesNew": {
+      "post": {
+        "tags": [
+          "Feature"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeatureDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeatureDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeatureDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Features/TestAdd": {
+      "post": {
+        "tags": [
+          "Features"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Features/AddFeatures": {
+      "post": {
+        "tags": [
+          "Features"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeatureDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeatureDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeatureDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Features/GetAllFeatures": {
+      "get": {
+        "tags": [
+          "Features"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Features/GetFeatures": {
+      "post": {
+        "tags": [
+          "Features"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeatureRequestDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeatureRequestDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeatureRequestDTO"
               }
             }
           }
@@ -1271,6 +1170,99 @@
         }
       }
     },
+    "/api/Product/AddProducts": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProducts"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProducts"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProducts"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Product/LoadProductImages": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductDetails"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductDetails"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductDetails"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Product/GetProductsByCategory": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubCategory"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubCategory"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubCategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Product/EditProducts": {
       "post": {
         "tags": [
@@ -1453,6 +1445,67 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Search/GetSearchProducts/{subcategoryId}": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "subcategoryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Search/GetFilteredProducts": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilteredProductsDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilteredProductsDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilteredProductsDTO"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success"
@@ -1663,27 +1716,6 @@
   },
   "components": {
     "schemas": {
-      "AddFeaturesDTO": {
-        "type": "object",
-        "properties": {
-          "categoryID": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "subCategoryID": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "features": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/FeatureDTO"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "AddProducts": {
         "type": "object",
         "properties": {
@@ -1707,15 +1739,7 @@
             "type": "string",
             "nullable": true
           },
-          "category": {
-            "type": "string",
-            "nullable": true
-          },
-          "subcategory": {
-            "type": "string",
-            "nullable": true
-          },
-          "subcategoryName": {
+          "categoryName": {
             "type": "string",
             "nullable": true
           },
@@ -1746,6 +1770,9 @@
           "quantity": {
             "type": "integer",
             "format": "int32"
+          },
+          "inStock": {
+            "type": "boolean"
           },
           "discount": {
             "type": "number",
@@ -1808,8 +1835,7 @@
             "nullable": true
           },
           "isDefault": {
-            "type": "integer",
-            "format": "int32"
+            "type": "boolean"
           },
           "postalCode": {
             "type": "string",
@@ -1950,10 +1976,33 @@
             "nullable": true
           },
           "isDefault": {
-            "type": "integer",
-            "format": "int32"
+            "type": "boolean"
           },
           "postalCode": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmailVerificationCodeDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmailVerificationDto": {
+        "type": "object",
+        "properties": {
+          "email": {
             "type": "string",
             "nullable": true
           }
@@ -1979,11 +2028,18 @@
           },
           "categoryId": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "subCategoryId": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
+          },
+          "subSubCategoryId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1996,6 +2052,10 @@
             "format": "int32"
           },
           "subCategoryID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "subSubCategoryID": {
             "type": "integer",
             "format": "int32"
           }
@@ -2046,52 +2106,6 @@
         },
         "additionalProperties": false
       },
-      "MerchantDTO": {
-        "type": "object",
-        "properties": {
-          "merchantName": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "businessType": {
-            "type": "string",
-            "nullable": true
-          },
-          "category": {
-            "type": "string",
-            "nullable": true
-          },
-          "county": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "town": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "extraInformation": {
-            "type": "string",
-            "nullable": true
-          },
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "phonenumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "createdBy": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "MerchantRequestDto": {
         "type": "object",
         "properties": {
@@ -2111,11 +2125,6 @@
         "properties": {
           "orderID": {
             "type": "string",
-            "nullable": true
-          },
-          "merchantId": {
-            "type": "integer",
-            "format": "int32",
             "nullable": true
           },
           "userID": {
@@ -2274,6 +2283,16 @@
         },
         "additionalProperties": false
       },
+      "PasswordResetDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "PaymentDetailsDto": {
         "type": "object",
         "properties": {
@@ -2384,6 +2403,20 @@
             "additionalProperties": {
               "type": "string"
             },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "newPassword": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -2551,6 +2584,20 @@
             "nullable": true
           },
           "password": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "VerifyResetCodeDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
             "type": "string",
             "nullable": true
           }

@@ -43,5 +43,86 @@ namespace Minimart_Api.Controllers
             }
 
         }
+
+        [HttpPost("SendResetCode")]
+        public async Task<IActionResult> SendResetCode([FromBody] PasswordResetDto passwordReset)
+        {
+            try
+            {
+                var response = await _authentication.SendResetCode(passwordReset);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpPost("VerifyEmailValidationCode")]
+        public async Task<IActionResult> VerifyEmailValidationCode([FromBody] EmailVerificationCodeDTO verificationCodeDTO)
+        {
+            try
+            {
+                var response = await _authentication.VerifyEmailValidationCode(verificationCodeDTO);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpPost("VerifyResetCode")]
+        public async Task<IActionResult> VerifyResetCode([FromBody] VerifyResetCodeDto verifyResetCode)
+        {
+            try
+            {
+                var response = await _authentication.VerifyResetCode(verifyResetCode);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPassword)
+        {
+            try
+            {
+                var response = await _authentication.ResetPassword(resetPassword);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+
+        [HttpPost("SendEmailVerificationCode")]
+        public async Task<IActionResult> SendEmailVerificationCode([FromBody] EmailVerificationDto emailVerification)
+        {
+            try
+            {
+                var response = await _authentication.SendEmailVerificationCode(emailVerification.Email);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
     }
 }
