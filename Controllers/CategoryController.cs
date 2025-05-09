@@ -116,8 +116,8 @@ namespace Minimart_Api.Controllers
             }
         }
 
-        [HttpPost("SubCategoryID")]
-        public async Task<IActionResult> SubCategoryID([FromBody] SubCategory categoryName)
+        [HttpPost("GetSubCategory")]
+        public async Task<IActionResult> GetSubCategory([FromBody] SubCategory categoryName)
         {
             //var jsonSrting = JsonConvert.SerializeObject(cartitems);
 

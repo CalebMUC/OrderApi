@@ -1,6 +1,7 @@
 ﻿using Minimart_Api.DTOS.Authorization;
 using Minimart_Api.Repositories.Authorization;
 using Minimart_Api.Models;
+using Minimart_Api.DTOS.General;
 
 namespace Minimart_Api.Services
 {
@@ -21,6 +22,30 @@ namespace Minimart_Api.Services
         {
 
             return await _authRepository.Login(userLogin);
+        }
+
+        public async Task<Status> SendResetCode(PasswordResetDto passwordReset) {
+
+            return await _authRepository.SendResetCode(passwordReset);
+        }
+        public async Task<Status> VerifyResetCode(VerifyResetCodeDto verifyResetCode) {
+
+            return await _authRepository.VerifyResetCode(verifyResetCode);
+        }
+
+        public async Task<Status> VerifyEmailValidationCode(EmailVerificationCodeDTO verificationCodeDTO)
+        {
+
+            return await _authRepository.VerifyEmailValidationCode(verificationCodeDTO);
+        }
+        public async Task<Status> ResetPassword(ResetPasswordDto resetPassword) {
+
+            return await _authRepository.ResetPassword(resetPassword);
+        }
+
+        public async Task<Status> SendEmailVerificationCode(string email) {
+
+            return await _authRepository.SendEmailVerificationCode(email);
         }
     }
 }

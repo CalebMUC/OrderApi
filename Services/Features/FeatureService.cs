@@ -10,7 +10,7 @@ namespace Minimart_Api.Services.Features
         public FeatureService(IFeatureRepo featureRepo) {
             _featureRepo = featureRepo;
         }
-        public async Task<Status> AddFeatures(AddFeaturesDTO addFeatures)
+        public async Task<Status> AddFeatures(FeatureDTO addFeatures)
         {
             return await _featureRepo.AddFeatures(addFeatures);
         }
@@ -20,9 +20,9 @@ namespace Minimart_Api.Services.Features
             return await _featureRepo.GetFeatures(feature);
         }
 
-        //public async Task<IEnumerable<Models.Features>> GetAllFeatures()
-        //{
-        //    return await _featureRepo.GetAllFeatures();
-        //}
+        public async Task<IEnumerable<AddFeaturesDTO>> GetAllFeatures()
+        {
+            return await _featureRepo.GetAllFeatures();
+        }
     }
 }

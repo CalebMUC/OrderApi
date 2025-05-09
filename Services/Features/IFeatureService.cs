@@ -6,10 +6,10 @@ namespace Minimart_Api.Services.Features
 {
     public interface IFeatureService
     {
-        Task<Status> AddFeatures(AddFeaturesDTO addFeatures);
+        Task<Status> AddFeatures(FeatureDTO addFeatures);
 
         Task<List<FeatureDTO>> GetFeatures(FeatureRequestDTO feature);
 
-        //Task<IEnumerable<Models.Features>> GetAllFeatures();
+        Task<IEnumerable<AddFeaturesDTO>> GetAllFeatures();
     }
 }

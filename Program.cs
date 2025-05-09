@@ -52,6 +52,10 @@ using Minimart_Api.Services.OrderService.OrderService;
 using Minimart_Api.Services.SearchService.SearchService;
 using Minimart_Api.Services.ReportService.ReportService;
 using Minimart_Api.Data;
+using StackExchange.Redis;
+using Minimart_Api.Services.EmailServices;
+using Minimart_Api.Services.Features;
+using Minimart_Api.Repositories.Features;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -79,6 +83,9 @@ builder.Services.AddScoped<ISearchRepo,SearchRepo>();
 builder.Services.AddScoped<IReportService, ReportServices>();
 builder.Services.AddScoped<IReportRepo, ReportRepo>();
 
+builder.Services.AddScoped<IFeatureService, FeatureService>();
+builder.Services.AddScoped<IFeatureRepo, FeatureRepo>();
+
 builder.Services.AddScoped<IAuthentication, AuthenticationService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
@@ -104,6 +111,8 @@ builder.Services.AddScoped<INotfication, NotificationService>();
 builder.Services.AddScoped<CoreLibraries>();
 builder.Services.AddScoped<OrderMapper>();
 
+builder.Services.AddScoped<BrevoEmailService>();
+
 builder.Services.AddSingleton<IRabbitMqConnection>(new RabbitMqConnection());
 //configure Serilog
 
@@ -126,6 +135,15 @@ builder.Services.AddDbContext<MinimartDBContext>(options =>
 },
 ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
 
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp => {
+    var configuration = builder.Configuration.GetConnectionString("redis");
+    return ConnectionMultiplexer.Connect(configuration);
+});
+builder.Services.AddScoped(provider =>
+{
+    var redis = provider.GetRequiredService<IConnectionMultiplexer>();
+    return redis.GetDatabase();
+});
 builder.Services.AddScoped<MpesaSandBox>();
 
 //builder.Services.AddHostedService<SyncProductsToOpenSearch>();

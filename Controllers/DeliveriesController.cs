@@ -3,6 +3,8 @@ using Minimart_Api.Services.Deliveries;
 
 namespace Minimart_Api.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class DeliveriesController : Controller
     {
         private readonly IDeliveryService _deliveryService;

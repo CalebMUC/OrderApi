@@ -53,6 +53,10 @@ namespace Minimart_Api.Models
 
         public DateTime? RefreshTokenExpiryTime { get; set; }
 
+        public bool isEmailVerified { get; set; }
+
+       
+
         // Navigation Properties
         public virtual Roles Role { get; set; }
         public virtual ICollection<Cart> Carts { get; set; }
