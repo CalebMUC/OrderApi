@@ -13,5 +13,7 @@ namespace Minimart_Api.Services.ProductService
         Task<Status> AddProducts(AddProducts product);
         Task<IEnumerable<CartResults>> GetProductsByCategory(int CategoryID);
         Task<IEnumerable<Products>> LoadProductImages(string ProductID);
+        
+
     }
 }

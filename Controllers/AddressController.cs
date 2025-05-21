@@ -57,29 +57,35 @@ namespace Minimart_Api.Controllers
         [HttpPost("AddAddress")]
         public async Task<IActionResult> AddAddress([FromBody] AddressDTO address)
         {
-            try
-            {
-                await _addressService.AddAddressAsync(address);
-
-                // Fetch the updated list of addresses for the user
-                var updatedAddresses = await _addressService.GetAddressesByUserIdAsync(address.UserID);
-
-                return Ok(new
-                {
-                    responseCode = 200,
-                    responseMessage = "Address added successfully.",
-                    addresses = updatedAddresses
-                });
-            }
-            catch (Exception ex)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(new
                 {
-                    responseCode = 500,
-                    responseMessage = "An error occurred while adding the address.",
-                    error = ex.Message
+                    responseCode = 400,
+                    responseMessage = "Invalid address data",
+                    errors = ModelState.Values.SelectMany(v => v.Errors)
                 });
             }
+
+            var result = await _addressService.AddAddressAsync(address);
+
+            if (!result.IsSuccess)
+            {
+                return BadRequest(new
+                {
+                    responseCode = 400,
+                    responseMessage = result.Message
+                });
+            }
+
+            var updatedAddresses = await _addressService.GetAddressesByUserIdAsync(address.UserID);
+
+            return Ok(new
+            {
+                responseCode = 200,
+                responseMessage = "Address added successfully",
+                addresses = updatedAddresses
+            });
         }
 
 

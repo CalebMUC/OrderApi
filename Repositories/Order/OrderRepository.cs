@@ -434,6 +434,9 @@ public class OrderRepository : IorderRepository
                 _dbContext.Orders.Add(newOrder);
                 await _dbContext.SaveChangesAsync();
 
+                //update CartItems To BoughtItems
+                await UpdateCartItems(orderDto.Products,newOrder.UserID);
+
                 await TrackOrderAsync(newOrder);
 
                 await PublishOrderEvent(newOrder);
@@ -488,7 +491,7 @@ public class OrderRepository : IorderRepository
 
                 var newPayment = new PaymentDetails
                 {
-                    PaymentID = paymentDetailDto.PaymentID,
+                    PaymentMethodID = paymentDetailDto.PaymentID,
                     TrxReference = stkPushResponse.CheckoutRequestID,
                     Amount = paymentDetailDto.Amount,
                     PaymentDate = DateTime.UtcNow,
@@ -559,6 +562,44 @@ public class OrderRepository : IorderRepository
             }
         }
     }
+
+
+    private async Task UpdateCartItems(List<OrderProductsDTO> products,int UserId)
+    {
+        // Get all product IDs from the order
+        var productIds = products.Select(p => p.ProductID).ToList();
+
+        // Fetch all relevant cart items in a single query
+        var cartItemsToUpdate = await _dbContext.CartItems
+                            .Where(c => productIds.Contains(c.ProductId) &&
+                                        c.Cart.UserId == UserId) // Assuming you have this relationship
+                            .Select( C => new CartItem { 
+                                CartItemId = C.CartItemId,
+                                CartId = C.CartId,
+                                ProductId =C.ProductId,
+                                Quantity = C.Quantity,
+                                CreatedOn = C.CreatedOn,
+                                UpdatedOn = C.UpdatedOn,
+                                IsBought = C.IsBought,
+                                IsActive = C.IsActive
+                            })
+                            .ToListAsync();
+
+        foreach (var cartItem in cartItemsToUpdate)
+        {
+            // Use a more efficient way to update without detaching/attaching
+            cartItem.IsActive = false;
+            cartItem.IsBought = true;
+            cartItem.UpdatedOn = DateTime.UtcNow;
+
+            // Mark as modified (only needed if you're not tracking these entities)
+            _dbContext.Entry(cartItem).State = EntityState.Modified;
+        }
+
+        // Single SaveChanges call for all updates
+        await _dbContext.SaveChangesAsync();
+    }
+
     //private async Task<STKPushResponse> InitiateMpesaSTKPush(PaymentDetailsDto paymentDetails)
     //{
     //    string token = string.Empty;

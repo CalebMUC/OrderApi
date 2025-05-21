@@ -24,14 +24,14 @@ namespace Minimart_Api.Services.Address
             return await _addressRepo.GetAddressesByUserIdAsync(userId);
         }
 
-        public async Task AddAddressAsync(AddressDTO address)
+        public async Task<OperationResult> AddAddressAsync(AddressDTO address)
         {
-            await _addressRepo.AddAddressAsync(address);
-            await _addressRepo.SaveChangesAsync();
+             return await _addressRepo.AddAddressAsync(address);
+            //await _addressRepo.SaveChangesAsync();
         }
-        public async Task EditAddressAsync(EditAddressDTO address)
+        public async Task<OperationResult> EditAddressAsync(EditAddressDTO address)
         {
-            await _addressRepo.EditAddressAsync(address);
+            return await _addressRepo.EditAddressAsync(address);
             //await _repository.SaveChangesAsync();
         }
     }

@@ -8,7 +8,7 @@
         public string ProductImage { get; set; } = string.Empty;
 
         public string ProductDescription { get; set; } = string.Empty;
-        public string KeyFeatures { get; set; } = string.Empty;
+        public string KeyFeatures { get; set; }
         public string Specification { get; set; } = string.Empty;
         public string Box { get; set; } = string.Empty;
         public int Quantity { get; set; }
