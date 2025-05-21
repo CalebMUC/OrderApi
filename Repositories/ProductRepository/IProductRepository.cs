@@ -11,7 +11,7 @@ namespace Minimart_Api.Repositories.ProductRepository
 
         Task<Status> EditProductsAsync(AddProducts products);
 
-        Task<IEnumerable<CartResults>> GetProductsByCategory(int CategoryID);
+        Task<IEnumerable<CartResults>> GetProductsByCategory(int? CategoryID);
 
 
         Task<IEnumerable<Products>> FetchAllProducts();
@@ -21,6 +21,13 @@ namespace Minimart_Api.Repositories.ProductRepository
      
 
         Task<IEnumerable<Products>> LoadProductImages(string ProductID);
+
+        Task<Products> GetByIdAsync(string productId);
+        Task<IEnumerable<Products>> GetProductsByIdsAsync(IEnumerable<string> productIds);
+        Task<IEnumerable<Products>> GetProductsByCategoryAsync(int categoryId, int limit, string excludeProductId);
+        Task<IEnumerable<Products>> GetProductsBySubCategoryAsync(int subCategoryId, int limit, string excludeProductId);
+        Task<IEnumerable<Products>> GetProductsByKeywordsAsync(IEnumerable<string> keywords, int limit, string excludeProductId);
+        Task<IEnumerable<Products>> GetPopularProductsAsync(int limit, string excludeProductId);
 
     }
 

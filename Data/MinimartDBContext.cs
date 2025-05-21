@@ -1,5 +1,6 @@
 ﻿ using Microsoft.EntityFrameworkCore;
 using Minimart_Api.Models;
+using StackExchange.Redis;
 
 namespace Minimart_Api.Data
 {
@@ -13,6 +14,7 @@ namespace Minimart_Api.Data
         public virtual DbSet<Addresses> Addresses { get; set; }
         public virtual DbSet<Cart> Cart { get; set; }
         public virtual DbSet<CartItem> CartItems { get; set; }
+        public virtual DbSet<SavedItems> SavedItems { get; set; }
         public virtual DbSet<Categories> Categories { get; set; }
         public virtual DbSet<Counties> Counties { get; set; }
         public virtual DbSet<DeliveryStations> DeliveryStations { get; set; }
@@ -45,7 +47,17 @@ namespace Minimart_Api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
 
-           // ─── Addresses ───────────────────────────────────────────────────
+            // In your DbContext's OnModelCreating
+            modelBuilder.Entity<Orders>()
+                .HasIndex(o => o.UserID);
+
+            modelBuilder.Entity<OrderProducts>()
+                .HasIndex(op => op.ProductID);
+
+            modelBuilder.Entity<Products>()
+                .HasIndex(p => p.CategoryId);
+
+            // ─── Addresses ───────────────────────────────────────────────────
 
 
             modelBuilder.Entity<Addresses>(entity =>
@@ -117,6 +129,16 @@ namespace Minimart_Api.Data
                 .WithMany(c=> c.Products)
                 .HasForeignKey(e=>e.CategoryId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Categories)
+              .WithMany(c => c.Products)
+              .HasForeignKey(e => e.SubCategoryId)
+              .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Categories)
+             .WithMany(c => c.Products)
+             .HasForeignKey(e => e.SubSubCategoryId)
+             .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasMany(e=> e.Reviews)
                 .WithOne(r=> r.Product)

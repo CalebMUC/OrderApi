@@ -19,6 +19,9 @@ namespace Minimart_Api.Models
         [Column(TypeName = "int")]
         public int Quantity { get; set; }
 
+        public bool IsActive { get; set; }
+        public bool IsBought { get; set; }
+
         [Column(TypeName = "datetime")]
         public DateTime? CreatedOn { get; set; }
 

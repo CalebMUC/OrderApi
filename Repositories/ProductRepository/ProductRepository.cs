@@ -4,6 +4,7 @@ using Minimart_Api.DTOS.Cart;
 using Minimart_Api.DTOS.General;
 using Minimart_Api.DTOS.Products;
 using Minimart_Api.Models;
+using OpenSearch.Client;
 
 namespace Minimart_Api.Repositories.ProductRepository
 {
@@ -69,18 +70,23 @@ namespace Minimart_Api.Repositories.ProductRepository
                 ProductName = product.productName,
                 ProductDescription = product.productDetails,
                 ProductType = "P",
-                CategoryId = product.CategoryID,
-                SearchKeyWord = product.SearchKeyWord,
+                CategoryId = product.categoryId,
+                CategoryName = product.categoryName,
+                SubCategoryId = product.subCategoryId,
+                SubCategoryName = product.subCategoryName,
+                SubSubCategoryId = product.subSubCategoryId != 0 ? product.subSubCategoryId : null,
+                SubSubCategoryName = product.subSubCategoryName,
+                SearchKeyWord = product.searchKeyWord,
                 Price = product.price,
-                InStock = product.InStock,
-                StockQuantity = product.Quantity,
+                InStock = product.inStock,
+                StockQuantity = product.quantity,
                 Discount = product.discount,
-                ImageUrl = product.productImage,
+                ImageUrl = product.imageUrls,
                 KeyFeatures = product.productFeatures,
                 Box = product.boxContent,
                 Specification = product.productSpecifications,
                 CreatedOn = DateTime.Now,
-                CreatedBy = product.CreatedBy,
+                CreatedBy = product.createdBy,
                 ImageType = "Image/Jpeg",
                 //Category = product.Category,
                 //SubCategoryName = product.subcategoryName
@@ -121,23 +127,23 @@ namespace Minimart_Api.Repositories.ProductRepository
             entity.ProductName = product.productName;
             entity.ProductDescription = product.productDetails;
             entity.ProductType = "P"; // Assuming "P" is the default product type
-            entity.CategoryId = product.CategoryID;
-            entity.SearchKeyWord = product.SearchKeyWord;
+            entity.CategoryId = product.categoryId;
+            entity.SearchKeyWord = product.searchKeyWord;
             entity.Price = product.price;
-            entity.StockQuantity = product.Quantity;
+            entity.StockQuantity = product.quantity;
             entity.Discount = product.discount;
-            entity.ImageUrl = product.productImage;
+            entity.ImageUrl = product.imageUrls;
             entity.KeyFeatures = product.productFeatures;
             entity.Box = product.boxContent;
             entity.Specification = product.productSpecifications;
             entity.CreatedOn = DateTime.Now; // Update the creation timestamp
-            entity.CreatedBy = product.CreatedBy;
+            entity.CreatedBy = product.createdBy;
             entity.ImageType = "Image/Jpeg"; // Assuming "Image/Jpeg" is the default image type
-            entity.CategoryName = product.CategoryName;
-            entity.InStock = product.InStock;
+            entity.CategoryName = product.categoryName;
+            entity.InStock = product.inStock;
             //entity.SubCategoryName = product.subcategoryName;
             entity.UpdatedOn = DateTime.Now;
-            entity.UpdatedBy = product.CreatedBy;
+            entity.UpdatedBy = product.createdBy;
         }
 
 
@@ -155,18 +161,92 @@ namespace Minimart_Api.Repositories.ProductRepository
         }
 
 
-        public async Task<IEnumerable<CartResults>> GetProductsByCategory(int categoryId)
+        public async Task<IEnumerable<CartResults>> GetProductsByCategory(int? categoryId)
         {
             return await _dbContext.Products
-                .Where(tp => tp.CategoryId == categoryId)
+                .Where(tp => tp.SubCategoryId == categoryId)
                 .Select(tp => new CartResults
                 {
                     productID = tp.ProductId,
                     ProductName = tp.ProductName,
-                    ProductImage = tp.ImageUrl,
+                    ProductImage = tp.ImageUrl ,
                     Instock = tp.StockQuantity,
                     price = tp.Price,
                 })
+                .ToListAsync();
+        }
+
+        //Similarproducts
+
+        public async Task<Products> GetByIdAsync(string productId)
+        {
+            return await _dbContext.Products
+                .Include(p => p.OrderItems)
+                .FirstOrDefaultAsync(p => p.ProductId == productId);
+        }
+
+        public async Task<IEnumerable<Products>> GetProductsByCategoryAsync(int categoryId, int limit, string excludeProductId)
+        {
+            return await _dbContext.Products
+                .Where(p => p.CategoryId == categoryId &&
+                           p.ProductId != excludeProductId &&
+                           p.InStock)
+                .Include(p => p.OrderItems)
+                .OrderByDescending(p => p.OrderItems.Count)
+                .Take(limit)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Products>> GetProductsBySubCategoryAsync(int subCategoryId, int limit, string excludeProductId)
+        {
+            return await _dbContext.Products
+                .Where(p => p.SubCategoryId == subCategoryId &&
+                           p.ProductId != excludeProductId &&
+                           p.InStock)
+                .Include(p => p.OrderItems)
+                .OrderByDescending(p => p.OrderItems.Count)
+                .Take(limit)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Products>> GetProductsByKeywordsAsync(IEnumerable<string> keywords, int limit, string excludeProductId)
+        {
+            var query = _dbContext.Products
+                .Where(p => p.ProductId != excludeProductId && p.InStock)
+                .Include(p => p.OrderItems);
+
+            var result = new List<Products>();
+
+            foreach (var keyword in keywords.Where(k => k.Length > 3))
+            {
+                var matches = await query
+                    .Where(p => p.ProductName.Contains(keyword) || p.SearchKeyWord.Contains(keyword))
+                    .OrderByDescending(p => p.OrderItems.Count)
+                    .Take(limit)
+                    .ToListAsync();
+
+                result.AddRange(matches);
+                if (result.Count >= limit) break;
+            }
+
+            return result.Distinct().Take(limit);
+        }
+
+        public async Task<IEnumerable<Products>> GetProductsByIdsAsync(IEnumerable<string> productIds)
+        {
+            return await _dbContext.Products
+                .Where(p => productIds.Contains(p.ProductId))
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Products>> GetPopularProductsAsync(int limit, string excludeProductId)
+        {
+            return await _dbContext.Products
+                .Where(p => p.ProductId != excludeProductId && p.InStock)
+                .Include(p => p.OrderItems)
+                .OrderByDescending(p => p.OrderItems.Count)
+                .ThenBy(p => EF.Functions.Random())
+                .Take(limit)
                 .ToListAsync();
         }
     }

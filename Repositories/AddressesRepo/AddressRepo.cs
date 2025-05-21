@@ -3,119 +3,154 @@ using Minimart_Api.Data;
 using Minimart_Api.DTOS.Address;
 using Minimart_Api.DTOS.Notification;
 using Minimart_Api.Models;
+using Minimart_Api.Repositories.AddressesRepo;
 
-namespace Minimart_Api.Repositories.AddressesRepo
+public class AddressRepo : IAddressRepo
 {
-    public class AddressRepo
+    private readonly MinimartDBContext _dbContext;
+    private readonly ILogger<AddressRepo> _logger;
+
+    public AddressRepo(MinimartDBContext dBContext, ILogger<AddressRepo> logger)
     {
+        _dbContext = dBContext;
+        _logger = logger;
+    }
 
-        private readonly MinimartDBContext _dbContext;
-        private readonly ILogger<Categories> _logger;
-
-        public AddressRepo(MinimartDBContext dBContext, ILogger<Categories> logger)
+    public async Task<OperationResult> AddAddressAsync(AddressDTO address)
+    {
+        using var transaction = await _dbContext.Database.BeginTransactionAsync();
+        try
         {
-            _dbContext = dBContext;
-            _logger = logger;
-        }
-        public async Task<Addresses> GetAddressByIdAsync(int addressId)
-        {
-            return await _dbContext.Addresses.FindAsync(addressId);
-        }
-
-        public async Task<IEnumerable<GetAddressDTO>> GetAddressesByUserIdAsync(int userId)
-        {
-            var addresses = await _dbContext.Addresses
-                                             .Where(a => a.UserID == userId)
-                                             .ToListAsync();
-
-            // List to hold the addresses with the correct County and Town IDs
-            var addressDTOs = new List<GetAddressDTO>();
-
-            foreach (var address in addresses)
-            {
-                // Fetch the County ID based on the county name
-                var county = await _dbContext.Counties
-                                             .FirstOrDefaultAsync(c => c.CountyName == address.County);
-                // Fetch the Town ID based on the town name
-                var town = await _dbContext.Towns
-                                           .FirstOrDefaultAsync(t => t.TownName == address.Town);
-
-                // Check if both county and town were found
-                if (county != null && town != null)
-
-                {
-                    // Create an AddressDTO or update address with CountyID and TownID
-                    addressDTOs.Add(new GetAddressDTO
-                    {
-                        AddressID = address.AddressID,
-                        UserID = address.UserID,
-                        Name = address.Name,
-                        PhoneNumber = address.Phonenumber,
-                        PostalAddress = address.PostalAddress,
-                        CountyId = county.CountyId, // Use CountyID
-                        TownId = town.TownId,       // Use TownID
-                        PostalCode = address.PostalCode,
-                        County = county.CountyName,
-                        Town = county.CountyName,
-                        ExtraInformation = address.ExtraInformation,
-                        isDefault = address.isDefault,
-                    });
-                }
-            }
-
-            return addressDTOs;
-        }
-
-
-        public async Task AddAddressAsync(AddressDTO address)
-        {
-            var NewAddress = new Addresses
-            {
-                UserID = address.UserID,
-                Name = address.Name,
-                Phonenumber = address.Phonenumber,
-                PostalAddress = address.PostalAddress,
-                County = address.County,
-                Town = address.Town,
-                PostalCode = address.PostalCode,
-                ExtraInformation = address.ExtraInformation,
-                isDefault = address.isDefault,
-            };
-            await _dbContext.Addresses.AddAsync(NewAddress);
-        }
-        public async Task EditAddressAsync(EditAddressDTO address)
-        {
-            // Find the existing address by ID
-            var existingAddress = await _dbContext.Addresses.FirstOrDefaultAsync(a => a.AddressID == address.AddressID);
-
+            // Handle default address logic
             if (address.isDefault)
             {
-                // Find and reset any previous default address for the user
-                var defaultAddress = await _dbContext.Addresses
-                    .FirstOrDefaultAsync(a => a.UserID == address.UserID && a.isDefault == true && a.AddressID != address.AddressID);
-
-                if (defaultAddress != null)
-                {
-                    defaultAddress.isDefault = true;
-                    _dbContext.Addresses.Update(defaultAddress);
-                }
+                await ResetExistingDefaultAddress(address.UserID);
             }
 
-            // Update the existing address fields with new data
-            //existingAddress.UserID = address.UserID;
-            existingAddress.Name = address.Name;
+            var newAddress = new Addresses
+            {
+                UserID = address.UserID,
+                Name = address.Name?.Trim(),
+                Phonenumber = address.Phonenumber,
+                PostalAddress = address.PostalAddress.Trim(),
+                County = address.County.Trim(),
+                Town = address.Town.Trim(),
+                PostalCode = address.PostalCode?.Trim(),
+                ExtraInformation = address.ExtraInformation?.Trim(),
+                isDefault = address.isDefault,
+                CreatedOn = DateTime.UtcNow,
+                LastUpdatedOn = DateTime.UtcNow
+            };
+
+            await _dbContext.Addresses.AddAsync(newAddress);
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return OperationResult.Success(newAddress.AddressID);
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            _logger.LogError(ex, "Error adding address to database");
+            return OperationResult.Failure("Database error while adding address");
+        }
+    }
+
+    public async Task<OperationResult> EditAddressAsync(EditAddressDTO address)
+    {
+        using var transaction = await _dbContext.Database.BeginTransactionAsync();
+        try
+        {
+            var existingAddress = await _dbContext.Addresses.FirstOrDefaultAsync(a => a.AddressID == address.AddressID);
+
+
+            if (existingAddress == null)
+                return OperationResult.Failure("Address not found");
+
+            // Handle default address logic
+            if (address.isDefault)
+            {
+                await ResetExistingDefaultAddress(address.UserID, address.AddressID);
+            }
+
+            // Update fields
+            existingAddress.Name = address.Name?.Trim();
             existingAddress.Phonenumber = address.Phonenumber;
-            existingAddress.PostalAddress = address.PostalAddress;
-            existingAddress.County = address.County;
-            existingAddress.Town = address.Town;
-            existingAddress.PostalCode = address.PostalCode;
-            existingAddress.ExtraInformation = address.ExtraInformation;
+            existingAddress.PostalAddress = address.PostalAddress.Trim();
+            existingAddress.County = address.County.Trim();
+            existingAddress.Town = address.Town.Trim();
+            existingAddress.PostalCode = address.PostalCode?.Trim();
+            existingAddress.ExtraInformation = address.ExtraInformation?.Trim();
             existingAddress.isDefault = address.isDefault;
+            existingAddress.LastUpdatedOn = DateTime.UtcNow;
 
             _dbContext.Addresses.Update(existingAddress);
-
-            // Save the changes to the database
             await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return OperationResult.Success("Address updated successfully");
         }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            _logger.LogError(ex, "Error updating address");
+            return OperationResult.Failure("Database error while updating address");
+        }
+    }
+
+    private async Task ResetExistingDefaultAddress(int userId, int? excludeAddressId = null)
+    {
+        var query = _dbContext.Addresses
+            .Where(a => a.UserID == userId && a.isDefault);
+
+        if (excludeAddressId.HasValue)
+        {
+            query = query.Where(a => a.AddressID != excludeAddressId.Value);
+        }
+
+        var defaultAddresses = await query.ToListAsync();
+        foreach (var addr in defaultAddresses)
+        {
+            addr.isDefault = false;
+        }
+
+        if (defaultAddresses.Any())
+        {
+            _dbContext.Addresses.UpdateRange(defaultAddresses);
+        }
+    }
+
+    public async Task<Addresses> GetAddressByIdAsync(int addressId)
+    {
+        return await _dbContext.Addresses.FindAsync(addressId);
+    }
+
+    public async Task<IEnumerable<GetAddressDTO>> GetAddressesByUserIdAsync(int userId)
+    {
+        return await _dbContext.Addresses
+            .Where(a => a.UserID == userId)
+            .Join(_dbContext.Counties,
+                address => address.County,       // Join on County name from Address
+                county => county.CountyName,      // Join on CountyName from County
+                (address, county) => new { Address = address, County = county })
+            .Join(_dbContext.Towns,
+                combined => combined.Address.Town, // Join on Town name from Address
+                town => town.TownName,             // Join on TownName from Town
+                (combined, town) => new GetAddressDTO
+                {
+                    AddressID = combined.Address.AddressID,
+                    UserID = combined.Address.UserID,
+                    Name = combined.Address.Name,
+                    PhoneNumber = combined.Address.Phonenumber,
+                    PostalAddress = combined.Address.PostalAddress,
+                    County = combined.Address.County,
+                    CountyId = combined.County.CountyId,  // From County table
+                    Town = combined.Address.Town,
+                    TownId = town.TownId,                 // From Town table
+                    PostalCode = combined.Address.PostalCode,
+                    ExtraInformation = combined.Address.ExtraInformation,
+                    isDefault = combined.Address.isDefault
+                })
+            .ToListAsync();
     }
 }

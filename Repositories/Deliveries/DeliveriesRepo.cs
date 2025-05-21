@@ -4,7 +4,7 @@ using Minimart_Api.Models;
 
 namespace Minimart_Api.Repositories.Deliveries
 {
-    public class DeliveriesRepo
+    public class DeliveriesRepo:IDeliveriesRepo
     {
         private readonly MinimartDBContext _dbContext;
         private readonly ILogger<Categories> _logger;

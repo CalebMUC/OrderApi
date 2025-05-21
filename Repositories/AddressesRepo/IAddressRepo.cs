@@ -9,9 +9,9 @@ namespace Minimart_Api.Repositories.AddressesRepo
     {
         Task<Addresses> GetAddressByIdAsync(int addressId);
         Task<IEnumerable<GetAddressDTO>> GetAddressesByUserIdAsync(int userId);
-        Task AddAddressAsync(AddressDTO address);
-        Task EditAddressAsync(EditAddressDTO address);
+        Task<OperationResult> AddAddressAsync(AddressDTO address);
+        Task<OperationResult> EditAddressAsync(EditAddressDTO address);
 
-        Task SaveChangesAsync();
+        //Task SaveChangesAsync();
     }
 }

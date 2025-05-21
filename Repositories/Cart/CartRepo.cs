@@ -5,10 +5,11 @@ using Minimart_Api.DTOS.Cart;
 using Minimart_Api.DTOS.General;
 using Minimart_Api.DTOS.Products;
 using Minimart_Api.Models;
+using OpenSearch.Client;
 
 namespace Minimart_Api.Repositories.Cart
 {
-    public class CartRepo
+    public class CartRepo : ICartRepo
     {
         private readonly MinimartDBContext _dbContext;
         private readonly ILogger<Categories> _logger;
@@ -21,7 +22,7 @@ namespace Minimart_Api.Repositories.Cart
 
         public async Task<IEnumerable<CartResults>> GetCartItems(int userId)
         {
-            return await _dbContext.CartItems.Where(ci => ci.Cart.UserId == userId)
+            return await _dbContext.CartItems.Where(ci => ci.Cart.UserId == userId && ci.IsActive == true)
                 .Select(ci => new CartResults
                 {
                     productID = ci.Products.ProductId,
@@ -42,7 +43,30 @@ namespace Minimart_Api.Repositories.Cart
         }
 
 
-        public async Task<Status> AddToCartEF(string cartItemsJson)
+        public async Task<IEnumerable<CartResults>> GetBoughtItems(int userId)
+        {
+            return await _dbContext.CartItems.Where(ci => ci.Cart.UserId == userId && ci.IsBought == true)
+                .Select(ci => new CartResults
+                {
+                    productID = ci.Products.ProductId,
+                    ProductImage = ci.Products.ImageUrl,
+                    ProductName = ci.Products.ProductName,
+                    MerchantId = ci.Products.MerchantID,
+                    Quantity = ci.Quantity,
+                    price = ci.Products.Price,
+                    Instock = ci.Products.StockQuantity,
+                    ProductDescription = ci.Products.ProductDescription,
+                    KeyFeatures = ci.Products.KeyFeatures,
+                    Specification = ci.Products.Specification,
+                    Box = ci.Products.Box,
+                    CartID = ci.CartId ?? 0,
+                    CartItemID = ci.CartItemId,
+                })
+                .ToListAsync();
+        }
+
+
+        public async Task<Status> AddToCart(string cartItemsJson)
         {
             // Parse the JSON input
             var json = JsonDocument.Parse(cartItemsJson);
@@ -175,6 +199,57 @@ namespace Minimart_Api.Repositories.Cart
         //        })
         //        .ToListAsync();
         //}
+
+        public async Task<SavedItems> SaveItemAsync(SavedItems item)
+        {
+            // Check if item already exists
+            var existingItem = await _dbContext.SavedItems
+                .FirstOrDefaultAsync(s => s.UserId == item.UserId && s.ProductId == item.ProductId);
+
+            if (existingItem != null)
+            {
+                existingItem.Quantity = item.Quantity;
+                existingItem.IsActive = true;
+                existingItem.SavedOn = DateTime.UtcNow;
+            }
+            else
+            {
+                _dbContext.SavedItems.Add(item);
+            }
+
+            await _dbContext.SaveChangesAsync();
+            return item;
+        }
+
+        public async Task<bool> RemoveItemAsync(int userId, string productId)
+        {
+            var item = await _dbContext.SavedItems
+                .FirstOrDefaultAsync(s => s.UserId == userId && s.ProductId == productId);
+
+            if (item != null)
+            {
+                item.IsActive = false;
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<IEnumerable<SavedItems>> GetSavedItemsAsync(int userId)
+        {
+            return await _dbContext.SavedItems
+                .Include(s => s.Products)
+                .Where(s => s.UserId == userId && s.IsActive)
+                .OrderByDescending(s => s.SavedOn)
+                .ToListAsync();
+        }
+
+        public async Task<SavedItems> GetSavedItemAsync(int userId, string productId)
+        {
+            return await _dbContext.SavedItems
+                .FirstOrDefaultAsync(s => s.UserId == userId && s.ProductId == productId && s.IsActive);
+        }
 
 
         public async Task<Status> DeleteCartItems(CartItemsDTO cartItems)

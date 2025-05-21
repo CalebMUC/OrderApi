@@ -10,8 +10,14 @@ namespace Minimart_Api.Services.Cart
         Task<Status> AddToCart(string CartItems);
         Task<Status> DeleteCartItems(CartItemsDTO CartItems);
         Task<IEnumerable<CartResults>> GetCartItems(int UserID);
-        Task<Status> SaveItems(SaveItemsDTO saveItems);
-        Task<IEnumerable<Products>> GetSavedItems();
+
+        Task<IEnumerable<CartResults>> GetBoughtItems(int userId);
+
+        Task<SavedProductsDto> SaveItemAsync(SaveItemDto itemDto);
+        Task<bool> RemoveItemAsync(int userId, string productId);
+        Task<IEnumerable<SavedProductsDto>> GetSavedItemsAsync(int userId);
+        //Task<Status> SaveItems(SaveItemsDTO saveItems);
+        //Task<IEnumerable<Products>> GetSavedItems();
 
     }
 }

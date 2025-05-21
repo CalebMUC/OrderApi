@@ -177,6 +177,53 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "GetSavedItems",
+    "RelativePath": "api/Cart/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[Minimart_Api.DTOS.Cart.SavedProductsDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "RemoveItem",
+    "RelativePath": "api/Cart/{userId}/{productId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "productId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
     "Method": "AddToCart",
     "RelativePath": "api/Cart/AddCartItems",
     "HttpMethod": "POST",
@@ -193,6 +240,27 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "GetComplementary",
+    "RelativePath": "api/Cart/complementary/{productId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "productId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
     "Method": "DeleteCartItems",
     "RelativePath": "api/Cart/DeleteCartItems",
     "HttpMethod": "POST",
@@ -202,6 +270,43 @@
       {
         "Name": "cartitems",
         "Type": "Minimart_Api.DTOS.Cart.CartItemsDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "GetFrequentlyBought",
+    "RelativePath": "api/Cart/frequently-bought/{productId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "productId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "GetBoughtItems",
+    "RelativePath": "api/Cart/GetBoughtItems",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "cartitems",
+        "Type": "Minimart_Api.DTOS.Cart.GetCartItems",
         "IsRequired": true
       }
     ],
@@ -225,29 +330,81 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
-    "Method": "GetSavedItems",
-    "RelativePath": "api/Cart/GetSavedItems",
+    "Method": "GetSimilarProducts",
+    "RelativePath": "api/Cart/GetSimilarProducts",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "productId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[Minimart_Api.DTOS.Products.SimilarProductDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "GetPersonalized",
+    "RelativePath": "api/Cart/personalized/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": []
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
-    "Method": "SaveItems",
+    "Method": "SaveItem",
     "RelativePath": "api/Cart/SaveItems",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "saveItems",
-        "Type": "Minimart_Api.DTOS.Products.SaveItemsDTO",
+        "Name": "itemDto",
+        "Type": "Minimart_Api.DTOS.Cart.SaveItemDto",
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Cart.SavedProductsDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CategoryController",

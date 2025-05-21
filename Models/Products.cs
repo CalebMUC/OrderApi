@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 using Minimart_Api.Models;
 using OpenSearch.Client;
 
@@ -48,7 +49,14 @@ public class Products
 
     [Required]
     [Column(TypeName = "nvarchar(Max)")]
-    public string ImageUrl { get; set; } = null!;
+    public string ImageUrl { get; set; } = "[]";
+
+    [NotMapped]
+    public string[] ImageUrlJson
+    { 
+        get=> JsonSerializer.Deserialize<string[]>(ImageUrl) ?? Array.Empty<string>();
+        set => ImageUrl = JsonSerializer.Serialize(value);
+    }
 
     public bool InStock { get; set; }
 
@@ -71,11 +79,17 @@ public class Products
     [Column(TypeName = "nvarchar(max)")]
     public string Box { get; set; } = null!;
 
-    public int? ParentCategoryId { get; set; }
+    public int? SubCategoryId { get; set; }
 
     [MaxLength(100)]
     [Column(TypeName = "nvarchar(100)")]
-    public string? ParentCategoryName { get; set; }
+    public string? SubCategoryName { get; set; }
+
+    public int? SubSubCategoryId { get; set; }
+
+    [MaxLength(100)]
+    [Column(TypeName = "nvarchar(100)")]
+    public string? SubSubCategoryName { get; set; }
 
     [MaxLength(100)]
     [Column(TypeName = "nvarchar(100)")]

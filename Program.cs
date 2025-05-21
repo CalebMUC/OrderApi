@@ -56,6 +56,15 @@ using StackExchange.Redis;
 using Minimart_Api.Services.EmailServices;
 using Minimart_Api.Services.Features;
 using Minimart_Api.Repositories.Features;
+using Minimart_Api.Services.Cart;
+using Minimart_Api.Repositories.Cart;
+using Minimart_Api.Services.SimilarProducts;
+using Minimart_Api.Services.Recommedation;
+using Minimart_Api.Repositories.Recommendation;
+using Minimart_Api.Services.Deliveries;
+using Minimart_Api.Repositories.Deliveries;
+using Minimart_Api.Services.Address;
+using Minimart_Api.Repositories.AddressesRepo;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -86,11 +95,27 @@ builder.Services.AddScoped<IReportRepo, ReportRepo>();
 builder.Services.AddScoped<IFeatureService, FeatureService>();
 builder.Services.AddScoped<IFeatureRepo, FeatureRepo>();
 
+
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ICartRepo, CartRepo>();
+
+builder.Services.AddScoped<IDeliveryService, DeliveryService>();
+builder.Services.AddScoped<IDeliveriesRepo, DeliveriesRepo>();
+
+builder.Services.AddScoped<IAddress, AddressService>();
+builder.Services.AddScoped<IAddressRepo, AddressRepo>();
+
+builder.Services.AddScoped<ISimilarProductsService, SimilarProductsService>();
+
 builder.Services.AddScoped<IAuthentication, AuthenticationService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
 builder.Services.AddScoped<ISystemSecurity, SystemSecurity>();
 builder.Services.AddScoped<ISystemSecurityRepo, SystemSecurityRepo>();
+
+
+builder.Services.AddScoped<IRecomedationService, RecommendationService>();
+builder.Services.AddScoped<IRecommendationRepository, RecommendationRepository>();
 
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
@@ -112,6 +137,8 @@ builder.Services.AddScoped<CoreLibraries>();
 builder.Services.AddScoped<OrderMapper>();
 
 builder.Services.AddScoped<BrevoEmailService>();
+
+builder.Services.AddMemoryCache();
 
 builder.Services.AddSingleton<IRabbitMqConnection>(new RabbitMqConnection());
 //configure Serilog

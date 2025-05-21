@@ -7,8 +7,8 @@ namespace Minimart_Api.Services.Deliveries
     public class DeliveryService : IDeliveryService
     {
         private readonly ILogger _logger;
-        private readonly DeliveriesRepo _deliveryRepo;
-        public DeliveryService(DeliveriesRepo deliveryRepo) { 
+        private readonly IDeliveriesRepo _deliveryRepo;
+        public DeliveryService(IDeliveriesRepo deliveryRepo) { 
             _deliveryRepo = deliveryRepo;
         }
         public async Task<IEnumerable<Counties>> GetCountiesAsync()
