@@ -133,6 +133,7 @@ builder.Services.AddScoped<INotfication, NotificationService>();
 
 //builder.Services.AddScoped<IOpenSearchService, OpenSearchService>();
 
+
 builder.Services.AddScoped<CoreLibraries>();
 builder.Services.AddScoped<OrderMapper>();
 
@@ -304,7 +305,7 @@ builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 //if (app.Environment.IsDevelopment())
 //{
 //    app.UseDeveloperExceptionPage();

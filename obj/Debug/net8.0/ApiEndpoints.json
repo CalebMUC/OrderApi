@@ -920,44 +920,12 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.SearchController",
-    "Method": "Autocomplete",
-    "RelativePath": "api/Search/Autocomplete",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "query",
-        "Type": "System.String",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Minimart_Api.Controllers.SearchController",
     "Method": "ConvertToJson",
     "RelativePath": "api/Search/ConvertToJson",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Minimart_Api.Controllers.SearchController",
-    "Method": "CreateIndex",
-    "RelativePath": "api/Search/CreateIndex",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "indexName",
-        "Type": "System.String",
-        "IsRequired": false
-      }
-    ],
     "ReturnTypes": []
   },
   {
@@ -969,7 +937,7 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "filteredProducts",
+        "Name": "request",
         "Type": "Minimart_Api.DTOS.Products.FilteredProductsDTO",
         "IsRequired": true
       }
@@ -1015,8 +983,24 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.SearchController",
-    "Method": "SearchProducts",
-    "RelativePath": "api/Search/SearchProducts",
+    "Method": "Search",
+    "RelativePath": "api/Search/searchProducts",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "query",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.SearchController",
+    "Method": "SearchSuggestion",
+    "RelativePath": "api/Search/SearchSuggestion",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
