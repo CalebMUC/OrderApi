@@ -1634,28 +1634,7 @@
         }
       }
     },
-    "/api/Search/CreateIndex": {
-      "post": {
-        "tags": [
-          "Search"
-        ],
-        "parameters": [
-          {
-            "name": "indexName",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Search/SearchProducts": {
+    "/api/Search/SearchSuggestion": {
       "get": {
         "tags": [
           "Search"
@@ -1676,7 +1655,7 @@
         }
       }
     },
-    "/api/Search/Autocomplete": {
+    "/api/Search/searchProducts": {
       "get": {
         "tags": [
           "Search"
@@ -2348,15 +2327,29 @@
       "FilteredProductsDTO": {
         "type": "object",
         "properties": {
-          "categoryID": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "subCategoryID": {
+          "searchQuery": {
             "type": "string",
             "nullable": true
           },
-          "features": {
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "categoryID": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "subCategoryID": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "filters": {
             "type": "object",
             "additionalProperties": {
               "type": "array",
@@ -2364,6 +2357,16 @@
                 "type": "string"
               }
             },
+            "nullable": true
+          },
+          "minPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxPrice": {
+            "type": "number",
+            "format": "double",
             "nullable": true
           }
         },

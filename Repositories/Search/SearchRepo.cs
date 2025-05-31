@@ -10,16 +10,88 @@ using Minimart_Api.DTOS.Cart;
 using Minimart_Api.DTOS.Products;
 using System.Text;
 using System.Data.SqlClient;
+using OpenSearch.Client;
+using Minimart_Api.DTOS.Search;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Minimart_Api.Repositories.Search
 {
     public class SearchRepo : ISearchRepo
     {
         private readonly MinimartDBContext _dbContext;
+        private readonly ILogger<SearchRepo> _logger;
 
-        public SearchRepo(MinimartDBContext dbContext)
+        public SearchRepo(MinimartDBContext dbContext, ILogger<SearchRepo> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
+        }
+
+
+        public async Task<IEnumerable<string>> GetSearchSuggestion(string queryName, int limit = 10)
+        {
+            try {
+
+                var suggestions = await _dbContext.Products
+                    .Where(p => p.ProductName.ToLower().Contains(queryName.ToLower()))
+                    .OrderBy(p => p.SearchKeyWord)
+                    .Take(limit)
+                    .Select(p => p.SearchKeyWord)
+                    .ToListAsync();
+
+                return suggestions;
+
+            }
+            catch (Exception ex) {
+
+                _logger.LogError(ex, "Error Retrieving suggestions");
+                return Enumerable.Empty<string>();
+            }
+        }
+
+        public async Task<IEnumerable<GetProductsDto>> SearchProductsAsync(string queryName)
+        {
+            try
+            {
+                var suggestions = await _dbContext.Products
+                    .Where(p => p.ProductName.ToLower().Contains(queryName.ToLower()))
+                    .Select(p => new GetProductsDto
+                    {
+                        MerchantID = p.MerchantID,
+                        ProductName = p.ProductName,
+                        Description = p.Description,
+                        Price = p.Price,
+                        StockQuantity = p.StockQuantity,
+                        CategoryId = p.CategoryId,
+                        ProductId = p.ProductId,
+                        ProductDescription = p.ProductDescription,
+                        CategoryName = p.CategoryName,
+                        ImageUrl = p.ImageUrl,
+                        InStock = p.InStock,
+                        Discount = p.Discount,
+                        SearchKeyWord = p.SearchKeyWord,
+                        KeyFeatures = p.KeyFeatures,
+                        Specification = p.Specification,
+                        Box = p.Box,
+                        SubCategoryId = p.SubCategoryId,
+                        SubCategoryName = p.SubCategoryName,
+                        SubSubCategoryName = p.SubSubCategoryName,
+                        ProductType = p.ProductType,
+                        CreatedOn = p.CreatedOn,
+                        CreatedBy = p.CreatedBy,
+                        UpdatedOn = p.UpdatedOn,
+                        UpdatedBy = p.UpdatedBy
+                    })
+                    //.Take(10) // Limit to 10 suggestions for performance
+                    .ToListAsync();
+
+                return suggestions;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Retrieving suggestions");
+                return Enumerable.Empty<GetProductsDto>();
+            }
         }
 
         public async Task<Status> UpdateColumnJson()
@@ -139,58 +211,69 @@ namespace Minimart_Api.Repositories.Search
         }
 
 
-        public async Task<List<CartResults>> GetFilteredProducts(FilteredProductsDTO filteredProducts)
+        // SearchService.cs
+        public async Task<PaginatedResult<Products>> GetFilteredProducts(ProductFilterParams filterParams)
         {
-            try
+            var query = _dbContext.Products.AsQueryable();
+
+            // Search term filter
+            if (!string.IsNullOrEmpty(filterParams.SearchTerm))
             {
-                // Start building the query
-                var query = new StringBuilder("SELECT * FROM T_Products WHERE CategoryID = @CategoryID AND SubCategoryID = @SubCategoryID");
+                query = query.Where(p =>
+                    p.ProductName.Contains(filterParams.SearchTerm) 
+                    //p.Description.Contains(filterParams.SearchTerm) ||
+                    //p.SearchKeyWord.Contains(filterParams.SearchTerm)
+                    );
+            }
 
-                // Base parameters
-                var parameters = new List<object>
-        {
-            new SqlParameter("@CategoryID", filteredProducts.CategoryID),
-            new SqlParameter("@SubCategoryID", filteredProducts.SubCategoryID)
-        };
+            // Category filters
+            if (filterParams.CategoryId.HasValue)
+            {
+                query = query.Where(p => p.CategoryId == filterParams.CategoryId);
+            }
 
-                // Add JSON filters for features
-                int paramIndex = 0;
-                foreach (var feature in filteredProducts.features)
+            if (filterParams.SubCategoryId != null)
+            {
+                query = query.Where(p => p.SubCategoryId == filterParams.SubCategoryId);
+            }
+
+            // Price range filter
+            if (filterParams.MinPrice.HasValue)
+            {
+                query = query.Where(p => p.Price >= filterParams.MinPrice.Value);
+            }
+
+            if (filterParams.MaxPrice.HasValue)
+            {
+                query = query.Where(p => p.Price <= filterParams.MaxPrice.Value);
+            }
+
+            // Feature filters (LIKE fallback for SQL Server)
+            foreach (var featureFilter in filterParams.Features)
+            {
+                foreach (var value in featureFilter.Value)
                 {
-                    string jsonPath = $"$.\"{feature.Key}\"";
-
-                    // Add conditions for each value in the feature
-                    foreach (var value in feature.Value)
-                    {
-                        var parameterName = $"@Param{paramIndex++}";
-                        query.Append($" AND JSON_VALUE(KeyFeatures, '{jsonPath}') = {parameterName}");
-                        parameters.Add(new SqlParameter(parameterName, value));
-                    }
+                    var searchPattern = $"\"{featureFilter.Key}\":\"{value}\"";
+                    query = query.Where(p => p.KeyFeatures.Contains(searchPattern));
                 }
-
-                // Convert query to string
-                var finalQuery = query.ToString();
-
-                // Execute the query
-                return await _dbContext.Products
-                    .FromSqlRaw(finalQuery, parameters.ToArray())
-                    .Select(p => new CartResults
-                    {
-                        productID = p.ProductId,
-                        ProductName = p.ProductName,
-                        price = p.Price,
-                        ProductImage = p.ImageUrl,
-                        KeyFeatures = p.KeyFeatures
-                    })
-                    .ToListAsync();
             }
-            catch (Exception ex)
+
+            // Total count
+            var totalCount = await query.CountAsync();
+
+            // Pagination
+            var items = await query
+                .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
+                .Take(filterParams.PageSize)
+                .ToListAsync();
+
+            return new PaginatedResult<Products>
             {
-                // Log the error
-                Console.Error.WriteLine($"Error in GetFilteredProducts: {ex.Message}");
-                throw;
-            }
+                Items = items,
+                TotalCount = totalCount
+            };
         }
+
 
 
     }
