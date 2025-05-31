@@ -164,7 +164,9 @@ builder.Services.AddDbContext<MinimartDBContext>(options =>
 ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp => {
-    var configuration = builder.Configuration.GetConnectionString("redis");
+    var redisUrl = builder.Configuration["REDIS_URL"];
+
+    var configuration = builder.Configuration.GetConnectionString(redisUrl);
     return ConnectionMultiplexer.Connect(configuration);
 });
 builder.Services.AddScoped(provider =>

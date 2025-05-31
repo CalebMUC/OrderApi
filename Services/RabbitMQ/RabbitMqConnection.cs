@@ -13,11 +13,16 @@ namespace Minimart_Api.Services.RabbitMQ
         
         public async void InitializeConnection() {
 
+            var uri = Environment.GetEnvironmentVariable("RABBITMQ_URI"); // store it in Render env
+
+
             var factory = new ConnectionFactory
             {
-                HostName = "localhost",
-                UserName = "guest",
-                Password = "guest",
+                //HostName = "localhost",
+                //UserName = "guest",
+                //Password = "guest",
+
+                Uri = new Uri(uri)
             };
 
 
