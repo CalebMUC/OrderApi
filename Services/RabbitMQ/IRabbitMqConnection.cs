@@ -1,9 +1,11 @@
 ﻿using RabbitMQ.Client;
 
+
 namespace Minimart_Api.Services.RabbitMQ
 {
-    public interface IRabbitMqConnection
+    public interface IRabbitMqConnection : IAsyncDisposable
     {
-        IConnection connection { get; }
+        Task<IConnection> GetConnectionAsync();
+        bool IsConnected { get; }
     }
 }
