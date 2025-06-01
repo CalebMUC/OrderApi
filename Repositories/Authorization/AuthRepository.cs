@@ -483,13 +483,15 @@ namespace Minimart_Api.Repositories.Authorization
                 refreshToken = GenerateRefreshToken();
 
                 // Update user details
+                // Update user details
                 user.IsLoggedIn = true;
-                user.LastLogin = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+                user.LastLogin = DateTime.UtcNow;
                 user.RefreshToken = refreshToken;
-                user.RefreshTokenExpiryTime = DateTime.SpecifyKind(DateTime.UtcNow.AddDays(7), DateTimeKind.Unspecified);
+                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
                 _dbContext.Users.Update(user);
                 await _dbContext.SaveChangesAsync();
+
 
                 return new LoginResponse
                 {

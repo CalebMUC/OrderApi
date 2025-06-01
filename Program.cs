@@ -345,15 +345,16 @@ builder.Services.AddSwaggerGen(c =>
     }});
 
 });
-// Configure CORS policy
+//https://minimart-nine.vercel.app
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins", builder =>
-        builder.WithOrigins("https://minimart-nine.vercel.app/") // Change this to match your frontend URL
+        builder.WithOrigins("https://minimart-nine.vercel.app")
                .AllowAnyMethod()
                .AllowAnyHeader()
-               .AllowCredentials()); // Important for authentication
+               .AllowCredentials());
 });
+
 
 
 builder.Services.AddHttpClient();
