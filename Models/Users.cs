@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Minimart_Api.Models
 {
@@ -10,18 +10,15 @@ namespace Minimart_Api.Models
         public int UserId { get; set; }
 
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
         public string? UserName { get; set; }
 
         [MaxLength(15)]
-        [Column(TypeName = "nvarchar(15)")]
         [Phone]
         public string? PhoneNumber { get; set; }
 
         public bool? IsLoggedIn { get; set; }
 
         [MaxLength(255)]
-        [Column(TypeName = "nvarchar(255)")]
         public string? Password { get; set; }
 
         public bool? IsAdmin { get; set; }
@@ -35,27 +32,21 @@ namespace Minimart_Api.Models
         public int? FailedAttempts { get; set; }
 
         [MaxLength(50)]
-        [Column(TypeName = "nvarchar(50)")]
         public string? RoleId { get; set; }
 
         [MaxLength(100)]
         [EmailAddress]
-        [Column(TypeName = "nvarchar(100)")]
         public string? Email { get; set; }
 
         [MaxLength(255)]
-        [Column(TypeName = "nvarchar(255)")]
         public string? Salt { get; set; }
 
         [MaxLength(255)]
-        [Column(TypeName = "nvarchar(255)")]
         public string? RefreshToken { get; set; }
 
         public DateTime? RefreshTokenExpiryTime { get; set; }
 
         public bool isEmailVerified { get; set; }
-
-       
 
         // Navigation Properties
         public virtual Roles Role { get; set; }

@@ -6,21 +6,21 @@ namespace Minimart_Api.Models
     public class OrderTracking
     {
         [Key]
-        [Column(TypeName = "nvarchar(50)")]
+        [Column(TypeName = "varchar(50)")]
         public string TrackingID { get; set; }
 
         [Required]
-        [Column(TypeName = "nvarchar(50)")]
+        [Column(TypeName = "varchar(50)")]
         public string OrderID { get; set; }
 
         [Required]
-        [Column(TypeName = "nvarchar(50)")]
+        [Column(TypeName = "varchar(50)")]
         public string ProductID { get; set; }
 
-        [Column(TypeName = "datetime")]
+        [Column(TypeName = "timestamp")]
         public DateTime TrackingDate { get; set; } = DateTime.Now;
 
-        [Column(TypeName = "datetime")]
+        [Column(TypeName = "timestamp")]
         public DateTime ExpectedDeliveryDate { get; set; }
 
         [Required]
@@ -35,19 +35,19 @@ namespace Minimart_Api.Models
         [ForeignKey("CurrentStatus")]
         public OrderStatus CurrentStatusNavigation { get; set; }
 
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string Carrier { get; set; }
 
-        [Column(TypeName = "nvarchar(50)")]
+        [Column(TypeName = "varchar(50)")]
         public string CreatedBy { get; set; }
 
-        [Column(TypeName = "datetime")]
+        [Column(TypeName = "timestamp")]
         public DateTime CreatedOn { get; set; }
 
-        [Column(TypeName = "nvarchar(50)")]
+        [Column(TypeName = "varchar(50)")]
         public string UpdatedBy { get; set; }
 
-        [Column(TypeName = "datetime")]
+        [Column(TypeName = "timestamp")]
         public DateTime UpdatedOn { get; set; }
 
         public virtual Orders Order { get; set; }

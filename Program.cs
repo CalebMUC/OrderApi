@@ -166,31 +166,54 @@ builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 builder.Services.AddDbContext<MinimartDBContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-           .LogTo(message => Log.Information(message),Microsoft.Extensions.Logging.LogLevel.Information) // Log to Serilog
-           .EnableSensitiveDataLogging(); // Enable logging of sensitive data (like parameters)
+   // options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+          // .LogTo(message => Log.Information(message),Microsoft.Extensions.Logging.LogLevel.Information) // Log to Serilog
+           //.EnableSensitiveDataLogging(); // Enable logging of sensitive data (like parameters)
+
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgressConnection"))
+    .LogTo(error => Log.Error(error))
+    .EnableSensitiveDataLogging();
 },
 ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
-    // Get the Redis URL from configuration or environment variable
+    // Try environment variable first
     var redisUrl = builder.Configuration["REDIS_URL"] ??
-                  Environment.GetEnvironmentVariable("REDIS_URL") ??
-                  "redis://default:AYgmAAIjcDFkNzgwMWU1NjZhMzQ0NWM1YTcwYWQ2MDk5MGQ4ZDU3Y3AxMA@loved-airedale-34854.upstash.io:6379";
+                   builder.Configuration["ConnectionStrings:redis"] ??
+                   "localhost:6379";
 
-    // Parse the Redis URL into a ConfigurationOptions object
-    var configOptions = ConfigurationOptions.Parse(redisUrl);
+    if (redisUrl.StartsWith("redis://") || redisUrl.StartsWith("rediss://"))
+    {
+        var uri = new Uri(redisUrl);
+        var userInfo = uri.UserInfo.Split(':');
+        var password = userInfo.Length > 1 ? userInfo[1] : "";
 
-    // For Upstash Redis with TLS (which your connection string indicates)
-    configOptions.Ssl = true;
-    configOptions.AbortOnConnectFail = false;
+        var config = new ConfigurationOptions
+        {
+            EndPoints = { { uri.Host, uri.Port } },
+            Password = password,
+            Ssl = true,
+            AbortOnConnectFail = false
+        };
 
-    // Add logging
-    var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
-    logger.LogInformation($"Connecting to Redis at {configOptions.EndPoints.First()}");
+        var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
+        logger.LogInformation($"Connecting to Upstash Redis at {uri.Host}:{uri.Port}");
 
-    return ConnectionMultiplexer.Connect(configOptions);
+        return ConnectionMultiplexer.Connect(config);
+    }
+    else
+    {
+        // Standard config (e.g. localhost or already-parsed)
+        var config = ConfigurationOptions.Parse(redisUrl);
+        config.AbortOnConnectFail = false;
+
+        var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
+        logger.LogInformation($"Connecting to Redis at {config.EndPoints.First()}");
+
+        return ConnectionMultiplexer.Connect(config);
+    }
 });
+
 
 // 2. Redis (TLS-enabled)
 //builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
@@ -326,7 +349,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins", builder =>
-        builder.WithOrigins("http://localhost:3000") // Change this to match your frontend URL
+        builder.WithOrigins("https://minimart-nine.vercel.app/") // Change this to match your frontend URL
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials()); // Important for authentication

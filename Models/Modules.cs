@@ -10,19 +10,19 @@ namespace Minimart_Api.Models
 
         [Required]
         [MaxLength(150)]
-        [Column(TypeName = "nvarchar(150)")]
+        [Column(TypeName = "varchar(150)")]
         public string ModuleName { get; set; }
 
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string CreatedBy { get; set; }
 
         [MaxLength(255)]
-        [Column(TypeName = "nvarchar(255)")]
+        [Column(TypeName = "varchar(255)")]
         public string MenuUrl { get; set; }
 
         [Required]
-        [Column(TypeName = "datetime")]
+        [Column(TypeName = "timestamp")]
         public DateTime CreatedOn { get; set; }
 
         // Navigation Properties

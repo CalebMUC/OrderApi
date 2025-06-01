@@ -11,17 +11,17 @@ namespace Minimart_Api.Models
 
         [Required]
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
 
         [MaxLength(255)]
-        [Column(TypeName = "nvarchar(255)")]
+        [Column(TypeName = "varchar(255)")]
         public string Description { get; set; } // Optional description of the payment method
 
         [Required]
         public bool IsActive { get; set; } = true; // To track if the payment method is active
 
-        [Column(TypeName = "datetime")]
+        [Column(TypeName = "timestamp")]
         public DateTime CreatedDate { get; set; } = DateTime.Now; // Creation date
 
         // Navigation property for related payment details

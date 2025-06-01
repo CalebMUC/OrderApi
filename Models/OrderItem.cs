@@ -10,19 +10,19 @@ namespace Minimart_Api.Models
         public int OrderItemId { get; set; }
 
         [ForeignKey("Order")]
+        [Column(TypeName = "varchar(50)")]  // Added explicit type for OrderId
         public string OrderId { get; set; }
 
         [MaxLength(50)]
-        [Column(TypeName = "nvarchar(50)")]
+        [Column(TypeName = "varchar(50)")]
         [ForeignKey("Product")]
         public string? ProductId { get; set; }
 
         [Required]
-        [Column(TypeName = "int")]
-        public int Quantity { get; set; }
+        public int Quantity { get; set; }  // Removed explicit type as int maps directly
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
+        [Column(TypeName = "numeric(18,2)")]  // Changed to PostgreSQL's numeric type
         public decimal Price { get; set; }
 
         // Navigation Properties

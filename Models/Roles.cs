@@ -9,12 +9,12 @@ namespace Minimart_Api.Models
         [Key]
         [Required]
         [MaxLength(50)]
-        [Column(TypeName = "nvarchar(50)")]
+        [Column(TypeName = "varchar(50)")]
         public string RoleID { get; set; } // Primary Key
 
         [Required]
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string RoleName { get; set; }
 
         [Required]

@@ -11,14 +11,14 @@ namespace Minimart_Api.Models
 
         [Required]
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string SubCategoryName { get; set; }
 
         [Required]
         public int SubModuleID { get; set; }
 
         [MaxLength(200)]
-        [Column(TypeName = "nvarchar(200)")]
+        [Column(TypeName = "varchar(200)")]
         public string SubCategoryUrl { get; set; }
 
         public int Order { get; set; }

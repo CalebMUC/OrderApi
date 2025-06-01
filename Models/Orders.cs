@@ -7,31 +7,26 @@ namespace Minimart_Api.Models
     {
         [Key]
         [MaxLength(50)]
-        [Column(TypeName = "nvarchar(50)")]
-        public string? OrderID { get; set; }
-
-        //[Column(TypeName = "int")]
-        //public int? MerchantId { get; set; }
+        [Column(TypeName = "varchar(50)")]
+        public string OrderID { get; set; }  // Removed nullable (primary key shouldn't be null)
 
         [Required]
-        [Column(TypeName = "int")]
-        public int UserID { get; set; }
+        public int UserID { get; set; }  // Removed explicit type as int maps to integer
 
         [Required]
-        [Column(TypeName = "datetime")]
+        [Column(TypeName = "timestamp")]
         public DateTime OrderDate { get; set; }
 
         [Required]
-        [Column(TypeName = "datetime")]
+        [Column(TypeName = "timestamp")]
         public DateTime DeliveryScheduleDate { get; set; }
 
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string? OrderedBy { get; set; }
 
         [Required]
-        [Column(TypeName = "int")]
-        public int Status { get; set; }
+        public int Status { get; set; }  // Consider using enum instead of raw int
 
         [Required]
         [ForeignKey("PaymentDetails")]
@@ -41,44 +36,45 @@ namespace Minimart_Api.Models
 
         [Required]
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string PaymentConfirmation { get; set; } = string.Empty;
 
-        [Column(TypeName = "float")]
+        [Column(TypeName = "money")]  // More precise than float
         public double TotalOrderAmount { get; set; }
 
-        [Column(TypeName = "float")]
+        [Column(TypeName = "money")]
         public double TotalPaymentAmount { get; set; }
 
-        [Column(TypeName = "float")]
+        [Column(TypeName = "money")]
         public double TotalDeliveryFees { get; set; }
 
-        [Column(TypeName = "float")]
+        [Column(TypeName = "money")]
         public double TotalTax { get; set; }
 
-        [Column(TypeName = "nvarchar(max)")]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        //[Column(TypeName = "money")]
+        //public decimal NetAmount => TotalOrderAmount + TotalTax + TotalDeliveryFees;
+
+        [Column(TypeName = "text")]  // Changed from nvarchar(max)
         public string? ShippingAddress { get; set; }
 
         [Required]
-        [Column(TypeName = "nvarchar(max)")]
+        [Column(TypeName = "jsonb")]  // Better than text for JSON data
         public string ProductsJson { get; set; }
 
         [Required]
         [MaxLength(255)]
-        [Column(TypeName = "nvarchar(255)")]
+        [Column(TypeName = "varchar(255)")]  // Changed from nvarchar
         public string PickupLocation { get; set; }
 
         [Required]
-        [Column(TypeName = "nvarchar(max)")]
+        [Column(TypeName = "jsonb")]  // Better for JSON data
         public string PaymentDetailsJson { get; set; }
 
+        // Navigation properties
         public virtual Users User { get; set; }
-
         public ICollection<OrderTracking> OrderTrackings { get; set; }
-
         public ICollection<OrderStatus> OrderStatuses { get; set; }
-
-
         public ICollection<OrderProducts> OrderProducts { get; set; }
     }
 }

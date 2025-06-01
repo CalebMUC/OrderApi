@@ -10,11 +10,11 @@ namespace Minimart_Api.Models
 
         [Required]
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string Status { get; set; }
 
         [MaxLength(500)]
-        [Column(TypeName = "nvarchar(500)")]
+        [Column(TypeName = "varchar(500)")]
         public string Description { get; set; }
 
         [Required]
@@ -22,21 +22,21 @@ namespace Minimart_Api.Models
         public int Order { get; set; }
 
         [Required]
-        [Column(TypeName = "datetime")]
+        [Column(TypeName = "timestamp")]
         public DateTime CreatedOn { get; set; }
 
         [Required]
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string CreatedBy { get; set; }
 
         [Required]
-        [Column(TypeName = "datetime")]
+        [Column(TypeName = "timestamp")]
         public DateTime UpdatedOn { get; set; }
 
         [Required]
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string UpdatedBy { get; set; }
 
         // No Orders navigation property needed here
