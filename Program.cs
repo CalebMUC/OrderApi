@@ -171,34 +171,34 @@ builder.Services.AddDbContext<MinimartDBContext>(options =>
            .EnableSensitiveDataLogging(); // Enable logging of sensitive data (like parameters)
 },
 ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
-//builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-//{
-//    // Get the Redis URL from configuration or environment variable
-//    var redisUrl = builder.Configuration["REDIS_URL"] ??
-//                  Environment.GetEnvironmentVariable("REDIS_URL") ??
-//                  "redis://default:AYgmAAIjcDFkNzgwMWU1NjZhMzQ0NWM1YTcwYWQ2MDk5MGQ4ZDU3Y3AxMA@loved-airedale-34854.upstash.io:6379";
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    // Get the Redis URL from configuration or environment variable
+    var redisUrl = builder.Configuration["REDIS_URL"] ??
+                  Environment.GetEnvironmentVariable("REDIS_URL") ??
+                  "redis://default:AYgmAAIjcDFkNzgwMWU1NjZhMzQ0NWM1YTcwYWQ2MDk5MGQ4ZDU3Y3AxMA@loved-airedale-34854.upstash.io:6379";
 
-//    // Parse the Redis URL into a ConfigurationOptions object
-//    var configOptions = ConfigurationOptions.Parse(redisUrl);
+    // Parse the Redis URL into a ConfigurationOptions object
+    var configOptions = ConfigurationOptions.Parse(redisUrl);
 
-//    // For Upstash Redis with TLS (which your connection string indicates)
-//    configOptions.Ssl = true;
-//    configOptions.AbortOnConnectFail = false;
+    // For Upstash Redis with TLS (which your connection string indicates)
+    configOptions.Ssl = true;
+    configOptions.AbortOnConnectFail = false;
 
-//    // Add logging
-//    var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
-//    logger.LogInformation($"Connecting to Redis at {configOptions.EndPoints.First()}");
+    // Add logging
+    var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
+    logger.LogInformation($"Connecting to Redis at {configOptions.EndPoints.First()}");
 
-//    return ConnectionMultiplexer.Connect(configOptions);
-//});
+    return ConnectionMultiplexer.Connect(configOptions);
+});
 
 // 2. Redis (TLS-enabled)
-builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
-    ConnectionMultiplexer.Connect(
-        Environment.GetEnvironmentVariable("REDIS_URL") ??
-        builder.Configuration.GetConnectionString("Redis"),
-        options => options.Ssl = true
-    ));
+//builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
+//    ConnectionMultiplexer.Connect(
+//        Environment.GetEnvironmentVariable("REDIS_URL") ??
+//        builder.Configuration.GetConnectionString("Redis"),
+//        options => options.Ssl = true
+//    ));
 
 builder.Services.AddScoped(provider =>
 {
