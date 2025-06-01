@@ -30,7 +30,9 @@ namespace Minimart_Api.Services.RabbitMQ
                 var scope = _scopeFactory.CreateScope();
                 var notificationService = scope.ServiceProvider.GetRequiredService<INotfication>();
                 //Create Channel Async
-                var channel = await _connection.connection.CreateChannelAsync();
+                var connection = await _connection.GetConnectionAsync();
+
+                var channel = await  connection.CreateChannelAsync();
 
                 //Declare Queue
                 await channel.QueueDeclareAsync(

@@ -19,7 +19,8 @@ namespace Minimart_Api.Services.RabbitMQ
         {
             try
             {
-                using var channel = await _connection.connection.CreateChannelAsync();
+                var connection = await _connection.GetConnectionAsync();
+                using var channel = await connection.CreateChannelAsync();
 
                 await channel.QueueDeclareAsync(
                     queue: "orderEvent_queue",
