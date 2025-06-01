@@ -338,6 +338,36 @@ builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Minimart API v1");
+
+        // For Render's proxy handling:
+        c.ConfigObject.AdditionalItems["servers"] = new List<Dictionary<string, string>>
+        {
+            new Dictionary<string, string> { { "url", "/" } }
+        };
+    });
+}
+else // Production settings
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Minimart API v1");
+        c.RoutePrefix = "swagger";  // Makes Swagger available at /swagger
+
+        // Required for Render's reverse proxy:
+        c.ConfigObject.AdditionalItems["servers"] = new List<Dictionary<string, string>>
+        {
+            new Dictionary<string, string> { { "url", "/" } }
+        };
+    });
+}
 // Configure the HTTP request pipeline
 //if (app.Environment.IsDevelopment())
 //{
