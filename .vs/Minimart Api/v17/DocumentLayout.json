@@ -3,12 +3,20 @@
   "WorkspaceRootPath": "E:\\MinimartApi_Staging\\OrderApi\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\services\\rabbitmq\\ordereventpublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:services\\rabbitmq\\ordereventpublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\services\\rabbitmq\\rabbitmqconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:services\\rabbitmq\\rabbitmqconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\services\\rabbitmq\\ordereventpublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:services\\rabbitmq\\ordereventpublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\services\\rabbitmq\\ordereventconsumer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -17,14 +25,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\services\\rabbitmq\\irabbitmqconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:services\\rabbitmq\\irabbitmqconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\services\\rabbitmq\\rabbitmqconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:services\\rabbitmq\\rabbitmqconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\controllers\\entitiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -249,6 +249,45 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAKcAAAAAAAAAAAAAALYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-23T02:39:36.681Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAABdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-05-31T09:00:07.996Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "RabbitMqConnection.cs",
+              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\RabbitMQ\\RabbitMqConnection.cs",
+              "RelativeDocumentMoniker": "Services\\RabbitMQ\\RabbitMqConnection.cs",
+              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Services\\RabbitMQ\\RabbitMqConnection.cs",
+              "RelativeToolTip": "Services\\RabbitMQ\\RabbitMqConnection.cs",
+              "ViewState": "AgIAACAAAAAAAAAAAAAgwAYAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-31T04:30:45.26Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "OrderEventPublisher.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\RabbitMQ\\OrderEventPublisher.cs",
               "RelativeDocumentMoniker": "Services\\RabbitMQ\\OrderEventPublisher.cs",
@@ -261,33 +300,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "RabbitMqConnection.cs",
-              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\RabbitMQ\\RabbitMqConnection.cs",
-              "RelativeDocumentMoniker": "Services\\RabbitMQ\\RabbitMqConnection.cs",
-              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Services\\RabbitMQ\\RabbitMqConnection.cs",
-              "RelativeToolTip": "Services\\RabbitMQ\\RabbitMqConnection.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAYAAAAmAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-31T04:30:45.26Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAANEAAAAAAAAAAAAmwN4AAABGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-23T02:39:36.681Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "IRabbitMqConnection.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\RabbitMQ\\IRabbitMqConnection.cs",
               "RelativeDocumentMoniker": "Services\\RabbitMQ\\IRabbitMqConnection.cs",
@@ -300,20 +313,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\appsettings.json",
-              "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAACIAAAAAAAAAAAAAACUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-05-31T09:00:07.996Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "OrderEventConsumer.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\RabbitMQ\\OrderEventConsumer.cs",
               "RelativeDocumentMoniker": "Services\\RabbitMQ\\OrderEventConsumer.cs",
