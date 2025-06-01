@@ -1,15 +1,11 @@
-﻿ using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Minimart_Api.Models;
-using StackExchange.Redis;
 
 namespace Minimart_Api.Data
 {
     public class MinimartDBContext : DbContext
     {
-        public MinimartDBContext(DbContextOptions<MinimartDBContext> options) : base(options)
-        {
-            
-        }
+        public MinimartDBContext(DbContextOptions<MinimartDBContext> options) : base(options) { }
 
         public virtual DbSet<Addresses> Addresses { get; set; }
         public virtual DbSet<Cart> Cart { get; set; }
@@ -24,7 +20,7 @@ namespace Minimart_Api.Data
         public virtual DbSet<OrderProducts> OrderProducts { get; set; }
         public virtual DbSet<Orders> Orders { get; set; }
         public virtual DbSet<OrderStatus> OrderStatuses { get; set; }
-        public virtual DbSet<OrderTracking> OrderTrackings { get; set; }
+        public virtual DbSet<OrderTracking>  OrderTrackings { get; set; }
         public virtual DbSet<PaymentDetails> PaymentDetails { get; set; }
         public virtual DbSet<PaymentMethods> PaymentMethods { get; set; }
         public virtual DbSet<Products> Products { get; set; }
@@ -35,513 +31,183 @@ namespace Minimart_Api.Data
         public virtual DbSet<SubModules> SubModules { get; set; }
         public virtual DbSet<SystemMerchants> SystemMerchants { get; set; }
         public virtual DbSet<Towns> Towns { get; set; }
-
         public virtual DbSet<Users> Users { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Configure indexes
+            modelBuilder.Entity<Orders>().HasIndex(o => o.UserID);
+            modelBuilder.Entity<OrderProducts>().HasIndex(op => op.ProductID);
+            modelBuilder.Entity<Products>().HasIndex(p => p.CategoryId);
 
-        //public override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-        //    if (!optionsBuilder.IsConfigured) { 
-
-        //    }
-        //}
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder) {
-
-            // In your DbContext's OnModelCreating
-            modelBuilder.Entity<Orders>()
-                .HasIndex(o => o.UserID);
-
-            modelBuilder.Entity<OrderProducts>()
-                .HasIndex(op => op.ProductID);
-
-            modelBuilder.Entity<Products>()
-                .HasIndex(p => p.CategoryId);
-
-            // ─── Addresses ───────────────────────────────────────────────────
-
-
+            // Addresses configuration
             modelBuilder.Entity<Addresses>(entity =>
             {
                 entity.ToTable("Addresses");
-
-                entity.HasKey(e => e.AddressID);
-
-                entity.Property(e => e.AddressID)
-                    .IsRequired();
-
-                entity.Property(e => e.UserID)
-                    .IsRequired();
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasColumnType("nvarchar(100)");
-
-                entity.Property(e => e.Phonenumber)
-                    .IsRequired()
-                    .HasColumnType("varchar(15)");
-
-                entity.Property(e => e.PostalAddress)
-                    .HasColumnType("nvarchar(200)");
-
-                entity.Property(e => e.County)
-                    .HasColumnType("nvarchar(50)");
-
-                entity.Property(e => e.Town)
-                    .HasColumnType("nvarchar(50)");
-
-                entity.Property(e => e.PostalCode)
-                    .HasColumnType("varchar(10)");
-
-                entity.Property(e => e.ExtraInformation)
-                    .HasColumnType("nvarchar(500)");
-
-                entity.Property(e => e.isDefault)
-                    .HasColumnType("bit");
-
-
-                entity.Property(e => e.CreatedOn)
-                    .HasColumnType("datetime");
-
-
-                entity.Property(e => e.LastUpdatedOn)
-                    .HasColumnType("datetime");
-
-                // ─── Relationships ───────────────────────────────────────────────────
-
-
-                // Foreign key relationship to Users
-                entity.HasOne(e => e.users)
-                    .WithMany() // or .WithMany(u => u.Addresses) if you have a collection in Users
-                    .HasForeignKey(e => e.UserID)
-                    .OnDelete(DeleteBehavior.Cascade); // Adjust based on your business rule
+                entity.Property(e => e.Name).HasColumnType("varchar(100)");
+                entity.Property(e => e.Phonenumber).HasColumnType("varchar(15)");
+                entity.Property(e => e.PostalAddress).HasColumnType("varchar(200)");
+                entity.Property(e => e.County).HasColumnType("varchar(50)");
+                entity.Property(e => e.Town).HasColumnType("varchar(50)");
+                entity.Property(e => e.PostalCode).HasColumnType("varchar(10)");
+                entity.Property(e => e.ExtraInformation).HasColumnType("varchar(500)");
+                entity.Property(e => e.CreatedOn).HasColumnType("timestamp");
+                entity.Property(e => e.LastUpdatedOn).HasColumnType("timestamp");
             });
 
-            // ─── Products ───────────────────────────────────────────────────
-
-            modelBuilder.Entity<Products>(entity => {
-
-                entity.HasIndex(e => new { e.ProductId });
-
-
-                entity.ToTable("Products");
-
-                entity.HasOne(e=> e.Categories)
-                .WithMany(c=> c.Products)
-                .HasForeignKey(e=>e.CategoryId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // Products configuration
+            modelBuilder.Entity<Products>(entity =>
+            {
+                entity.HasOne(e => e.Categories)
+                    .WithMany(c => c.Products)
+                    .HasForeignKey(e => e.CategoryId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.Categories)
-              .WithMany(c => c.Products)
-              .HasForeignKey(e => e.SubCategoryId)
-              .OnDelete(DeleteBehavior.Cascade);
+                    .WithMany(c => c.Products)
+                    .HasForeignKey(e => e.SubCategoryId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.Categories)
-             .WithMany(c => c.Products)
-             .HasForeignKey(e => e.SubSubCategoryId)
-             .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasMany(e=> e.Reviews)
-                .WithOne(r=> r.Product)
-                .HasForeignKey(r=>r.ProductId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-
+                    .WithMany(c => c.Products)
+                    .HasForeignKey(e => e.SubSubCategoryId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
-            //_________________________________OrderItems_______________________________________
-
-            modelBuilder.Entity<OrderItem>(entity => {
-
+            // OrderItems configuration
+            modelBuilder.Entity<OrderItem>(entity =>
+            {
                 entity.ToTable("OrderItems");
-
-                entity.HasOne(e=>e.Product)
-                .WithMany()
-                .HasForeignKey(e=>e.ProductId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(e => e.Order)
-                .WithMany()
-                .HasForeignKey(e => e.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
-
+                entity.Property(e => e.Price).HasColumnType("numeric(18,2)");
             });
 
-            //---------------------------------------Reviews-----------------------------
-
-            modelBuilder.Entity<Reviews>(entity => {
+            // Reviews configuration
+            modelBuilder.Entity<Reviews>(entity =>
+            {
                 entity.ToTable("Reviews");
-
-                entity.HasOne(e=>e.Product)
-                .WithMany()//the product entity can be refrenced by many reviewed records
-                .HasForeignKey(e=>e.ProductId) 
-                .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(e => e.User)
-                .WithMany()
-                .HasForeignKey(e => e.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(e => e.ReviewDate).HasColumnType("timestamp");
             });
 
-            // ------------------------------------------------------------------------------------------------------------------------------------
-            //-----------------------------Categories---------------------------------------------------
-            //-------------------------------------------------------------------------------------------------------------------------------------
-
+            // Categories configuration
             modelBuilder.Entity<Categories>(entity =>
             {
                 entity.ToTable("Categories");
-
-                entity.HasMany(e=> e.SubCategories)
-                .WithOne(e=> e.ParentCategory)//one category can have many subcategories
-                .HasForeignKey(e=> e.ParentCategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-
-                entity.HasMany(e => e.Products)
-                .WithOne(p => p.Categories)//one category can have many products
-                .HasForeignKey(p => p.CategoryId)
-                .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(e => e.CreatedOn).HasColumnType("timestamp");
+                entity.Property(e => e.UpdatedOn).HasColumnType("timestamp");
             });
 
-
-            // ------------------------------------------------------------------------------------------------------------------------------------
-            //-----------------------------Features---------------------------------------------------
-            //-------------------------------------------------------------------------------------------------------------------------------------
-
+            // Features configuration
             modelBuilder.Entity<Features>(entity =>
             {
                 entity.ToTable("Features");
 
-                entity.HasOne(e => e.Category)
+                // Relationship with Category
+                entity.HasOne(f => f.Category)
                     .WithMany(c => c.CategoryFeatures)
-                    .HasForeignKey(e => e.CategoryID)
-                    .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+                    .HasForeignKey(f => f.CategoryID)
+                    .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(e => e.SubCategory)
+                // Relationship with SubCategory
+                entity.HasOne(f => f.SubCategory)
                     .WithMany(c => c.SubCategoryFeatures)
-                    .HasForeignKey(e => e.SubCategoryID)
-                    .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+                    .HasForeignKey(f => f.SubCategoryID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Relationship with SubSubCategory (if needed)
+                entity.HasOne(f => f.SubSubCategory)
+                    .WithMany(c => c.SubSubCategoryFeatures)
+                    .HasForeignKey(f => f.SubSubCategoryID)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
+            // Authorization configuration
+            modelBuilder.Entity<SubModuleCategories>().HasKey(sc => sc.SubModuleID);
+            modelBuilder.Entity<Modules>().HasKey(m => m.ModuleID);
+            modelBuilder.Entity<SubModules>().HasKey(sm => sm.SubModuleID);
+            modelBuilder.Entity<Roles>().HasKey(r => r.RoleID);
+            modelBuilder.Entity<RolePermissions>().HasKey(rp => rp.RolePermissionID);
 
-
-            // ------------------------------------------------------------------------------------------------------------------------------------
-            //-----------------------------Authorization---------------------------------------------------
-            //-------------------------------------------------------------------------------------------------------------------------------------
-
-            modelBuilder.Entity<SubModuleCategories>()
-         .HasKey(sc => sc.SubModuleID);
-
-            modelBuilder.Entity<SubModuleCategories>()
-                .HasOne(sc => sc.Submodule)
-                .WithMany(sm => sm.SubModuleCategories)
-                .HasForeignKey(sc => sc.SubModuleID)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Modules>()
-                .HasKey(m => m.ModuleID); // Primary Key
-
-            // Configure Submodule Entity
-            modelBuilder.Entity<SubModules>()
-                .HasKey(sm => sm.SubModuleID); // Primary Key
-
-            modelBuilder.Entity<SubModules>()
-                .HasOne(sm => sm.Module)
-                .WithMany(m => m.Submodules)
-                .HasForeignKey(sm => sm.ModuleID)
-                .OnDelete(DeleteBehavior.Cascade); // Cascade delete if Module is deleted
-
-            // Configure Role Entity
-            modelBuilder.Entity<Roles>()
-                .HasKey(r => r.RoleID); // Primary Key
-
-            modelBuilder.Entity<Roles>()
-               .HasKey(r => r.RoleID); // Primary Key
-
-
-            // Configure RolePermission Entity
-            modelBuilder.Entity<RolePermissions>()
-                .HasKey(rp => rp.RolePermissionID);
-
-            // Cascade on delete from Role
-            modelBuilder.Entity<RolePermissions>()
-                .HasOne(rp => rp.Role)
-                .WithMany(r => r.RolePermissions)
-                .HasForeignKey(rp => rp.RoleID)
-                .OnDelete(DeleteBehavior.Cascade); // Keep cascade here
-
-            // Restrict on delete from Module
-            modelBuilder.Entity<RolePermissions>()
-                .HasOne(rp => rp.Module)
-                .WithMany(m => m.RolePermissions)
-                .HasForeignKey(rp => rp.ModuleID)
-                .OnDelete(DeleteBehavior.Restrict); // Change from Cascade to Restrict
-
-            // Restrict on delete from Submodule (already okay)
-            modelBuilder.Entity<RolePermissions>()
-                .HasOne(rp => rp.Submodule)
-                .WithMany(sm => sm.RolePermissions)
-                .HasForeignKey(rp => rp.SubModuleID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-
-            //------------------------------------------------------------------------------------------------------------------------------------
-            //----------------------------Users-------------------------------------
-            //------------------------------------------------------------------------------------------------------------------------------------
-
+            // Users configuration
             modelBuilder.Entity<Users>(entity =>
             {
-                entity.HasIndex(e => new { e.UserId });
-
-
-                entity.HasOne(u => u.Role)
-                        .WithMany(r => r.Users)
-                        .HasForeignKey(u => u.RoleId)
-                        .HasPrincipalKey(r => r.RoleID) // Because RoleID is a string and the PK in Roles
-                        .OnDelete(DeleteBehavior.Restrict); // Optional: prevents deleting a Role if users exist
-
+                entity.Property(e => e.CreatedAt).HasColumnType("timestamp");
+                //entity.Property(e => e.).HasColumnType("timestamp");
             });
-           
 
-
-
-            //---------------------------------------------------------------
-            //-------------Orders--------------------------------------
-            //----------------------------------------------------------------
-
-            //------------------------------Orders--------------------------------------
-
-            modelBuilder.Entity<Orders>(entity => {
-
+            // Orders configuration
+            modelBuilder.Entity<Orders>(entity =>
+            {
                 entity.ToTable("Orders");
-                //one User can have many orders in the same Table
-                entity.HasOne(e => e.User)
-                .WithMany()
-                .HasForeignKey(e => e.UserID);
-
-                entity.HasOne(e => e.PaymentDetails)
-                .WithMany(p => p.Orders)
-                .HasForeignKey(e => e.PaymentID);
-
-                entity.HasMany(e => e.OrderProducts)
-                .WithOne(op => op.order)
-                .HasForeignKey(op => op.OrderID);
-
-             
-
-
+                entity.Property(e => e.OrderDate).HasColumnType("timestamp with time zone");
+                entity.Property(e => e.DeliveryScheduleDate).HasColumnType("timestamp with time zone");
+                entity.Property(e => e.TotalOrderAmount).HasColumnType("money");
+                entity.Property(e => e.TotalPaymentAmount).HasColumnType("money");
+                entity.Property(e => e.TotalDeliveryFees).HasColumnType("money");
+                entity.Property(e => e.TotalTax).HasColumnType("money");
             });
 
-
-   
-
-
-            modelBuilder.Entity<OrderTracking>(entity => {
+            // OrderTracking configuration
+            modelBuilder.Entity<OrderTracking>(entity =>
+            {
                 entity.ToTable("OrderTracking");
-                //many OrderTracking per Order 
-                entity.HasOne(e=> e.Order)
-                .WithMany(o=> o.OrderTrackings)
-                .HasForeignKey(e=> e.OrderID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-                //many OrderTracking per Product 
-                entity.HasOne(e => e.product)
-                .WithMany(o => o.OrderTrackings)
-                .HasForeignKey(e => e.ProductID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(e=>e.PreviousStatusNavigation)
-                .WithMany() //the OrderStaus Entity can be refrenced by many Order Tracking Records
-                .HasForeignKey(e=> e.PreviousStatus)
-                .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(e => e.CurrentStatusNavigation)
-                .WithMany() //the OrderStaus Entity can be refrenced by many Order Tracking Records
-                .HasForeignKey(e => e.CurrentStatus)
-                .OnDelete(DeleteBehavior.Restrict);
-
+                entity.Property(e => e.TrackingDate).HasColumnType("timestamp");
             });
 
-            // ------------------------------------------------------------------------------------------------------------------------------------
-            //-----------------------------Payments---------------------------------------------------
-            //-------------------------------------------------------------------------------------------------------------------------------------
-
-            modelBuilder.Entity<PaymentDetails>(entity => {
-                entity.HasOne(e => e.Payments)
-                .WithMany()//Paymenthod can be refrenced in many PaymentDetails Records
-                .HasForeignKey(e=> e.PaymentMethodID)
-                .OnDelete(DeleteBehavior.Restrict);
-
+            // PaymentDetails configuration
+            modelBuilder.Entity<PaymentDetails>(entity =>
+            {
+                entity.Property(e => e.PaymentDate).HasColumnType("timestamp with time zone");
+                entity.Property(e => e.Amount).HasColumnType("money");
             });
 
-
-            //________Cart__________________________________________
-
+            // Cart configuration
             modelBuilder.Entity<Cart>(entity =>
             {
                 entity.ToTable("Cart");
-
-                entity.HasKey(e => e.CartId);
-
-                entity.Property(e => e.CartId)
-                    .ValueGeneratedOnAdd(); // Same as [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-
-                entity.Property(e => e.UserId)
-                    .IsRequired();
-
-                entity.Property(e => e.CartName)
-                    .HasMaxLength(100)
-                    .HasColumnType("nvarchar(100)");
-
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime");
-
-                // ─── Relationships ───────────────────────────────────────────────────
-
-
-                // Foreign key to Users
-                entity.HasOne(e => e.User)
-                    .WithMany() // or WithMany(u => u.Carts) if User class has a collection
-                    .HasForeignKey(e => e.UserId)
-                    .OnDelete(DeleteBehavior.Cascade); // Optional based on your business rules
-
-                // One-to-many relationship with CartItems
-                entity.HasMany(e => e.CartItems)
-                    .WithOne(ci => ci.Cart)
-                    .HasForeignKey(ci => ci.CartId)
-                    .OnDelete(DeleteBehavior.Cascade); // Optional, can be Restrict, SetNull, etc.
+                entity.Property(e => e.CreatedAt).HasColumnType("timestamp");
             });
 
-            // ─── CartItems ───────────────────────────────────────────────────
-
-            modelBuilder.Entity<CartItem>(entity => {
-
+            // CartItem configuration
+            modelBuilder.Entity<CartItem>(entity =>
+            {
                 entity.ToTable("CartItem");
-
-                entity.HasKey(e => e.CartItemId);
-
-                entity.Property(e => e.ProductId)
-                .HasColumnType("nvarchar(50)")
-                ;
-
-                entity.Property(e => e.Quantity)
-                .HasColumnType("int")
-                .IsRequired();
-
-
-                entity.Property(e => e.CartId)
-                .HasColumnType("int")
-                .IsRequired();
-
-                entity.Property(e => e.CreatedOn)
-                .HasColumnType("Datetime");
-
-
-                entity.Property(e => e.UpdatedOn)
-                .HasColumnType("Datetime");
-
-                // ─── Relationships ───────────────────────────────────────────────────
-
-                entity.HasOne(e => e.Cart)
-                .WithMany(c=>c.CartItems)
-                .HasForeignKey("CartId")
-                .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(e => e.Products)
-                .WithMany()
-                .HasForeignKey("ProductId")
-                .OnDelete(DeleteBehavior.Cascade);
-
-
+                entity.Property(e => e.ProductId).HasColumnType("varchar(50)");
+                entity.Property(e => e.CreatedOn).HasColumnType("timestamp");
+                entity.Property(e => e.UpdatedOn).HasColumnType("timestamp");
             });
 
-
-            // ─── BuyAgain ───────────────────────────────────────────────────
-
-
+            // BuyAgain configuration
             modelBuilder.Entity<BuyAgain>(entity =>
             {
                 entity.ToTable("BuyAgain");
-
-                entity.HasKey(e => e.Id);
-
-                entity.Property(e => e.UserId)
-                    .IsRequired()
-                    .HasColumnType("int");
-
-                entity.Property(e => e.ProductId)
-                    .IsRequired()
-                    .HasColumnType("nvarchar(50)");
-
-                entity.Property(e => e.PurchasedOn)
-                    .IsRequired()
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.Quantity)
-                    .IsRequired()
-                    .HasColumnType("int");
-
-                // ─── Relationships ───────────────────────────────────────────────────
-
-
-                entity.Property(e => e.IsActive)
-                    .IsRequired()
-                    .HasColumnType("bit")
-                    .HasDefaultValue(true);
-                entity.HasOne(e => e.User)
-                .WithMany()//a user can have many buy again products
-                .HasForeignKey(e=>e.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(e => e.Products)
-                .WithMany()
-                .HasForeignKey(e=>e.ProductId)
-                .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(e => e.ProductId).HasColumnType("varchar(50)");
+                entity.Property(e => e.PurchasedOn).HasColumnType("timestamp");
             });
 
-            // ─── SavedItems ───────────────────────────────────────────────────
-
-
+            // SavedItems configuration
             modelBuilder.Entity<SavedItems>(entity =>
             {
                 entity.ToTable("SavedItems");
-
-                entity.HasKey(e => e.Id); 
-
-                entity.Property(e => e.UserId) 
-                .IsRequired()
-                .HasColumnType("int");
-
-                entity.Property(e => e.ProductId)
-                .IsRequired().
-                HasColumnType("nVarchar(50)");
-
-                entity.Property(e => e.SavedOn)
-                .IsRequired()
-                .HasColumnType("datetime");
-
-            entity.Property(e => e.Quantity)
-                .IsRequired()
-                .HasColumnType("int");
-
-
-            entity.Property(e => e.IsActive)
-                .IsRequired()
-                .HasColumnType("bit")
-                .HasDefaultValue(true);
-
-
-                entity.HasOne(e =>e.User)
-                .WithMany()
-                .HasForeignKey(e=>e.UserId) 
-                .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(e => e.Products)
-                .WithMany()
-                .HasForeignKey(e=>e.ProductId) 
-                .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(e => e.ProductId).HasColumnType("varchar(50)");
+                entity.Property(e => e.SavedOn).HasColumnType("timestamp");
             });
 
-
-            }
+            // SystemMerchants configuration
+            modelBuilder.Entity<SystemMerchants>(entity =>
+            {
+                entity.Property(e => e.BusinessType).HasColumnType("varchar(50)");
+                entity.Property(e => e.BusinessRegistrationNo).HasColumnType("varchar(50)");
+                entity.Property(e => e.KRAPIN).HasColumnType("varchar(20)");
+                entity.Property(e => e.BusinessNature).HasColumnType("varchar(50)");
+                entity.Property(e => e.BusinessCategory).HasColumnType("varchar(50)");
+                entity.Property(e => e.Email).HasColumnType("varchar(255)");
+                entity.Property(e => e.Phone).HasColumnType("varchar(20)");
+                entity.Property(e => e.Address).HasColumnType("varchar(500)");
+                entity.Property(e => e.BankAccountNo).HasColumnType("varchar(20)");
+                entity.Property(e => e.MpesaPaybill).HasColumnType("varchar(20)");
+                entity.Property(e => e.MpesaTillNumber).HasColumnType("varchar(20)");
+                entity.Property(e => e.Status).HasColumnType("varchar(20)");
+            });
+        }
     }
 }

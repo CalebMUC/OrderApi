@@ -17,7 +17,7 @@ namespace Minimart_Api.Models
         public int? UserId { get; set; }
 
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string? CartName { get; set; }
 
         public DateTime? CreatedAt { get; set; }

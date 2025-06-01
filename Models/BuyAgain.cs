@@ -14,7 +14,7 @@ namespace Minimart_Api.Models
 
         [Required]
         [MaxLength(50)]
-        [Column(TypeName = "nvarchar(50)")]
+        [Column(TypeName = "varchar(50)")]
         public string ProductId { get; set; }
 
         [Required]

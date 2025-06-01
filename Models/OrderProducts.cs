@@ -11,7 +11,7 @@ namespace Minimart_Api.Models
         // Foreign key to Order
         [Required]
         [MaxLength(50)]
-        [Column(TypeName = "nvarchar(50)")]
+        [Column(TypeName = "varchar(50)")]
         [ForeignKey("order")]
         public string OrderID { get; set; }
 
@@ -20,7 +20,7 @@ namespace Minimart_Api.Models
         // Foreign key to Product
         [Required]
         [MaxLength(50)]
-        [Column(TypeName = "nvarchar(50)")]
+        [Column(TypeName = "varchar(50)")]
         [ForeignKey("Product")]
         public string ProductID { get; set; }
 

@@ -12,11 +12,11 @@ namespace Minimart_Api.Models
         // Foreign Key to Roles
         [Required]
         [MaxLength(50)]
-        [Column(TypeName = "nvarchar(50)")]
+        [Column(TypeName = "varchar(50)")]
         public string RoleID { get; set; }
 
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string RoleName { get; set; }
 
         // Foreign Key to Modules
@@ -24,7 +24,7 @@ namespace Minimart_Api.Models
         public int ModuleID { get; set; }
 
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string ModuleName { get; set; }
 
         // Foreign Key to Submodules
@@ -32,7 +32,7 @@ namespace Minimart_Api.Models
         public int SubModuleID { get; set; }
 
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string SubModuleName { get; set; }
 
         // Navigation Properties

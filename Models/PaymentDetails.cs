@@ -15,23 +15,23 @@ namespace Minimart_Api.Models
 
         [Required]
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string TrxReference { get; set; }
 
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string PaymentReference { get; set; }
 
         [Required]
-        [Column(TypeName = "bigint")]
+        [Column(TypeName = "varchar(20)")]
         public long Phonenumber { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
+        [Column(TypeName = "money")]
         public decimal Amount { get; set; }
 
         [Required]
-        [Column(TypeName = "datetime")]
+        [Column(TypeName = "timestamp")]
         public DateTime PaymentDate { get; set; }
 
         // Navigation property for related payments

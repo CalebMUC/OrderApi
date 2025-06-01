@@ -11,14 +11,14 @@ namespace Minimart_Api.Models
 
         [Required]
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string SubModuleName { get; set; }
 
         [Required]
         public int ModuleID { get; set; } // Foreign Key to Modules
 
         [MaxLength(200)]
-        [Column(TypeName = "nvarchar(200)")]
+        [Column(TypeName = "varchar(200)")]
         public string SubModuleUrl { get; set; }
 
         [Required]

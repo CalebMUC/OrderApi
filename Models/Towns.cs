@@ -10,11 +10,11 @@ namespace Minimart_Api.Models
 
         [Required]
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]
         public string TownName { get; set; }
 
         [Required]
-        [Column(TypeName = "datetime")]
+        [Column(TypeName = "timestamp")]
         public DateTime CreatedOn { get; set; }
 
         [Required]

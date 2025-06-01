@@ -365,7 +365,9 @@ namespace Minimart_Api.Repositories.Authorization
                     PhoneNumber = register.PhoneNumber,
                     RoleId = "User",
                     IsAdmin = false,
-                    CreatedAt = DateTime.UtcNow,
+                    //CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified),
+
                     IsLoggedIn = false,
                     LastLogin = null,
                     PasswordChangesOn = null,

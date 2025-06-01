@@ -11,7 +11,7 @@ namespace Minimart_Api.Models
 
         [Required]
         [MaxLength(50)]
-        [Column(TypeName = "nvarchar(50)")]
+        [Column(TypeName = "varchar(50)")]  // Changed from nvarchar
         public string ProductId { get; set; }
 
         public int? UserId { get; set; }
@@ -21,26 +21,24 @@ namespace Minimart_Api.Models
         public int Rating { get; set; }
 
         [MaxLength(100)]
-        [Column(TypeName = "nvarchar(100)")]
+        [Column(TypeName = "varchar(100)")]  // Changed from nvarchar
         public string? Title { get; set; }
 
-        [Column(TypeName = "nvarchar(max)")]
+        [Column(TypeName = "text")]  // Changed from nvarchar(max)
         public string? Comment { get; set; }
 
-        [Column(TypeName = "datetime")]
+        [Column(TypeName = "timestamp")]  // Changed from datetime
         public DateTime ReviewDate { get; set; } = DateTime.Now;
 
-        [Column(TypeName = "bit")]
-        public bool IsVerifiedBuyer { get; set; } = false;
+        public bool IsVerifiedBuyer { get; set; } = false;  // Removed bit annotation
 
-        [Column(TypeName = "bit")]
-        public bool IsVisible { get; set; } = true;
+        public bool IsVisible { get; set; } = true;  // Removed bit annotation
 
         [MaxLength(1000)]
-        [Column(TypeName = "nvarchar(1000)")]
+        [Column(TypeName = "varchar(1000)")]  // Changed from nvarchar
         public string? AdminResponse { get; set; }
 
-        // Navigation Properties
+        // Navigation Properties remain unchanged
         public virtual Products? Product { get; set; }
         public virtual Users? User { get; set; }
     }
