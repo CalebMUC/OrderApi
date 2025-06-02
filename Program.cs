@@ -263,37 +263,96 @@ ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
 //});
 
 
+//builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+//{
+//    var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
+
+//    var redisUrl = Environment.GetEnvironmentVariable("REDIS_URL")
+//                  ?? builder.Configuration.GetConnectionString("Redis");
+
+//    if (string.IsNullOrWhiteSpace(redisUrl))
+//        throw new InvalidOperationException("Redis connection string is missing.");
+
+//    logger.LogInformation("Connecting to Redis via URI: {RedisUrl}", redisUrl);
+
+//    try
+//    {
+//        // Parse the URL into ConfigurationOptions for better control
+//        var config = ConfigurationOptions.Parse(redisUrl);
+
+//        // Recommended settings for Upstash
+//        config.AbortOnConnectFail = false; // Retry on failure
+//        config.ConnectTimeout = 10000;    // 10 seconds
+//        config.SyncTimeout = 5000;        // 5 seconds
+//        config.Ssl = true;                 // Force SSL (Upstash requires it)
+//        config.DefaultDatabase = 0;        // Explicitly set DB if needed
+
+//        var connection = ConnectionMultiplexer.Connect(config);
+
+//        connection.ConnectionFailed += (_, args) =>
+//            logger.LogError(args.Exception, "Redis connection failed to {Endpoint}", args.EndPoint);
+
+//        connection.ConnectionRestored += (_, args) =>
+//            logger.LogInformation("Redis connection restored to {Endpoint}", args.EndPoint);
+
+//        logger.LogInformation("Redis connected successfully.");
+//        return connection;
+//    }
+//    catch (Exception ex)
+//    {
+//        logger.LogCritical(ex, "Failed to connect to Redis.");
+//        throw;
+//    }
+//});
+
+
+
+// Register Redis in DI container
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
 
+    // Get connection string from Render environment variable
     var redisUrl = Environment.GetEnvironmentVariable("REDIS_URL")
-                    ?? builder.Configuration.GetConnectionString("Redis");
+                   ?? throw new InvalidOperationException("Missing REDIS_URL");
 
-    if (string.IsNullOrWhiteSpace(redisUrl))
-        throw new InvalidOperationException("Redis connection string is missing.");
-
-    logger.LogInformation("Connecting to Redis via URI.");
+    logger.LogInformation("Connecting to Redis: {Host}", redisUrl);
 
     try
     {
-        var connection = ConnectionMultiplexer.Connect(redisUrl); //  Use URI directly, no parse
+        // Explicit configuration to avoid port parsing bugs
+        var config = new ConfigurationOptions
+        {
+            // Manually specify endpoint to prevent 6379:6380 issue
+            EndPoints = { "loved-airedale-34854.upstash.io:6379" },
 
-        connection.ConnectionFailed += (_, args) =>
-            logger.LogError(args.Exception, "Redis connection failed to {Endpoint}", args.EndPoint);
+            // Extract password from URL (or use directly)
+            Password = redisUrl.Split('@')[0].Split(':')[2],
 
-        connection.ConnectionRestored += (_, args) =>
-            logger.LogInformation("Redis connection restored to {Endpoint}", args.EndPoint);
+            // Critical for Upstash
+            Ssl = true,
+            AbortOnConnectFail = false,
+            ConnectTimeout = 15000, // 15 seconds
+            SyncTimeout = 5000      // 5 seconds
+        };
+
+        var connection = ConnectionMultiplexer.Connect(config);
+
+        // Attach event handlers for reliability
+        connection.ConnectionFailed += (_, e) =>
+            logger.LogError(e.Exception, "Redis connection failed");
+
+        connection.ConnectionRestored += (_, _) =>
+            logger.LogInformation("Redis connection restored");
 
         return connection;
     }
     catch (Exception ex)
     {
-        logger.LogCritical(ex, "Failed to connect to Redis.");
+        logger.LogCritical(ex, "Failed to connect to Redis");
         throw;
     }
 });
-
 
 
 
