@@ -175,44 +175,65 @@ builder.Services.AddDbContext<MinimartDBContext>(options =>
     .EnableSensitiveDataLogging();
 },
 ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
+//builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+//{
+//    // Try environment variable first
+//    var redisUrl = builder.Configuration["REDIS_URL"] ??
+//                   builder.Configuration["ConnectionStrings:redis"] ??
+//                   "localhost:6379";
+
+//    if (redisUrl.StartsWith("redis://") || redisUrl.StartsWith("rediss://"))
+//    {
+//        var uri = new Uri(redisUrl);
+//        var userInfo = uri.UserInfo.Split(':');
+//        var password = userInfo.Length > 1 ? userInfo[1] : "";
+
+//        var config = new ConfigurationOptions
+//        {
+//            EndPoints = { { uri.Host, uri.Port } },
+//            Password = password,
+//            Ssl = true,
+//            AbortOnConnectFail = false
+//        };
+
+//        var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
+//        logger.LogInformation($"Connecting to Upstash Redis at {uri.Host}:{uri.Port}");
+
+//        return ConnectionMultiplexer.Connect(config);
+//    }
+//    else
+//    {
+//        // Standard config (e.g. localhost or already-parsed)
+//        var config = ConfigurationOptions.Parse(redisUrl);
+//        config.AbortOnConnectFail = false;
+
+//        var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
+//        logger.LogInformation($"Connecting to Redis at {config.EndPoints.First()}");
+
+//        return ConnectionMultiplexer.Connect(config);
+//    }
+//});
+
+
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
-    // Try environment variable first
-    var redisUrl = builder.Configuration["REDIS_URL"] ??
-                   builder.Configuration["ConnectionStrings:redis"] ??
-                   "localhost:6379";
+    var redisUrl = Environment.GetEnvironmentVariable("REDIS_URL")
+               ?? builder.Configuration.GetConnectionString("Redis")
+               ?? "localhost:6379";
 
-    if (redisUrl.StartsWith("redis://") || redisUrl.StartsWith("rediss://"))
-    {
-        var uri = new Uri(redisUrl);
-        var userInfo = uri.UserInfo.Split(':');
-        var password = userInfo.Length > 1 ? userInfo[1] : "";
+    if (string.IsNullOrWhiteSpace(redisUrl))
+        throw new InvalidOperationException("REDIS_URL environment variable is missing.");
 
-        var config = new ConfigurationOptions
-        {
-            EndPoints = { { uri.Host, uri.Port } },
-            Password = password,
-            Ssl = true,
-            AbortOnConnectFail = false
-        };
+    var configOptions = ConfigurationOptions.Parse(redisUrl);
+    configOptions.Ssl = true;
+    configOptions.AbortOnConnectFail = false;
 
-        var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
-        logger.LogInformation($"Connecting to Upstash Redis at {uri.Host}:{uri.Port}");
+    var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
+    logger.LogInformation($"Connecting to Redis at {configOptions.EndPoints.First()}");
 
-        return ConnectionMultiplexer.Connect(config);
-    }
-    else
-    {
-        // Standard config (e.g. localhost or already-parsed)
-        var config = ConfigurationOptions.Parse(redisUrl);
-        config.AbortOnConnectFail = false;
-
-        var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
-        logger.LogInformation($"Connecting to Redis at {config.EndPoints.First()}");
-
-        return ConnectionMultiplexer.Connect(config);
-    }
+    return ConnectionMultiplexer.Connect(configOptions);
 });
+
 
 
 // 2. Redis (TLS-enabled)
