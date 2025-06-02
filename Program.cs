@@ -214,6 +214,55 @@ ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
 //    }
 //});
 
+//builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+//{
+//    var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
+
+//    var redisUrl = Environment.GetEnvironmentVariable("REDIS_URL")
+//                    ?? builder.Configuration.GetConnectionString("Redis");
+
+//    if (string.IsNullOrWhiteSpace(redisUrl))
+//        throw new InvalidOperationException("Redis connection string is missing.");
+
+//    ConfigurationOptions configOptions;
+//    try
+//    {
+//        configOptions = ConfigurationOptions.Parse(redisUrl);
+//    }
+//    catch (Exception ex)
+//    {
+//        logger.LogCritical(ex, "Invalid Redis URL format.");
+//        throw;
+//    }
+
+//    configOptions.Ssl = true;
+//    configOptions.AbortOnConnectFail = false;
+//    configOptions.ConnectTimeout = 15000;
+//    configOptions.SyncTimeout = 10000;
+//    configOptions.DefaultDatabase = null; // Required for Upstash
+
+//    logger.LogInformation("Connecting to Redis at {Endpoint}", configOptions.EndPoints.First());
+
+//    try
+//    {
+//        var connection = ConnectionMultiplexer.Connect(configOptions);
+
+//        connection.ConnectionFailed += (_, args) =>
+//            logger.LogError(args.Exception, "Redis connection failed to {Endpoint}", args.EndPoint);
+
+//        connection.ConnectionRestored += (_, args) =>
+//            logger.LogInformation("Redis connection restored to {Endpoint}", args.EndPoint);
+
+//        return connection;
+//    }
+//    catch (Exception ex)
+//    {
+//        logger.LogCritical(ex, "Failed to connect to Redis.");
+//        throw;
+//    }
+//});
+
+
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
@@ -224,28 +273,11 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     if (string.IsNullOrWhiteSpace(redisUrl))
         throw new InvalidOperationException("Redis connection string is missing.");
 
-    ConfigurationOptions configOptions;
-    try
-    {
-        configOptions = ConfigurationOptions.Parse(redisUrl);
-    }
-    catch (Exception ex)
-    {
-        logger.LogCritical(ex, "Invalid Redis URL format.");
-        throw;
-    }
-
-    configOptions.Ssl = true;
-    configOptions.AbortOnConnectFail = false;
-    configOptions.ConnectTimeout = 15000;
-    configOptions.SyncTimeout = 10000;
-    configOptions.DefaultDatabase = null; // Required for Upstash
-
-    logger.LogInformation("Connecting to Redis at {Endpoint}", configOptions.EndPoints.First());
+    logger.LogInformation("Connecting to Redis via URI.");
 
     try
     {
-        var connection = ConnectionMultiplexer.Connect(configOptions);
+        var connection = ConnectionMultiplexer.Connect(redisUrl); //  Use URI directly, no parse
 
         connection.ConnectionFailed += (_, args) =>
             logger.LogError(args.Exception, "Redis connection failed to {Endpoint}", args.EndPoint);
@@ -261,6 +293,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
         throw;
     }
 });
+
 
 
 
