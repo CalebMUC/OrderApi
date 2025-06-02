@@ -214,25 +214,54 @@ ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
 //    }
 //});
 
-
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
+    var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
+
     var redisUrl = Environment.GetEnvironmentVariable("REDIS_URL")
-               ?? builder.Configuration.GetConnectionString("Redis")
-               ?? "localhost:6379";
+                    ?? builder.Configuration.GetConnectionString("Redis");
 
     if (string.IsNullOrWhiteSpace(redisUrl))
-        throw new InvalidOperationException("REDIS_URL environment variable is missing.");
+        throw new InvalidOperationException("Redis connection string is missing.");
 
-    var configOptions = ConfigurationOptions.Parse(redisUrl);
+    ConfigurationOptions configOptions;
+    try
+    {
+        configOptions = ConfigurationOptions.Parse(redisUrl);
+    }
+    catch (Exception ex)
+    {
+        logger.LogCritical(ex, "Invalid Redis URL format.");
+        throw;
+    }
+
     configOptions.Ssl = true;
     configOptions.AbortOnConnectFail = false;
+    configOptions.ConnectTimeout = 15000;
+    configOptions.SyncTimeout = 10000;
+    configOptions.DefaultDatabase = null; // Required for Upstash
 
-    var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
-    logger.LogInformation($"Connecting to Redis at {configOptions.EndPoints.First()}");
+    logger.LogInformation("Connecting to Redis at {Endpoint}", configOptions.EndPoints.First());
 
-    return ConnectionMultiplexer.Connect(configOptions);
+    try
+    {
+        var connection = ConnectionMultiplexer.Connect(configOptions);
+
+        connection.ConnectionFailed += (_, args) =>
+            logger.LogError(args.Exception, "Redis connection failed to {Endpoint}", args.EndPoint);
+
+        connection.ConnectionRestored += (_, args) =>
+            logger.LogInformation("Redis connection restored to {Endpoint}", args.EndPoint);
+
+        return connection;
+    }
+    catch (Exception ex)
+    {
+        logger.LogCritical(ex, "Failed to connect to Redis.");
+        throw;
+    }
 });
+
 
 
 
