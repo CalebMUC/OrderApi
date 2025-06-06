@@ -20,6 +20,9 @@ using Minimart_Api.DTOS.Address;
 using Minimart_Api.DTOS.Cart;
 using Minimart_Api.DTOS.Notification;
 using Minimart_Api.DTOS.Category;
+using Amazon.S3;
+using Amazon.S3.Model;
+using Amazon;
 
 namespace Minimart_Api.Controllers
 {
@@ -446,7 +449,7 @@ namespace Minimart_Api.Controllers
 
         }
 
-       
+
 
 
         //[HttpPost("AddToCart")]
@@ -469,40 +472,140 @@ namespace Minimart_Api.Controllers
 
         //}
 
+
+
+        //[HttpPost("UploadImages")]
+        //public async Task<IActionResult> UploadImages(IFormFile file)
+        //{
+        //    if (file == null || file.Length == 0)
+        //    {
+        //        return BadRequest("No file uploaded");
+        //    }
+
+        //    var bucketName = "minimartke-products-upload";
+
+        //    var filename = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+
+        //    using var client = new AmazonS3Client();
+
+        //    using var newMemoryStream = new MemoryStream();
+        //    await file.CopyToAsync(newMemoryStream);
+
+        //    var uploaadRquest = new PutObjectRequest { 
+        //        InputStream = newMemoryStream,
+        //        BucketName = bucketName,
+        //        Key = $"product-images/{filename}",
+        //        ContentType = file.ContentType,
+        //        CannedACL = S3CannedACL.PublicRead
+        //    }
+
+        //    await client.PutObjectAsync(uploaadRquest);
+
+        //    var fileUrl = $"https://{bucketName}.s3.amazonaws.com/product-images/{fileName}";
+
+        //    // Define the path to the 'uploads' folder within the 'wwwroot' directory
+        //    //var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+
+
+        //    //var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+
+        //    //// Check if directory exists; if not, create it
+        //    //if (!Directory.Exists(uploadsDir))
+        //    //{
+        //    //    Directory.CreateDirectory(uploadsDir);
+        //    //}
+
+        //    //// Generate a unique filename to avoid collisions
+
+        //    //var filepath = Path.Combine(uploadsDir, filename);
+
+        //    //// Save the file to the uploads directory
+        //    //using (var stream = new FileStream(filepath, FileMode.Create))
+        //    //{
+        //    //    await file.CopyToAsync(stream);
+        //    //}
+
+        //    //// Generate the absolute URL to access the file
+        //    //var fileUrl = $"{Request.Scheme}://{Request.Host}/uploads/{filename}";
+
+        //    return Ok(new { Url = fileUrl });
+        //}
+
+
         [HttpPost("UploadImages")]
         public async Task<IActionResult> UploadImages(IFormFile file)
         {
-            if (file == null)
-            {
+            if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded");
-            }
 
-            // Define the path to the 'uploads' folder within the 'wwwroot' directory
-            //var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-
-
-            var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-
-            // Check if directory exists; if not, create it
-            if (!Directory.Exists(uploadsDir))
+            try
             {
-                Directory.CreateDirectory(uploadsDir);
+                // 1. Configure S3 Client with Environment Variables (Production/Development)
+                var s3Config = new AmazonS3Config
+                {
+                    RegionEndpoint = RegionEndpoint.GetBySystemName(
+                        Environment.GetEnvironmentVariable("AWS_REGION") ?? "us-east-1"
+                    )
+                };
+
+                using var client = new AmazonS3Client(
+                    Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID") ?? "AKIARJHKLYVKSAVJHAPL",
+                    Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY")  ?? "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",
+                    s3Config
+                );
+
+                // 2. Bucket Name from Environment (with fallback)
+                var bucketName = Environment.GetEnvironmentVariable("AWS_S3_BUCKET") ?? "minimartke-products-upload";
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+                var folderPrefix = Environment.GetEnvironmentVariable("S3_UPLOAD_FOLDER") ?? "product-images";
+
+                // 3. Upload to S3
+                using var memoryStream = new MemoryStream();
+                await file.CopyToAsync(memoryStream);
+
+                var uploadRequest = new PutObjectRequest
+                {
+                    BucketName = bucketName,
+                    Key = $"{folderPrefix}/{fileName}",
+                    InputStream = memoryStream,
+                    ContentType = file.ContentType,
+                    CannedACL = S3CannedACL.PublicRead
+                };
+
+                await client.PutObjectAsync(uploadRequest);
+
+                // 4. Generate URL (with CloudFront fallback to S3)
+                var cdnUrl = Environment.GetEnvironmentVariable("CLOUDFRONT_URL");
+                var fileUrl = cdnUrl != null
+                    ? $"{cdnUrl}/{folderPrefix}/{fileName}"
+                    : $"https://{bucketName}.s3.{s3Config.RegionEndpoint.SystemName}.amazonaws.com/{folderPrefix}/{fileName}";
+
+                return Ok(new { Url = fileUrl });
             }
-
-            // Generate a unique filename to avoid collisions
-            var filename = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            var filepath = Path.Combine(uploadsDir, filename);
-
-            // Save the file to the uploads directory
-            using (var stream = new FileStream(filepath, FileMode.Create))
+            catch (AmazonS3Exception ex)
             {
-                await file.CopyToAsync(stream);
+                // Log the error (implement your logging)
+                return StatusCode(500, $"S3 Error: {ex.Message}");
             }
-
-            // Generate the absolute URL to access the file
-            var fileUrl = $"{Request.Scheme}://{Request.Host}/uploads/{filename}";
-
-            return Ok(new { Url = fileUrl });
+            catch (Exception ex)
+            {
+                // Fallback to local storage if AWS fails (development only)
+                //if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+                //{
+                //    try
+                //    {
+                //        var localPath = Path.Combine("wwwroot", "uploads", fileName);
+                //        using var stream = new FileStream(localPath, FileMode.Create);
+                //        await file.CopyToAsync(stream);
+                //        return Ok(new { Url = $"/uploads/{fileName}" });
+                //    }
+                //    catch
+                //    {
+                //        return StatusCode(500, "Both S3 and local storage failed");
+                //    }
+                //}
+                return StatusCode(500, "Upload failed");
+            }
         }
 
     }
