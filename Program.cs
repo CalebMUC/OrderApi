@@ -490,14 +490,16 @@ builder.Services.AddSwaggerGen(c =>
     }});
 
 });
-//https://minimart-nine.vercel.app
+// Add services to the container.
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins", builder =>
+    options.AddPolicy("AllowFrontend", builder =>
+    {
         builder.WithOrigins("https://minimart-nine.vercel.app")
                .AllowAnyMethod()
                .AllowAnyHeader()
-               .AllowCredentials());
+               .AllowCredentials();
+    });
 });
 
 
