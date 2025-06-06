@@ -1,13 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "s1TswN4FK0I=",
+  "dgSpecHash": "kWbg9giy9ik=",
   "success": true,
   "projectFilePath": "E:\\MinimartApi_Staging\\OrderApi\\MinimartApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ADMIN\\.nuget\\packages\\aspnetcore.reporting\\2.1.0\\aspnetcore.reporting.2.1.0.nupkg.sha512",
     "C:\\Users\\ADMIN\\.nuget\\packages\\aspnetcore.reportingservices\\2.1.0\\aspnetcore.reportingservices.2.1.0.nupkg.sha512",
-    "C:\\Users\\ADMIN\\.nuget\\packages\\awssdk.core\\3.7.300\\awssdk.core.3.7.300.nupkg.sha512",
+    "C:\\Users\\ADMIN\\.nuget\\packages\\awssdk.core\\4.0.0.7\\awssdk.core.4.0.0.7.nupkg.sha512",
     "C:\\Users\\ADMIN\\.nuget\\packages\\awssdk.extensions.netcore.setup\\3.7.301\\awssdk.extensions.netcore.setup.3.7.301.nupkg.sha512",
+    "C:\\Users\\ADMIN\\.nuget\\packages\\awssdk.s3\\4.0.1.3\\awssdk.s3.4.0.1.3.nupkg.sha512",
     "C:\\Users\\ADMIN\\.nuget\\packages\\bouncycastle.cryptography\\2.5.1\\bouncycastle.cryptography.2.5.1.nupkg.sha512",
     "C:\\Users\\ADMIN\\.nuget\\packages\\elasticsearch.net\\7.0.0\\elasticsearch.net.7.0.0.nupkg.sha512",
     "C:\\Users\\ADMIN\\.nuget\\packages\\elasticsearch.net.aws\\7.2.2\\elasticsearch.net.aws.7.2.2.nupkg.sha512",

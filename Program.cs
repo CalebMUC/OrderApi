@@ -65,6 +65,7 @@ using Minimart_Api.Services.Deliveries;
 using Minimart_Api.Repositories.Deliveries;
 using Minimart_Api.Services.Address;
 using Minimart_Api.Repositories.AddressesRepo;
+using Microsoft.AspNetCore.HttpOverrides;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -175,12 +176,12 @@ builder.Services.AddDbContext<MinimartDBContext>(options =>
     .EnableSensitiveDataLogging();
 },
 ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
-//builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-//{
-//    // Try environment variable first
-//    var redisUrl = builder.Configuration["REDIS_URL"] ??
-//                   builder.Configuration["ConnectionStrings:redis"] ??
-//                   "localhost:6379";
+                         //builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+                         //{
+                         //    // Try environment variable first
+                         //    var redisUrl = builder.Configuration["REDIS_URL"] ??
+                         //                   builder.Configuration["ConnectionStrings:redis"] ??
+                         //                   "localhost:6379";
 
 //    if (redisUrl.StartsWith("redis://") || redisUrl.StartsWith("rediss://"))
 //    {
@@ -307,51 +308,53 @@ ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
 
 
 
-// Register Redis in DI container
+//Register Redis in DI container
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
 
-    // Get connection string from Render environment variable
-    var redisUrl = Environment.GetEnvironmentVariable("REDIS_URL")
-                   ?? throw new InvalidOperationException("Missing REDIS_URL");
+// Get connection string from Render environment variable
+var redisUrl = Environment.GetEnvironmentVariable("REDIS_URL")
+               ?? builder.Configuration.GetConnectionString("Redis")
+               ?? throw new InvalidOperationException("Missing REDIS_URL");
+        
+logger.LogInformation("Connecting to Redis: {Host}", redisUrl);
 
-    logger.LogInformation("Connecting to Redis: {Host}", redisUrl);
+try
+{
 
-    try
+    // Explicit configuration to avoid port parsing bugs
+    var config = new ConfigurationOptions
     {
-        // Explicit configuration to avoid port parsing bugs
-        var config = new ConfigurationOptions
-        {
-            // Manually specify endpoint to prevent 6379:6380 issue
-            EndPoints = { "loved-airedale-34854.upstash.io:6379" },
+        // Manually specify endpoint to prevent 6379:6380 issue
+        EndPoints = { "loved-airedale-34854.upstash.io:6379" },
 
-            // Extract password from URL (or use directly)
-            Password = redisUrl.Split('@')[0].Split(':')[2],
+        // Extract password from URL (or use directly)
+        Password = redisUrl.Split('@')[0].Split(':')[2],
 
-            // Critical for Upstash
-            Ssl = true,
-            AbortOnConnectFail = false,
-            ConnectTimeout = 15000, // 15 seconds
-            SyncTimeout = 5000      // 5 seconds
-        };
+        // Critical for Upstash
+        Ssl = true,
+        AbortOnConnectFail = false,
+        ConnectTimeout = 15000, // 15 seconds
+        SyncTimeout = 5000      // 5 seconds
+    };
 
-        var connection = ConnectionMultiplexer.Connect(config);
+    var connection = ConnectionMultiplexer.Connect(config);
 
-        // Attach event handlers for reliability
-        connection.ConnectionFailed += (_, e) =>
-            logger.LogError(e.Exception, "Redis connection failed");
+    // Attach event handlers for reliability
+    connection.ConnectionFailed += (_, e) =>
+        logger.LogError(e.Exception, "Redis connection failed");
 
-        connection.ConnectionRestored += (_, _) =>
-            logger.LogInformation("Redis connection restored");
+    connection.ConnectionRestored += (_, _) =>
+        logger.LogInformation("Redis connection restored");
 
-        return connection;
-    }
-    catch (Exception ex)
-    {
-        logger.LogCritical(ex, "Failed to connect to Redis");
-        throw;
-    }
+    return connection;
+}
+catch (Exception ex)
+{
+    logger.LogCritical(ex, "Failed to connect to Redis");
+    throw;
+}
 });
 
 
@@ -498,91 +501,81 @@ builder.Services.AddCors(options =>
 });
 
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear(); // Optional for proxy environments
+    options.KnownProxies.Clear();  // Optional for proxy environments
+});
+
+
+
 
 builder.Services.AddHttpClient();
 
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Enable forwarded headers middleware BEFORE any URL generation or redirect logic
+app.UseForwardedHeaders();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Minimart API v1");
-
-        // For Render's proxy handling:
         c.ConfigObject.AdditionalItems["servers"] = new List<Dictionary<string, string>>
         {
             new Dictionary<string, string> { { "url", "/" } }
         };
     });
 }
-else // Production settings
+else
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Minimart API v1");
-        c.RoutePrefix = "swagger";  // Makes Swagger available at /swagger
-
-        // Required for Render's reverse proxy:
+        c.RoutePrefix = "swagger";
         c.ConfigObject.AdditionalItems["servers"] = new List<Dictionary<string, string>>
         {
             new Dictionary<string, string> { { "url", "/" } }
         };
     });
 }
-// Configure the HTTP request pipeline
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseDeveloperExceptionPage();
-//    app.UseSwagger();
-//    app.UseSwaggerUI(c =>
-//    {
-//        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-//        c.RoutePrefix = "Swagger"; // Serve Swagger UI at the app's rootMpesaSandBox
-//    });
-//}
 
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-    c.RoutePrefix = "swagger"; // Ensure lowercase "swagger" for easier access
-});
-
-
+// Redirect HTTP to HTTPS
 app.UseHttpsRedirection();
 
+// Create Uploads directory if it doesn't exist
 var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
-if (!Directory.Exists(uploadsPath)) { 
-    Directory.CreateDirectory(uploadsPath); 
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
 }
 
-// Enable serving of static files from the "Uploads" directory
+// Serve static files from the "Uploads" directory
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(Directory.GetCurrentDirectory(), "Uploads")),
-    RequestPath = "/uploads" // URL path to access the uploads
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
 });
 
-app.UseCors("AllowAllOrigins");
-
+// Use refined CORS policy
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Enable CORS if you're accessing the API from different origins
+// Map SignalR hub
+app.MapHub<ActivityHub>("/ActivityHub").RequireCors("AllowFrontend");
 
-
-app.MapHub<ActivityHub>("/ActivityHub").RequireCors("AllowAllOrigins");
-
+// Map controller routes
 app.MapControllers();
 
+// Use global error handler
 app.UseExceptionHandler("/error");
 
- app.Run();
+app.Run();
 

@@ -373,3 +373,4 @@ E:\MinimartApi_Staging\OrderApi\obj\Debug\net8.0\MinimartApi.pdb
 E:\MinimartApi_Staging\OrderApi\obj\Debug\net8.0\MinimartApi.genruntimeconfig.cache
 E:\MinimartApi_Staging\OrderApi\obj\Debug\net8.0\ref\MinimartApi.dll
 E:\MinimartApi_Staging\OrderApi\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+E:\MinimartApi_Staging\OrderApi\bin\Debug\net8.0\AWSSDK.S3.dll
