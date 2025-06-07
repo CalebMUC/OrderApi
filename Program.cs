@@ -394,7 +394,7 @@ builder.Services.AddCors(options =>
     {
         //https://minimart-nine.vercel.app
         //http://localhost:3000/
-        builder.WithOrigins("http://localhost:3000")
+        builder.WithOrigins("https://minimart-nine.vercel.app")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();
