@@ -167,103 +167,31 @@ builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 builder.Services.AddDbContext<MinimartDBContext>(options =>
 {
-   // options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-          // .LogTo(message => Log.Information(message),Microsoft.Extensions.Logging.LogLevel.Information) // Log to Serilog
-           //.EnableSensitiveDataLogging(); // Enable logging of sensitive data (like parameters)
+    // options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+    //.LogTo(message => Log.Information(message), Microsoft.Extensions.Logging.LogLevel.Information) // Log to Serilog
+    //.EnableSensitiveDataLogging(); // Enable logging of sensitive data (like parameters)
 
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgressConnection"))
+    //options.UseNpgsql(builder.Configuration.GetConnectionString("PostgressConnection"))
+    //.LogTo(error => Log.Error(error))
+    //.EnableSensitiveDataLogging();
+
+    options.UseNpgsql(
+    builder.Configuration.GetConnectionString("PostgressConnection"),
+    npgsqlOptions =>
+    {
+        npgsqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorCodesToAdd: null
+        );
+    })
     .LogTo(error => Log.Error(error))
     .EnableSensitiveDataLogging();
+
 },
 ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
-                         //builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-                         //{
-                         //    // Try environment variable first
-                         //    var redisUrl = builder.Configuration["REDIS_URL"] ??
-                         //                   builder.Configuration["ConnectionStrings:redis"] ??
-                         //                   "localhost:6379";
-
-//    if (redisUrl.StartsWith("redis://") || redisUrl.StartsWith("rediss://"))
-//    {
-//        var uri = new Uri(redisUrl);
-//        var userInfo = uri.UserInfo.Split(':');
-//        var password = userInfo.Length > 1 ? userInfo[1] : "";
-
-//        var config = new ConfigurationOptions
-//        {
-//            EndPoints = { { uri.Host, uri.Port } },
-//            Password = password,
-//            Ssl = true,
-//            AbortOnConnectFail = false
-//        };
-
-//        var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
-//        logger.LogInformation($"Connecting to Upstash Redis at {uri.Host}:{uri.Port}");
-
-//        return ConnectionMultiplexer.Connect(config);
-//    }
-//    else
-//    {
-//        // Standard config (e.g. localhost or already-parsed)
-//        var config = ConfigurationOptions.Parse(redisUrl);
-//        config.AbortOnConnectFail = false;
-
-//        var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
-//        logger.LogInformation($"Connecting to Redis at {config.EndPoints.First()}");
-
-//        return ConnectionMultiplexer.Connect(config);
-//    }
-//});
-
-//builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-//{
-//    var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
-
-//    var redisUrl = Environment.GetEnvironmentVariable("REDIS_URL")
-//                    ?? builder.Configuration.GetConnectionString("Redis");
-
-//    if (string.IsNullOrWhiteSpace(redisUrl))
-//        throw new InvalidOperationException("Redis connection string is missing.");
-
-//    ConfigurationOptions configOptions;
-//    try
-//    {
-//        configOptions = ConfigurationOptions.Parse(redisUrl);
-//    }
-//    catch (Exception ex)
-//    {
-//        logger.LogCritical(ex, "Invalid Redis URL format.");
-//        throw;
-//    }
-
-//    configOptions.Ssl = true;
-//    configOptions.AbortOnConnectFail = false;
-//    configOptions.ConnectTimeout = 15000;
-//    configOptions.SyncTimeout = 10000;
-//    configOptions.DefaultDatabase = null; // Required for Upstash
-
-//    logger.LogInformation("Connecting to Redis at {Endpoint}", configOptions.EndPoints.First());
-
-//    try
-//    {
-//        var connection = ConnectionMultiplexer.Connect(configOptions);
-
-//        connection.ConnectionFailed += (_, args) =>
-//            logger.LogError(args.Exception, "Redis connection failed to {Endpoint}", args.EndPoint);
-
-//        connection.ConnectionRestored += (_, args) =>
-//            logger.LogInformation("Redis connection restored to {Endpoint}", args.EndPoint);
-
-//        return connection;
-//    }
-//    catch (Exception ex)
-//    {
-//        logger.LogCritical(ex, "Failed to connect to Redis.");
-//        throw;
-//    }
-//});
-
-
+                        
+//Development
 //builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 //{
 //    var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
@@ -284,7 +212,7 @@ ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
 //        // Recommended settings for Upstash
 //        config.AbortOnConnectFail = false; // Retry on failure
 //        config.ConnectTimeout = 10000;    // 10 seconds
-//        config.SyncTimeout = 5000;        // 5 seconds
+//        config.SyncTimeout = 5000;        // 5 seconds  
 //        config.Ssl = true;                 // Force SSL (Upstash requires it)
 //        config.DefaultDatabase = 0;        // Explicitly set DB if needed
 
@@ -308,53 +236,53 @@ ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
 
 
 
-//Register Redis in DI container
+//Production
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
 
-// Get connection string from Render environment variable
-var redisUrl = Environment.GetEnvironmentVariable("REDIS_URL")
-               ?? builder.Configuration.GetConnectionString("Redis")
-               ?? throw new InvalidOperationException("Missing REDIS_URL");
-        
-logger.LogInformation("Connecting to Redis: {Host}", redisUrl);
+    // Get connection string from Render environment variable
+    var redisUrl = Environment.GetEnvironmentVariable("REDIS_URL")
+                   ?? builder.Configuration.GetConnectionString("Redis")
+                   ?? throw new InvalidOperationException("Missing REDIS_URL");
 
-try
-{
+    logger.LogInformation("Connecting to Redis: {Host}", redisUrl);
 
-    // Explicit configuration to avoid port parsing bugs
-    var config = new ConfigurationOptions
+    try
     {
-        // Manually specify endpoint to prevent 6379:6380 issue
-        EndPoints = { "loved-airedale-34854.upstash.io:6379" },
 
-        // Extract password from URL (or use directly)
-        Password = redisUrl.Split('@')[0].Split(':')[2],
+        // Explicit configuration to avoid port parsing bugs
+        var config = new ConfigurationOptions
+        {
+            // Manually specify endpoint to prevent 6379:6380 issue
+            EndPoints = { "loved-airedale-34854.upstash.io:6379" },
 
-        // Critical for Upstash
-        Ssl = true,
-        AbortOnConnectFail = false,
-        ConnectTimeout = 15000, // 15 seconds
-        SyncTimeout = 5000      // 5 seconds
-    };
+            // Extract password from URL (or use directly)
+            Password = redisUrl.Split('@')[0].Split(':')[2],
 
-    var connection = ConnectionMultiplexer.Connect(config);
+            // Critical for Upstash
+            Ssl = true,
+            AbortOnConnectFail = false,
+            ConnectTimeout = 15000, // 15 seconds
+            SyncTimeout = 5000      // 5 seconds
+        };
 
-    // Attach event handlers for reliability
-    connection.ConnectionFailed += (_, e) =>
-        logger.LogError(e.Exception, "Redis connection failed");
+        var connection = ConnectionMultiplexer.Connect(config);
 
-    connection.ConnectionRestored += (_, _) =>
-        logger.LogInformation("Redis connection restored");
+        // Attach event handlers for reliability
+        connection.ConnectionFailed += (_, e) =>
+            logger.LogError(e.Exception, "Redis connection failed");
 
-    return connection;
-}
-catch (Exception ex)
-{
-    logger.LogCritical(ex, "Failed to connect to Redis");
-    throw;
-}
+        connection.ConnectionRestored += (_, _) =>
+            logger.LogInformation("Redis connection restored");
+
+        return connection;
+    }
+    catch (Exception ex)
+    {
+        logger.LogCritical(ex, "Failed to connect to Redis");
+        throw;
+    }
 });
 
 
@@ -384,41 +312,10 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 
 builder.Services.Configure<CelcomAfrica>(builder.Configuration.GetSection("CelcomAfrica"));
 
-//builder.Services.Configure<OpenSearchSettings>(builder.Configuration.GetSection("OpenSearchSettings"));
 
-//builder.Services.AddSingleton<IElasticClient>(sp =>
-//{
-//    var settings = sp.GetRequiredService<IOptions<OpenSearchSettings>>().Value;
-//    var uri = new Uri(settings.Endpoint);
-
-//    var connectionSettings = new ConnectionSettings(uri)
-//        .BasicAuthentication("CalebMuchiri", "Caleb@2543")
-//        .EnableApiVersioningHeader()  // Ensure compatibility with OpenSearch
-//        .ServerCertificateValidationCallback(CertificateValidations.AllowAll); // Disable strict SSL checks for testing purposes
-
-//    var client = new ElasticClient(connectionSettings);
-//    return client;
-//});
-
-//Configure OpenSearch client
-//builder.Services.AddSingleton<IOpenSearchClient>(sp =>
-//{
-//    var settings = sp.GetRequiredService<IOptions<OpenSearchSettings>>().Value;
-//    var uri = new Uri(settings.Endpoint);
-//    var connectionSettings = new ConnectionSettings(uri)
-//        .BasicAuthentication("CalebMuchiri", "Caleb@2543"); // Add username/password if required
-//    return new OpenSearchClient(connectionSettings);
-//});
 
 builder.Services.AddSignalR();
 
-//builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-//    .AddEntityFrameworkStores<MinimartDBContext>()
-//    .AddDefaultTokenProviders();
-
-
-
-//uilder.Services.AddTransient<IEmailSender, EmailSender>();  // Update the namespace accordingly
 
 // Add JWT authentication
 builder.Services.AddAuthentication(options =>
@@ -495,7 +392,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", builder =>
     {
-        builder.WithOrigins("https://minimart-nine.vercel.app")
+        //https://minimart-nine.vercel.app
+        //http://localhost:3000/
+        builder.WithOrigins("http://localhost:3000")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();
