@@ -569,7 +569,7 @@ namespace Minimart_Api.Controllers
                     Key = $"{folderPrefix}/{fileName}",
                     InputStream = memoryStream,
                     ContentType = file.ContentType,
-                    CannedACL = S3CannedACL.PublicRead
+                    //CannedACL = S3CannedACL.PublicRead
                 };
 
                 await client.PutObjectAsync(uploadRequest);
