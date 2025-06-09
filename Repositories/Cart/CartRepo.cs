@@ -25,7 +25,7 @@ namespace Minimart_Api.Repositories.Cart
             return await _dbContext.CartItems.Where(ci => ci.Cart.UserId == userId && ci.IsActive == true)
                 .Select(ci => new CartResults
                 {
-                    productID = ci.Products.ProductId,
+                    productID = ci.ProductId,
                     ProductImage = ci.Products.ImageUrl,
                     ProductName = ci.Products.ProductName,
                     MerchantId = ci.Products.MerchantID,

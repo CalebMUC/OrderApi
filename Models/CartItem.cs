@@ -11,23 +11,24 @@ namespace Minimart_Api.Models
         [ForeignKey("Cart")]
         public int? CartId { get; set; }
 
-        [ForeignKey("Product")]
-        [Column(TypeName = "varchar(50)")]  // Changed from nvarchar to varchar
+        //[ForeignKey("Product")]
+        [Column(TypeName = "varchar(50)")]  
         public string? ProductId { get; set; }
 
         [Required]
-        public int Quantity { get; set; }  // Removed explicit Column type as int is standard
+        public int Quantity { get; set; } 
 
         public bool IsActive { get; set; }
         public bool IsBought { get; set; }
 
-        [Column(TypeName = "timestamp")]  // Changed from datetime to timestamp
+        [Column(TypeName = "timestamp")]  
         public DateTime? CreatedOn { get; set; }
 
-        [Column(TypeName = "timestamp")]  // Changed from datetime to timestamp
+        [Column(TypeName = "timestamp")]  
         public DateTime? UpdatedOn { get; set; }
 
         public virtual Cart? Cart { get; set; }
+        [ForeignKey("ProductId")]
         public virtual Products? Products { get; set; }
     }
 }
