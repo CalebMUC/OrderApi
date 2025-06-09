@@ -168,6 +168,10 @@ namespace Minimart_Api.Data
             });
 
             // CartItem configuration
+            modelBuilder.Entity<CartItem>()
+               .HasOne(ci => ci.Products)
+               .WithMany()
+               .HasForeignKey(ci => ci.ProductId);
             modelBuilder.Entity<CartItem>(entity =>
             {
                 entity.ToTable("CartItem");
