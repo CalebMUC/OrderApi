@@ -121,7 +121,9 @@ namespace Minimart_Api.Repositories.Cart
                     CartId = cart.CartId,
                     ProductId = productId,
                     Quantity = quantity,
-                    CreatedOn = DateTime.Now
+                    CreatedOn = DateTime.Now,
+                    IsActive = true
+                    
                 };
 
                 _dbContext.CartItems.Add(newCartItem);
