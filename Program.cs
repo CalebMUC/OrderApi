@@ -164,7 +164,7 @@ builder.Host.UseSerilog();
 //configur Logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
-builder.Logging.AddDebug();
+builder.Logging.AddDebug(); 
 builder.Services.AddDbContext<MinimartDBContext>(options =>
 {
     // options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
@@ -190,7 +190,7 @@ builder.Services.AddDbContext<MinimartDBContext>(options =>
 
 },
 ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
-                        
+
 //Development
 //builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 //{
@@ -240,7 +240,7 @@ ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
-
+    
     // Get connection string from Render environment variable
     var redisUrl = Environment.GetEnvironmentVariable("REDIS_URL")
                    ?? builder.Configuration.GetConnectionString("Redis")

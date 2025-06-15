@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Minimart_Api.Data;
 using Minimart_Api.DTOS.Address;
 using Minimart_Api.DTOS.General;
@@ -179,7 +180,8 @@ public class OrderRepository : IorderRepository
 
             return tracking;
         }
-        catch (Exception ex) { 
+        catch (Exception ex)
+        {
             return new List<OrderTracking>();
         }
     }
@@ -353,169 +355,376 @@ public class OrderRepository : IorderRepository
     }
 
 
+    //public async Task<Status> TrackOrderAsync(Orders order)
+    //{
+    //    try
+    //    {
+    //        var statusId = await _dbContext.OrderStatuses
+    //            .Where(os => os.Status == "Processing")
+    //            .Select(os => os.StatusId)
+    //            .FirstOrDefaultAsync();
+
+    //        var createdBy = await _dbContext.Users
+    //            .Where(u => u.UserId == order.UserID)
+    //            .Select(u => u.UserName)
+    //            .FirstOrDefaultAsync();
+
+    //        // Loop through each product in the order
+    //        foreach (var product in order.OrderProducts)
+    //        {
+    //            var trackingId = $"TRK-{Guid.NewGuid().ToString().Substring(0, 4)}";
+
+    //            var newOrderTrack = new OrderTracking
+    //            {
+    //                TrackingID = trackingId,
+    //                OrderID = order.OrderID,
+    //                ProductID = product.ProductID,
+    //                CurrentStatus = statusId,
+    //                PreviousStatus = statusId,
+    //                TrackingDate = DateTime.Now,
+    //                ExpectedDeliveryDate = DateTime.Now, // Update this if needed
+    //                Carrier = "ABC Delivery Company",
+    //                CreatedOn = DateTime.UtcNow,
+    //                CreatedBy = createdBy,
+    //                UpdatedBy = "",
+    //                UpdatedOn = DateTime.Now
+    //            };
+
+    //            // Add each tracking record to the DbContext
+    //            _dbContext.OrderTrackings.Add(newOrderTrack);
+    //        }
+
+    //        // Save all tracking records after the loop
+    //        await _dbContext.SaveChangesAsync();
+
+    //        return new Status
+    //        {
+    //            ResponseCode = 200,
+    //            ResponseMessage = "Order Tracking Created Successfully for All Products"
+    //        };
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return new Status
+    //        {
+    //            ResponseCode = 500,
+    //            ResponseMessage = ex.Message
+    //        };
+    //    }
+    //}
+
     public async Task<Status> TrackOrderAsync(Orders order)
+{
+    try
     {
-        try
+        var statusId = await _dbContext.OrderStatuses
+            .Where(os => os.Status == "Processing")
+            .Select(os => os.StatusId)
+            .FirstOrDefaultAsync();
+
+        var createdBy = await _dbContext.Users
+            .Where(u => u.UserId == order.UserID)
+            .Select(u => u.UserName)
+            .FirstOrDefaultAsync();
+
+        foreach (var product in order.OrderProducts)
         {
-            var statusId = await _dbContext.OrderStatuses
-                .Where(os => os.Status == "Processing")
-                .Select(os => os.StatusId)
-                .FirstOrDefaultAsync();
+            var trackingId = $"TRK-{Guid.NewGuid().ToString().Substring(0, 4)}";
 
-            var createdBy = await _dbContext.Users
-                .Where(u => u.UserId == order.UserID)
-                .Select(u => u.UserName)
-                .FirstOrDefaultAsync();
-
-            // Loop through each product in the order
-            foreach (var product in order.OrderProducts)
+            var newOrderTrack = new OrderTracking
             {
-                var trackingId = $"TRK-{Guid.NewGuid().ToString().Substring(0, 4)}";
-
-                var newOrderTrack = new OrderTracking
-                {
-                    TrackingID = trackingId,
-                    OrderID = order.OrderID,
-                    ProductID = product.ProductID,
-                    CurrentStatus = statusId,
-                    PreviousStatus = statusId,
-                    TrackingDate = DateTime.Now,
-                    ExpectedDeliveryDate = DateTime.Now, // Update this if needed
-                    Carrier = "ABC Delivery Company",
-                    CreatedOn = DateTime.UtcNow,
-                    CreatedBy = createdBy,
-                    UpdatedBy = "",
-                    UpdatedOn = DateTime.Now
-                };
-
-                // Add each tracking record to the DbContext
-                _dbContext.OrderTrackings.Add(newOrderTrack);
-            }
-
-            // Save all tracking records after the loop
-            await _dbContext.SaveChangesAsync();
-
-            return new Status
-            {
-                ResponseCode = 200,
-                ResponseMessage = "Order Tracking Created Successfully for All Products"
+                TrackingID = trackingId,
+                OrderID = order.OrderID,
+                ProductID = product.ProductID,
+                CurrentStatus = statusId,
+                PreviousStatus = statusId,
+                TrackingDate = DateTime.Now,
+                ExpectedDeliveryDate = DateTime.Now.AddDays(3), // Example delivery window
+                Carrier = "ABC Delivery Company",
+                CreatedOn = DateTime.Now,
+                CreatedBy = createdBy,
+                UpdatedBy = "",
+                UpdatedOn = DateTime.Now
             };
+
+            _dbContext.OrderTrackings.Add(newOrderTrack);
         }
-        catch (Exception ex)
+
+        await _dbContext.SaveChangesAsync();
+
+        return new Status
         {
-            return new Status
-            {
-                ResponseCode = 500,
-                ResponseMessage = ex.Message
-            };
-        }
+            ResponseCode = 200,
+            ResponseMessage = "Order Tracking Created Successfully for All Products"
+        };
     }
+    catch (Exception ex)
+    {
+        return new Status
+        {
+            ResponseCode = 500,
+            ResponseMessage = ex.Message
+        };
+    }
+}
+
 
 
 
 
 
     //Create Order
+    //public async Task<Status> AddOrder(OrderListDto transaction)
+    //{
+    //    using var transactionScope = await _dbContext.Database.BeginTransactionAsync();
+
+    //    try
+    //    {
+    //        foreach (var orderDto in transaction.Orders)
+    //        {
+    //            int paymentMethodID = await HandlePaymentDetails(orderDto.PaymentDetails);
+
+    //            var newOrder = await CreateOrder(orderDto, paymentMethodID);
+
+    //            await UpdateProductStock(orderDto.Products);
+
+    //            // Save the order and commit the transaction
+    //            _dbContext.Orders.Add(newOrder);
+    //            await _dbContext.SaveChangesAsync();
+
+    //            //update CartItems To BoughtItems
+    //            await UpdateCartItems(orderDto.Products,newOrder.UserID);
+
+    //            await TrackOrderAsync(newOrder);
+
+    //            await PublishOrderEvent(newOrder);
+
+    //            //_hubContext.Clients.All.SendAsync("ReceiveNewOrder", $"New OrderId {newOrder.OrderID} has been created");
+    //        }
+
+    //        await transactionScope.CommitAsync();
+
+
+
+    //        return new Status
+    //        {
+    //            ResponseCode = 200,
+    //            ResponseMessage = "Transaction completed successfully"
+    //        };
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        await transactionScope.RollbackAsync();
+
+    //        return new Status
+    //        {
+    //            ResponseCode = 500,
+    //            ResponseMessage = $"Internal Server Error: {ex.Message}"
+    //        };
+    //    }
+    //}
+
     public async Task<Status> AddOrder(OrderListDto transaction)
     {
-        using var transactionScope = await _dbContext.Database.BeginTransactionAsync();
+        var strategy = _dbContext.Database.CreateExecutionStrategy();
+        Status result = null;
 
-        try
+        await strategy.ExecuteAsync(async () =>
         {
-            foreach (var orderDto in transaction.Orders)
+            await using var transactionScope = await _dbContext.Database.BeginTransactionAsync();
+
+            try
             {
-                int paymentMethodID = await HandlePaymentDetails(orderDto.PaymentDetails);
+                foreach (var orderDto in transaction.Orders)
+                {
+                    int paymentMethodID = await HandlePaymentDetails(orderDto.PaymentDetails);
 
-                var newOrder = await CreateOrder(orderDto, paymentMethodID);
+                    var newOrder = await CreateOrder(orderDto, paymentMethodID);
 
-                await UpdateProductStock(orderDto.Products);
+                    await UpdateProductStock(orderDto.Products);
 
-                // Save the order and commit the transaction
-                _dbContext.Orders.Add(newOrder);
-                await _dbContext.SaveChangesAsync();
+                    _dbContext.Orders.Add(newOrder);
+                    await _dbContext.SaveChangesAsync(); // Save order
 
-                //update CartItems To BoughtItems
-                await UpdateCartItems(orderDto.Products,newOrder.UserID);
+                    await UpdateCartItems(orderDto.Products, newOrder.UserID);
 
-                await TrackOrderAsync(newOrder);
+                    await TrackOrderAsync(newOrder);
 
-                await PublishOrderEvent(newOrder);
+                    //await PublishOrderEvent(newOrder);
+                }
 
-                //_hubContext.Clients.All.SendAsync("ReceiveNewOrder", $"New OrderId {newOrder.OrderID} has been created");
+                await transactionScope.CommitAsync();
+
+                result = new Status
+                {
+                    ResponseCode = 200,
+                    ResponseMessage = "Transaction completed successfully"
+                };
             }
-
-            await transactionScope.CommitAsync();
-
-            
-
-            return new Status
+            catch (Exception ex)
             {
-                ResponseCode = 200,
-                ResponseMessage = "Transaction completed successfully"
-            };
-        }
-        catch (Exception ex)
-        {
-            await transactionScope.RollbackAsync();
+                await transactionScope.RollbackAsync();
+                result = new Status
+                {
+                    ResponseCode = 500,
+                    ResponseMessage = $"Internal Server Error: {ex.Message}"
+                };
+            }
+        });
 
-            return new Status
-            {
-                ResponseCode = 500,
-                ResponseMessage = $"Internal Server Error: {ex.Message}"
-            };
-        }
+        return result;
     }
+
+
+    //private async Task<int> HandlePaymentDetails(List<PaymentDetailsDto> paymentDetails)
+    //{
+    //    int paymentMethodID = 0;
+
+    //    foreach (var paymentDetailDto in paymentDetails)
+    //    {
+    //        var paymentExists = _dbContext.PaymentMethods
+    //            .Any(p => p.PaymentMethodID == paymentDetailDto.PaymentID);
+
+    //        if (!paymentExists)
+    //        {
+    //            throw new Exception($"PaymentID {paymentDetailDto.PaymentID} does not exist in the Payments table.");
+    //        }
+
+    //        if (paymentDetailDto.PaymentMethod == "Mpesa")
+    //        {
+    //            var stkPushResponse = await InitiateMpesaSTKPush(paymentDetailDto);
+
+    //            if (stkPushResponse.ResponseCode == "1")
+    //            {
+    //                throw new Exception("M-Pesa STK Push failed: " + stkPushResponse.CustomerMessage);
+    //            }
+
+    //            var newPayment = new PaymentDetails
+    //            {
+    //                PaymentMethodID = paymentDetailDto.PaymentID,
+    //                TrxReference = stkPushResponse.CheckoutRequestID,
+    //                Amount = paymentDetailDto.Amount,
+    //                PaymentDate = DateTime.UtcNow,
+    //                PaymentReference = Convert.ToString(paymentDetailDto.Phonenumber)
+    //            };
+
+    //            _dbContext.PaymentDetails.Add(newPayment);
+    //            await _dbContext.SaveChangesAsync();
+
+    //            paymentMethodID = newPayment.PaymentMethodID;
+    //        }
+    //    }
+
+    //    return paymentMethodID;
+    //}
 
     private async Task<int> HandlePaymentDetails(List<PaymentDetailsDto> paymentDetails)
     {
+        if (paymentDetails == null || !paymentDetails.Any())
+            throw new ArgumentException("Payment details are required");
+
         int paymentMethodID = 0;
 
         foreach (var paymentDetailDto in paymentDetails)
         {
-            var paymentExists = _dbContext.PaymentMethods
-                .Any(p => p.PaymentMethodID == paymentDetailDto.PaymentID);
+            // Validate payment method exists
+            var paymentMethod = await _dbContext.PaymentMethods
+                .FirstOrDefaultAsync(p => p.PaymentMethodID == paymentDetailDto.PaymentID);
 
-            if (!paymentExists)
+            if (paymentMethod == null)
+                throw new Exception($"Payment method {paymentDetailDto.PaymentID} not found");
+
+            // Handle M-Pesa specifically
+            if (paymentMethod.Name.Equals("MPESA", StringComparison.OrdinalIgnoreCase))
             {
-                throw new Exception($"PaymentID {paymentDetailDto.PaymentID} does not exist in the Payments table.");
-            }
-
-            if (paymentDetailDto.PaymentMethod == "Mpesa")
-            {
-                var stkPushResponse = await InitiateMpesaSTKPush(paymentDetailDto);
-
-                if (stkPushResponse.ResponseCode == "1")
+                try
                 {
-                    throw new Exception("M-Pesa STK Push failed: " + stkPushResponse.CustomerMessage);
+                    // Validate M-Pesa requirements
+                    if (paymentDetailDto.Amount <= 0)
+                        throw new Exception("Amount must be greater than 0");
+
+                    //if (string.IsNullOrEmpty(paymentDetailDto.Phonenumber))
+                    //    throw new Exception("Phone number is required for M-Pesa");
+
+                    // Initiate STK Push
+                    var stkPushResponse = await InitiateMpesaSTKPush(paymentDetailDto);
+
+                    if (stkPushResponse == null)
+                        throw new Exception("M-Pesa service unavailable");
+
+                    if (stkPushResponse.ResponseCode != "0")
+                        throw new Exception($"STK Push failed: {stkPushResponse.CustomerMessage}");
+
+                    // Record payment
+                    var newPayment = new PaymentDetails
+                    {
+                        PaymentMethodID = paymentDetailDto.PaymentID,
+                        TrxReference = stkPushResponse.CheckoutRequestID,
+                        Amount = paymentDetailDto.Amount,
+                        PaymentDate = DateTime.UtcNow,
+                        PaymentReference = paymentDetailDto.Phonenumber.ToString(),
+                        //Status = "Pending" // Important for M-Pesa payments
+                    };
+
+                    _dbContext.PaymentDetails.Add(newPayment);
+                    await _dbContext.SaveChangesAsync();
+
+                    paymentMethodID = newPayment.PaymentID;
                 }
-
-                var newPayment = new PaymentDetails
+                catch (Exception ex)
                 {
-                    PaymentMethodID = paymentDetailDto.PaymentID,
-                    TrxReference = stkPushResponse.CheckoutRequestID,
-                    Amount = paymentDetailDto.Amount,
-                    PaymentDate = DateTime.UtcNow,
-                    PaymentReference = Convert.ToString(paymentDetailDto.Phonenumber)
-                };
-
-                _dbContext.PaymentDetails.Add(newPayment);
-                await _dbContext.SaveChangesAsync();
-
-                paymentMethodID = newPayment.PaymentMethodID;
+                    throw new Exception($"M-Pesa payment processing failed: {ex.Message}", ex);
+                }
+            }
+            else
+            {
+                // Handle non-M-Pesa payments
+                paymentMethodID = paymentDetailDto.PaymentID;
             }
         }
 
         return paymentMethodID;
     }
 
+
+
+    //private async Task<Orders> CreateOrder(OrderDTO orderDto, int paymentMethodID)
+    //{
+    //    return new Orders
+    //    {
+    //        OrderID = orderDto.OrderID,
+    //        //MerchantId = orderDto.MerchantId,
+    //        UserID = orderDto.UserID,
+    //        OrderDate = DateTime.Now,
+    //        DeliveryScheduleDate = orderDto.DeliveryScheduleDate,
+    //        OrderedBy = orderDto.OrderedBy,
+    //        Status = orderDto.Status,
+    //        PaymentID = paymentMethodID,
+    //        PaymentConfirmation = orderDto.PaymentConfirmation,
+    //        TotalOrderAmount = orderDto.TotalOrderAmount,
+    //        TotalPaymentAmount = orderDto.TotalPaymentAmount,
+    //        TotalDeliveryFees = orderDto.TotalDeliveryFees,
+    //        TotalTax = 0,
+    //        PaymentDetailsJson = JsonConvert.SerializeObject(orderDto.PaymentDetails),
+    //        ProductsJson = JsonConvert.SerializeObject(orderDto.Products),
+    //        OrderProducts = orderDto.Products.Select(p => new OrderProducts
+    //        {
+    //            ProductID = p.ProductID,
+    //            Quantity = p.Quantity
+    //        }).ToList(),
+    //        ShippingAddress = JsonConvert.SerializeObject(orderDto.ShippingAddress),
+    //        PickupLocation = JsonConvert.SerializeObject(orderDto.PickUpLocation),
+
+    //    };
+    //}
+
     private async Task<Orders> CreateOrder(OrderDTO orderDto, int paymentMethodID)
     {
         return new Orders
         {
             OrderID = orderDto.OrderID,
-            //MerchantId = orderDto.MerchantId,
             UserID = orderDto.UserID,
-            OrderDate = DateTime.Now,
+            OrderDate = DateTime.UtcNow,
             DeliveryScheduleDate = orderDto.DeliveryScheduleDate,
             OrderedBy = orderDto.OrderedBy,
             Status = orderDto.Status,
@@ -533,72 +742,111 @@ public class OrderRepository : IorderRepository
                 Quantity = p.Quantity
             }).ToList(),
             ShippingAddress = JsonConvert.SerializeObject(orderDto.ShippingAddress),
-            PickupLocation = JsonConvert.SerializeObject(orderDto.PickUpLocation),
-            
+            PickupLocation = JsonConvert.SerializeObject(orderDto.PickUpLocation)
         };
     }
+
+    //private async Task UpdateProductStock(List<OrderProductsDTO> products)
+    //{
+    //    foreach (var product in products)
+    //    {
+    //        var existingProduct = await _dbContext.Products.FirstOrDefaultAsync(p => p.ProductId == product.ProductID);
+    //        if (existingProduct != null)
+    //        {
+    //            existingProduct.StockQuantity -= product.Quantity;
+
+    //            if (existingProduct.StockQuantity < 0)
+    //            {
+    //                throw new Exception($"Insufficient stock for product: {existingProduct.ProductName}");
+    //            }
+
+    //            //detach entity for EF tracking to prevent updating RowID
+    //            _dbContext.Entry(existingProduct).State = EntityState.Detached;
+
+    //            //attach and explicitly set properties to update
+
+    //            _dbContext.Products.Attach(existingProduct);
+
+    //            _dbContext.Entry(existingProduct).Property(x => x.InStock).IsModified = true;
+    //        }
+    //    }
+    //}
+
     private async Task UpdateProductStock(List<OrderProductsDTO> products)
     {
         foreach (var product in products)
         {
             var existingProduct = await _dbContext.Products.FirstOrDefaultAsync(p => p.ProductId == product.ProductID);
-            if (existingProduct != null)
-            {
-                existingProduct.StockQuantity -= product.Quantity;
 
-                if (existingProduct.StockQuantity < 0)
-                {
-                    throw new Exception($"Insufficient stock for product: {existingProduct.ProductName}");
-                }
+            if (existingProduct == null)
+                throw new Exception($"Product ID {product.ProductID} not found.");
 
-                //detach entity for EF tracking to prevent updating RowID
-                _dbContext.Entry(existingProduct).State = EntityState.Detached;
+            if (existingProduct.StockQuantity < product.Quantity)
+                throw new Exception($"Insufficient stock for {existingProduct.ProductName}");
 
-                //attach and explicitly set properties to update
-
-                _dbContext.Products.Attach(existingProduct);
-
-                _dbContext.Entry(existingProduct).Property(x => x.InStock).IsModified = true;
-            }
+            existingProduct.StockQuantity -= product.Quantity;
         }
+
+        await _dbContext.SaveChangesAsync(); // Save all stock updates
     }
 
 
-    private async Task UpdateCartItems(List<OrderProductsDTO> products,int UserId)
+
+    //private async Task UpdateCartItems(List<OrderProductsDTO> products,int UserId)
+    //{
+    //    // Get all product IDs from the order
+    //    var productIds = products.Select(p => p.ProductID).ToList();
+
+    //    // Fetch all relevant cart items in a single query
+    //    var cartItemsToUpdate = await _dbContext.CartItems
+    //                        .Where(c => productIds.Contains(c.ProductId) &&
+    //                                    c.Cart.UserId == UserId) // Assuming you have this relationship
+    //                        .Select( C => new CartItem { 
+    //                            CartItemId = C.CartItemId,
+    //                            CartId = C.CartId,
+    //                            ProductId =C.ProductId,
+    //                            Quantity = C.Quantity,
+    //                            CreatedOn = C.CreatedOn,
+    //                            UpdatedOn = C.UpdatedOn,
+    //                            IsBought = C.IsBought,
+    //                            IsActive = C.IsActive
+    //                        })
+    //                        .ToListAsync();
+
+    //    foreach (var cartItem in cartItemsToUpdate)
+    //    {
+    //        // Use a more efficient way to update without detaching/attaching
+    //        cartItem.IsActive = false;
+    //        cartItem.IsBought = true;
+    //        cartItem.UpdatedOn = DateTime.UtcNow;
+
+    //        // Mark as modified (only needed if you're not tracking these entities)
+    //        _dbContext.Entry(cartItem).State = EntityState.Modified;
+    //    }
+
+    //    // Single SaveChanges call for all updates
+    //    await _dbContext.SaveChangesAsync();
+    //}
+
+
+    private async Task UpdateCartItems(List<OrderProductsDTO> products, int userId)
     {
-        // Get all product IDs from the order
         var productIds = products.Select(p => p.ProductID).ToList();
 
-        // Fetch all relevant cart items in a single query
-        var cartItemsToUpdate = await _dbContext.CartItems
-                            .Where(c => productIds.Contains(c.ProductId) &&
-                                        c.Cart.UserId == UserId) // Assuming you have this relationship
-                            .Select( C => new CartItem { 
-                                CartItemId = C.CartItemId,
-                                CartId = C.CartId,
-                                ProductId =C.ProductId,
-                                Quantity = C.Quantity,
-                                CreatedOn = C.CreatedOn,
-                                UpdatedOn = C.UpdatedOn,
-                                IsBought = C.IsBought,
-                                IsActive = C.IsActive
-                            })
-                            .ToListAsync();
+        var cartItems = await _dbContext.CartItems
+            .Where(c => productIds.Contains(c.ProductId) && c.Cart.UserId == userId)
+            .ToListAsync();
 
-        foreach (var cartItem in cartItemsToUpdate)
+        foreach (var item in cartItems)
         {
-            // Use a more efficient way to update without detaching/attaching
-            cartItem.IsActive = false;
-            cartItem.IsBought = true;
-            cartItem.UpdatedOn = DateTime.UtcNow;
-
-            // Mark as modified (only needed if you're not tracking these entities)
-            _dbContext.Entry(cartItem).State = EntityState.Modified;
+            item.IsActive = false;
+            item.IsBought = true;
+            item.UpdatedOn = DateTime.Now;
         }
 
-        // Single SaveChanges call for all updates
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(); // Save all cart updates
     }
+
 
     //private async Task<STKPushResponse> InitiateMpesaSTKPush(PaymentDetailsDto paymentDetails)
     //{
@@ -727,7 +975,7 @@ public class OrderRepository : IorderRepository
         return Convert.ToBase64String(bytes);
     }
 
-    public async Task<STKPushResponse> InitiateMpesaSTKPush(PaymentDetailsDto paymentDetails) 
+    public async Task<STKPushResponse> InitiateMpesaSTKPush(PaymentDetailsDto paymentDetails)
     {
         var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
         var generatedPassword = GeneratePassword(timestamp);
@@ -824,45 +1072,87 @@ public class OrderRepository : IorderRepository
     //    await _orderEventPublisher.PublishOrderEvent(orderEvent);
     //}
 
+    //public async Task PublishOrderEvent(Orders order)
+    //{
+    //    // Deserialize the ProductsJson into a List<ProductDto>
+    //    var products = System.Text.Json.JsonSerializer.Deserialize<List<ProductDto>>(order.ProductsJson);
+
+    //    // Group products by MerchantId
+    //    var productsByMerchant = products.GroupBy(p => p.merchantId);
+
+    //    // Loop through each merchant's products
+    //    foreach (var merchantGroup in productsByMerchant)
+    //    {
+    //        var merchantId = Convert.ToInt16(merchantGroup.Key);
+
+    //        // Fetch merchant details dynamically (e.g., from a database or service)
+    //        var merchant = await _systemMerchants.GetMerchantByIdAsync(merchantId); // Assuming you have a service to fetch merchant details
+
+    //        if (merchant == null)
+    //        {
+    //            // Handle case where merchant is not found
+    //            continue;
+    //        }
+
+    //        // Create an OrderEvent object for this merchant
+    //        var orderEvent = new OrderEvent
+    //        {
+    //            OrderID = order.OrderID,
+    //            OrderDate = order.OrderDate,
+    //            MerchantName = merchant.MerchantName, // Dynamically loaded merchant name
+    //            UserID = order.UserID,
+    //            products = merchantGroup.ToList(), // Assign products for this merchant
+    //            UserEmail = "user@gmail.com", // Replace with dynamic user email if available
+    //            MerchantEmail = merchant.Email, // Dynamically loaded merchant email
+    //            UserPhoneNumber = "254794129559", // Replace with dynamic user phone number if available
+    //            MerchantPhoneNumber = merchant.Phone, // Dynamically loaded merchant phone number
+    //            addresses = order.ShippingAddress,
+    //            Amount = merchantGroup.Sum(p => p.Price * p.Quantity) // Calculate total amount for this merchant's products
+    //        };
+
+    //        // Publish the order event for this merchant
+    //        await _orderEventPublisher.PublishOrderEvent(orderEvent);
+    //    }
+    //}
+
+
     public async Task PublishOrderEvent(Orders order)
     {
-        // Deserialize the ProductsJson into a List<ProductDto>
         var products = System.Text.Json.JsonSerializer.Deserialize<List<ProductDto>>(order.ProductsJson);
 
-        // Group products by MerchantId
         var productsByMerchant = products.GroupBy(p => p.merchantId);
 
-        // Loop through each merchant's products
         foreach (var merchantGroup in productsByMerchant)
         {
-            var merchantId = Convert.ToInt16(merchantGroup.Key);
+            //if (!int.TryParse(Convert.ToInt16(merchantGroup.Key), out int merchantId))
+            //{
+            //    continue; // Skip invalid merchantId
+            //}
 
-            // Fetch merchant details dynamically (e.g., from a database or service)
-            var merchant = await _systemMerchants.GetMerchantByIdAsync(merchantId); // Assuming you have a service to fetch merchant details
+            int merchantId = (int)merchantGroup.Key;
 
+
+            var merchant = await _systemMerchants.GetMerchantByIdAsync(merchantId);
             if (merchant == null)
             {
-                // Handle case where merchant is not found
-                continue;
+                continue; // Merchant not found
             }
 
-            // Create an OrderEvent object for this merchant
             var orderEvent = new OrderEvent
             {
                 OrderID = order.OrderID,
                 OrderDate = order.OrderDate,
-                MerchantName = merchant.MerchantName, // Dynamically loaded merchant name
+                MerchantName = merchant.MerchantName,
                 UserID = order.UserID,
-                products = merchantGroup.ToList(), // Assign products for this merchant
-                UserEmail = "user@gmail.com", // Replace with dynamic user email if available
-                MerchantEmail = merchant.Email, // Dynamically loaded merchant email
-                UserPhoneNumber = "254794129559", // Replace with dynamic user phone number if available
-                MerchantPhoneNumber = merchant.Phone, // Dynamically loaded merchant phone number
+                products = merchantGroup.ToList(),
+                UserEmail = "user@gmail.com", // Replace with actual lookup if available
+                MerchantEmail = merchant.Email,
+                UserPhoneNumber = "254794129559", // Replace with actual lookup if available
+                MerchantPhoneNumber = merchant.Phone,
                 addresses = order.ShippingAddress,
-                Amount = merchantGroup.Sum(p => p.Price * p.Quantity) // Calculate total amount for this merchant's products
+                Amount = merchantGroup.Sum(p => p.Price * p.Quantity)
             };
 
-            // Publish the order event for this merchant
             await _orderEventPublisher.PublishOrderEvent(orderEvent);
         }
     }

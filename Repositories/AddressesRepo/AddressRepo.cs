@@ -16,87 +16,210 @@ public class AddressRepo : IAddressRepo
         _logger = logger;
     }
 
+    //public async Task<OperationResult> AddAddressAsync(AddressDTO address)
+    //{
+    //    using var transaction = await _dbContext.Database.BeginTransactionAsync();
+    //    try
+    //    {
+    //        // Handle default address logic
+    //        if (address.isDefault)
+    //        {
+    //            await ResetExistingDefaultAddress(address.UserID);
+    //        }
+
+    //        var newAddress = new Addresses
+    //        {
+    //            UserID = address.UserID,
+    //            Name = address.Name?.Trim(),
+    //            Phonenumber = address.Phonenumber,
+    //            PostalAddress = address.PostalAddress.Trim(),
+    //            County = address.County.Trim(),
+    //            Town = address.Town.Trim(),
+    //            PostalCode = address.PostalCode?.Trim(),
+    //            ExtraInformation = address.ExtraInformation?.Trim(),
+    //            isDefault = address.isDefault,
+    //            CreatedOn = DateTime.UtcNow,
+    //            LastUpdatedOn = DateTime.UtcNow
+    //        };
+
+    //        await _dbContext.Addresses.AddAsync(newAddress);
+    //        await _dbContext.SaveChangesAsync();
+    //        await transaction.CommitAsync();
+
+    //        return OperationResult.Success(newAddress.AddressID);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        await transaction.RollbackAsync();
+    //        _logger.LogError(ex, "Error adding address to database");
+    //        return OperationResult.Failure("Database error while adding address");
+    //    }
+    //}
     public async Task<OperationResult> AddAddressAsync(AddressDTO address)
     {
-        using var transaction = await _dbContext.Database.BeginTransactionAsync();
-        try
+        var strategy = _dbContext.Database.CreateExecutionStrategy();
+        OperationResult result = null;
+
+        await strategy.ExecuteAsync(async () =>
         {
-            // Handle default address logic
-            if (address.isDefault)
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
             {
-                await ResetExistingDefaultAddress(address.UserID);
+                if (address.isDefault)
+                {
+                    await ResetExistingDefaultAddress(address.UserID);
+                }
+
+                var newAddress = new Addresses
+                {
+                    UserID = address.UserID,
+                    Name = address.Name?.Trim(),
+                    Phonenumber = address.Phonenumber,
+                    PostalAddress = address.PostalAddress.Trim(),
+                    County = address.County.Trim(),
+                    Town = address.Town.Trim(),
+                    PostalCode = address.PostalCode?.Trim(),
+                    ExtraInformation = address.ExtraInformation?.Trim(),
+                    isDefault = address.isDefault,
+                    CreatedOn = DateTime.Now,
+                    LastUpdatedOn = DateTime.Now
+                };
+
+                await _dbContext.Addresses.AddAsync(newAddress);
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                result = OperationResult.Success(newAddress.AddressID);
             }
-
-            var newAddress = new Addresses
+            catch (Exception ex)
             {
-                UserID = address.UserID,
-                Name = address.Name?.Trim(),
-                Phonenumber = address.Phonenumber,
-                PostalAddress = address.PostalAddress.Trim(),
-                County = address.County.Trim(),
-                Town = address.Town.Trim(),
-                PostalCode = address.PostalCode?.Trim(),
-                ExtraInformation = address.ExtraInformation?.Trim(),
-                isDefault = address.isDefault,
-                CreatedOn = DateTime.UtcNow,
-                LastUpdatedOn = DateTime.UtcNow
-            };
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Error adding address to database");
+                result = OperationResult.Failure("Database error while adding address");
+            }
+        });
 
-            await _dbContext.Addresses.AddAsync(newAddress);
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return OperationResult.Success(newAddress.AddressID);
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            _logger.LogError(ex, "Error adding address to database");
-            return OperationResult.Failure("Database error while adding address");
-        }
+        return result;
     }
+
+    //public async Task<OperationResult> EditAddressAsync(EditAddressDTO address)
+    //{
+
+    //    using var transaction = await _dbContext.Database.BeginTransactionAsync();
+    //    try
+    //    {
+    //        var existingAddress = await _dbContext.Addresses.FirstOrDefaultAsync(a => a.AddressID == address.AddressID);
+
+
+    //        if (existingAddress == null)
+    //            return OperationResult.Failure("Address not found");
+
+    //        // Handle default address logic
+    //        if (address.isDefault)
+    //        {
+    //            await ResetExistingDefaultAddress(address.UserID, address.AddressID);
+    //        }
+
+    //        // Update fields
+    //        existingAddress.Name = address.Name?.Trim();
+    //        existingAddress.Phonenumber = address.Phonenumber;
+    //        existingAddress.PostalAddress = address.PostalAddress.Trim();
+    //        existingAddress.County = address.County.Trim();
+    //        existingAddress.Town = address.Town.Trim();
+    //        existingAddress.PostalCode = address.PostalCode?.Trim();
+    //        existingAddress.ExtraInformation = address.ExtraInformation?.Trim();
+    //        existingAddress.isDefault = address.isDefault;
+    //        existingAddress.LastUpdatedOn = DateTime.UtcNow;
+
+    //        _dbContext.Addresses.Update(existingAddress);
+    //        await _dbContext.SaveChangesAsync();
+    //        await transaction.CommitAsync();
+
+    //        return OperationResult.Success("Address updated successfully");
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        await transaction.RollbackAsync();
+    //        _logger.LogError(ex, "Error updating address");
+    //        return OperationResult.Failure("Database error while updating address");
+    //    }
+    //}
 
     public async Task<OperationResult> EditAddressAsync(EditAddressDTO address)
     {
-        using var transaction = await _dbContext.Database.BeginTransactionAsync();
-        try
+        var strategy = _dbContext.Database.CreateExecutionStrategy();
+        OperationResult result = null;
+
+        await strategy.ExecuteAsync(async () =>
         {
-            var existingAddress = await _dbContext.Addresses.FirstOrDefaultAsync(a => a.AddressID == address.AddressID);
-
-
-            if (existingAddress == null)
-                return OperationResult.Failure("Address not found");
-
-            // Handle default address logic
-            if (address.isDefault)
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
             {
-                await ResetExistingDefaultAddress(address.UserID, address.AddressID);
+                var existingAddress = await _dbContext.Addresses
+                    .FirstOrDefaultAsync(a => a.AddressID == address.AddressID);
+
+                if (existingAddress == null)
+                {
+                    result = OperationResult.Failure("Address not found");
+                    return;
+                }
+
+                // Handle default address logic
+                if (address.isDefault)
+                {
+                    await ResetExistingDefaultAddress(address.UserID, address.AddressID);
+                }
+
+                // Update fields
+                existingAddress.Name = address.Name?.Trim();
+                existingAddress.Phonenumber = address.Phonenumber;
+                existingAddress.PostalAddress = address.PostalAddress.Trim();
+                existingAddress.County = address.County.Trim();
+                existingAddress.Town = address.Town.Trim();
+                existingAddress.PostalCode = address.PostalCode?.Trim();
+                existingAddress.ExtraInformation = address.ExtraInformation?.Trim();
+                existingAddress.isDefault = address.isDefault;
+                existingAddress.LastUpdatedOn = DateTime.Now;
+
+                _dbContext.Addresses.Update(existingAddress);
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                result = OperationResult.Success("Address updated successfully");
             }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Error updating address");
+                result = OperationResult.Failure("Database error while updating address");
+            }
+        });
 
-            // Update fields
-            existingAddress.Name = address.Name?.Trim();
-            existingAddress.Phonenumber = address.Phonenumber;
-            existingAddress.PostalAddress = address.PostalAddress.Trim();
-            existingAddress.County = address.County.Trim();
-            existingAddress.Town = address.Town.Trim();
-            existingAddress.PostalCode = address.PostalCode?.Trim();
-            existingAddress.ExtraInformation = address.ExtraInformation?.Trim();
-            existingAddress.isDefault = address.isDefault;
-            existingAddress.LastUpdatedOn = DateTime.UtcNow;
-
-            _dbContext.Addresses.Update(existingAddress);
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return OperationResult.Success("Address updated successfully");
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            _logger.LogError(ex, "Error updating address");
-            return OperationResult.Failure("Database error while updating address");
-        }
+        return result;
     }
+
+
+    //private async Task ResetExistingDefaultAddress(int userId, int? excludeAddressId = null)
+    //{
+    //    var query = _dbContext.Addresses
+    //        .Where(a => a.UserID == userId && a.isDefault);
+
+    //    if (excludeAddressId.HasValue)
+    //    {
+    //        query = query.Where(a => a.AddressID != excludeAddressId.Value);
+    //    }
+
+    //    var defaultAddresses = await query.ToListAsync();
+    //    foreach (var addr in defaultAddresses)
+    //    {
+    //        addr.isDefault = false;
+    //    }
+
+    //    if (defaultAddresses.Any())
+    //    {
+    //        _dbContext.Addresses.UpdateRange(defaultAddresses);
+    //    }
+    //}
 
     private async Task ResetExistingDefaultAddress(int userId, int? excludeAddressId = null)
     {
@@ -109,6 +232,7 @@ public class AddressRepo : IAddressRepo
         }
 
         var defaultAddresses = await query.ToListAsync();
+
         foreach (var addr in defaultAddresses)
         {
             addr.isDefault = false;
@@ -117,8 +241,10 @@ public class AddressRepo : IAddressRepo
         if (defaultAddresses.Any())
         {
             _dbContext.Addresses.UpdateRange(defaultAddresses);
+            await _dbContext.SaveChangesAsync(); // ✅ Ensure changes are persisted
         }
     }
+
 
     public async Task<Addresses> GetAddressByIdAsync(int addressId)
     {
