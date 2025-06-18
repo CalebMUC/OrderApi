@@ -106,13 +106,24 @@ namespace Minimart_Api.Repositories.Cart
             var existingCartItem = await _dbContext.CartItems
                 .FirstOrDefaultAsync(ci => ci.CartId == cart.CartId && ci.ProductId == productId);
 
-            if (existingCartItem != null)
+            if (existingCartItem != null && existingCartItem.IsActive == true && existingCartItem.IsBought == false)
             {
                 existingCartItem.Quantity = quantity;
                 existingCartItem.UpdatedOn = DateTime.Now;
 
                 await _dbContext.SaveChangesAsync();
                 return new Status { ResponseCode = 200, ResponseMessage = "Product Updated in cart Successfully" };
+            }
+            else if (existingCartItem != null && existingCartItem.IsActive == false && existingCartItem.IsBought == true)
+            {
+                existingCartItem.Quantity = quantity;
+                existingCartItem.UpdatedOn = DateTime.Now;
+                //reactivate the CartItenm
+                existingCartItem.IsActive == true;
+
+                await _dbContext.SaveChangesAsync();
+                return new Status { ResponseCode = 200, ResponseMessage = "Product has been moved to cart Successfully" };
+
             }
             else
             {
@@ -123,7 +134,7 @@ namespace Minimart_Api.Repositories.Cart
                     Quantity = quantity,
                     CreatedOn = DateTime.Now,
                     IsActive = true
-                    
+
                 };
 
                 _dbContext.CartItems.Add(newCartItem);
