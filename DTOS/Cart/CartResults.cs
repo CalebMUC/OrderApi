@@ -15,7 +15,7 @@
 
         public decimal? price { get; set; }
 
-        public int Instock { get; set; }
+        public bool InStock { get; set; }
 
         public int CartID { get; set; }
 
