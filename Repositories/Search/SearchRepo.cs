@@ -204,7 +204,7 @@ namespace Minimart_Api.Repositories.Search
                     productID = tp.ProductId,
                     ProductName = tp.ProductName,
                     ProductImage = tp.ImageUrl,
-                    Instock = tp.StockQuantity,
+                    InStock = tp.InStock,
                     price = tp.Price,
                 })
                 .ToListAsync();

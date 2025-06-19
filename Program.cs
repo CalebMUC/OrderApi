@@ -240,7 +240,7 @@ ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
-    
+
     // Get connection string from Render environment variable
     var redisUrl = Environment.GetEnvironmentVariable("REDIS_URL")
                    ?? builder.Configuration.GetConnectionString("Redis")
@@ -393,7 +393,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", builder =>
     {
         //https://minimart-nine.vercel.app
-        //http://localhost:3000/
+        //http://localhost:3000
         builder.WithOrigins("https://minimart-nine.vercel.app")
                .AllowAnyMethod()
                .AllowAnyHeader()
