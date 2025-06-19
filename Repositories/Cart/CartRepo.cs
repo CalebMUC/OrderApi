@@ -119,7 +119,7 @@ namespace Minimart_Api.Repositories.Cart
                 existingCartItem.Quantity = quantity;
                 existingCartItem.UpdatedOn = DateTime.Now;
                 //reactivate the CartItenm
-                existingCartItem.IsActive == true;
+                existingCartItem.IsActive = true;
 
                 await _dbContext.SaveChangesAsync();
                 return new Status { ResponseCode = 200, ResponseMessage = "Product has been moved to cart Successfully" };
