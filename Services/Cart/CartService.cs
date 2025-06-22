@@ -120,7 +120,7 @@ namespace Minimart_Api.Services.Cart
 
             return new SavedProductsDto
             {
-                ProductId = product.ProductId,
+                ProductID = product.ProductId,
                 ProductName = product.ProductName,
                 ProductImage = product.ImageUrl,
                 Price = product.Price ?? 0,
