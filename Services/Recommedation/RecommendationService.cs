@@ -120,7 +120,7 @@ namespace Minimart_Api.Services.Recommedation
         {
             return products.Select(p => new SavedProductsDto
             {
-                ProductId = p.ProductId,
+                ProductID = p.ProductId,
                 ProductName = p.ProductName,
                 ProductImage = p.ImageUrl,
                 Price = p.Price ?? 0,
