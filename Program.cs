@@ -400,13 +400,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-          //"http://localhost:3000",
-                //"https://minimart-nine.vercel.app",
-                //"https://www.minimartke.com"
         policy.WithOrigins()
             .AllowAnyMethod()
-            .AllowAnyHeader()
-            //.AllowCredentials();
+            .AllowAnyHeader();
     });
 });
 
