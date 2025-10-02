@@ -66,6 +66,8 @@ using Minimart_Api.Repositories.Deliveries;
 using Minimart_Api.Services.Address;
 using Minimart_Api.Repositories.AddressesRepo;
 using Microsoft.AspNetCore.HttpOverrides;
+using Minimart_Api.Services.Mpesa;
+using Minimart_Api.Repositories.Mpesa;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -126,6 +128,9 @@ builder.Services.AddScoped<ISystemMerchantRepo, SystemMerchantRepo>();
 
 builder.Services.AddScoped<ICategoriesService, CategoriesNewService>();
 builder.Services.AddScoped<ICategoryRepos, CategoryRepos>();
+
+builder.Services.AddScoped<IMpesaService, MpesaService>();
+builder.Services.AddScoped<IMpesaRepo, MpesaRepo>();
 
 builder.Services.AddScoped<IOrderEventPublisher, OrderEventPublisher>();
 builder.Services.AddHostedService<OrderEventConsumer>();
@@ -312,6 +317,9 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 
 builder.Services.Configure<CelcomAfrica>(builder.Configuration.GetSection("CelcomAfrica"));
 
+builder.Services.Configure<MpesaGoLive>(builder.Configuration.GetSection("MpesaGoLive"));
+
+
 
 
 builder.Services.AddSignalR();
@@ -394,7 +402,7 @@ builder.Services.AddCors(options =>
     {
         //https://minimart-nine.vercel.app
         //http://localhost:3000
-        builder.WithOrigins("https://minimart-nine.vercel.app")
+        builder.WithOrigins("http://localhost:3000")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();

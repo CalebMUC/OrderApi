@@ -414,59 +414,59 @@ public class OrderRepository : IorderRepository
     //}
 
     public async Task<Status> TrackOrderAsync(Orders order)
-{
-    try
     {
-        var statusId = await _dbContext.OrderStatuses
-            .Where(os => os.Status == "Processing")
-            .Select(os => os.StatusId)
-            .FirstOrDefaultAsync();
-
-        var createdBy = await _dbContext.Users
-            .Where(u => u.UserId == order.UserID)
-            .Select(u => u.UserName)
-            .FirstOrDefaultAsync();
-
-        foreach (var product in order.OrderProducts)
+        try
         {
-            var trackingId = $"TRK-{Guid.NewGuid().ToString().Substring(0, 4)}";
+            var statusId = await _dbContext.OrderStatuses
+                .Where(os => os.Status == "Processing")
+                .Select(os => os.StatusId)
+                .FirstOrDefaultAsync();
 
-            var newOrderTrack = new OrderTracking
+            var createdBy = await _dbContext.Users
+                .Where(u => u.UserId == order.UserID)
+                .Select(u => u.UserName)
+                .FirstOrDefaultAsync();
+
+            foreach (var product in order.OrderProducts)
             {
-                TrackingID = trackingId,
-                OrderID = order.OrderID,
-                ProductID = product.ProductID,
-                CurrentStatus = statusId,
-                PreviousStatus = statusId,
-                TrackingDate = DateTime.Now,
-                ExpectedDeliveryDate = DateTime.Now.AddDays(3), // Example delivery window
-                Carrier = "ABC Delivery Company",
-                CreatedOn = DateTime.Now,
-                CreatedBy = createdBy,
-                UpdatedBy = "",
-                UpdatedOn = DateTime.Now
+                var trackingId = $"TRK-{Guid.NewGuid().ToString().Substring(0, 4)}";
+
+                var newOrderTrack = new OrderTracking
+                {
+                    TrackingID = trackingId,
+                    OrderID = order.OrderID,
+                    ProductID = product.ProductID,
+                    CurrentStatus = statusId,
+                    PreviousStatus = statusId,
+                    TrackingDate = DateTime.Now,
+                    ExpectedDeliveryDate = DateTime.Now.AddDays(3), // Example delivery window
+                    Carrier = "ABC Delivery Company",
+                    CreatedOn = DateTime.Now,
+                    CreatedBy = createdBy,
+                    UpdatedBy = "",
+                    UpdatedOn = DateTime.Now
+                };
+
+                _dbContext.OrderTrackings.Add(newOrderTrack);
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            return new Status
+            {
+                ResponseCode = 200,
+                ResponseMessage = "Order Tracking Created Successfully for All Products"
             };
-
-            _dbContext.OrderTrackings.Add(newOrderTrack);
         }
-
-        await _dbContext.SaveChangesAsync();
-
-        return new Status
+        catch (Exception ex)
         {
-            ResponseCode = 200,
-            ResponseMessage = "Order Tracking Created Successfully for All Products"
-        };
+            return new Status
+            {
+                ResponseCode = 500,
+                ResponseMessage = ex.Message
+            };
+        }
     }
-    catch (Exception ex)
-    {
-        return new Status
-        {
-            ResponseCode = 500,
-            ResponseMessage = ex.Message
-        };
-    }
-}
 
 
 

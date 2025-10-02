@@ -1224,6 +1224,68 @@
         }
       }
     },
+    "/Confirmation": {
+      "post": {
+        "tags": [
+          "Mpesa"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfimationRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfimationRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfimationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/Validation": {
+      "post": {
+        "tags": [
+          "Mpesa"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidationRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidationRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Order/GetOrders": {
       "post": {
         "tags": [
@@ -2158,6 +2220,64 @@
         },
         "additionalProperties": false
       },
+      "ConfimationRequest": {
+        "type": "object",
+        "properties": {
+          "transactionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "transID": {
+            "type": "string",
+            "nullable": true
+          },
+          "transTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "transAmount": {
+            "type": "string",
+            "nullable": true
+          },
+          "businessShortCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "billRefNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "invoiceNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "orgAccountBalance": {
+            "type": "string",
+            "nullable": true
+          },
+          "thirdPartyTransID": {
+            "type": "string",
+            "nullable": true
+          },
+          "msisdn": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "DateOnly": {
         "type": "object",
         "properties": {
@@ -2736,7 +2856,7 @@
       "SavedProductsDto": {
         "type": "object",
         "properties": {
-          "productId": {
+          "productID": {
             "type": "string",
             "nullable": true
           },
@@ -2967,6 +3087,64 @@
             "nullable": true
           },
           "password": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ValidationRequest": {
+        "type": "object",
+        "properties": {
+          "transactionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "transID": {
+            "type": "string",
+            "nullable": true
+          },
+          "transTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "transAmount": {
+            "type": "string",
+            "nullable": true
+          },
+          "businessShortCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "billRefNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "invoiceNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "orgAccountBalance": {
+            "type": "string",
+            "nullable": true
+          },
+          "thirdPartyTransID": {
+            "type": "string",
+            "nullable": true
+          },
+          "msisdn": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
             "type": "string",
             "nullable": true
           }

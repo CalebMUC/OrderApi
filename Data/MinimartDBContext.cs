@@ -32,6 +32,7 @@ namespace Minimart_Api.Data
         public virtual DbSet<SystemMerchants> SystemMerchants { get; set; }
         public virtual DbSet<Towns> Towns { get; set; }
         public virtual DbSet<Users> Users { get; set; }
+        public DbSet<MpesaTransaction> MpesaTransactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

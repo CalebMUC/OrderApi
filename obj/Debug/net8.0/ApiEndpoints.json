@@ -1120,6 +1120,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Minimart_Api.Controllers.MpesaController",
+    "Method": "Confirmation",
+    "RelativePath": "Confirmation",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Mpesa.ConfimationRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Minimart_Api.Controllers.ErrorController",
     "Method": "HandleError",
     "RelativePath": "error",
@@ -1127,6 +1143,22 @@
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MpesaController",
+    "Method": "Validation",
+    "RelativePath": "Validation",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Mpesa.ValidationRequest",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {
