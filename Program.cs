@@ -398,16 +398,19 @@ builder.Services.AddSwaggerGen(c =>
 // Add services to the container.
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", builder =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        //https://minimart-nine.vercel.app
-        //http://localhost:3000
-        builder.WithOrigins("http://localhost:3000,https://minimart-nine.vercel.app,https://www.minimartke.com")
-               .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials();
+        policy.WithOrigins(
+                "http://localhost:3000",
+                "https://minimart-nine.vercel.app",
+                "https://www.minimartke.com"
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
     });
 });
+
 
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
