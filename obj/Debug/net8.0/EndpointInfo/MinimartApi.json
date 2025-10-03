@@ -1224,7 +1224,7 @@
         }
       }
     },
-    "/Confirmation": {
+    "/api/Mpesa/confirmation": {
       "post": {
         "tags": [
           "Mpesa"
@@ -1255,7 +1255,7 @@
         }
       }
     },
-    "/Validation": {
+    "/api/Mpesa/validation": {
       "post": {
         "tags": [
           "Mpesa"

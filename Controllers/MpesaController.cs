@@ -4,6 +4,8 @@ using Minimart_Api.Services.Mpesa;
 
 namespace Minimart_Api.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class MpesaController : ControllerBase
     {
         private readonly ILogger<MpesaController> _logger;
@@ -14,7 +16,7 @@ namespace Minimart_Api.Controllers
             _mpesaService = mpesaService;
         }
 
-        [HttpPost("Confirmation")]
+        [HttpPost("confirmation")]
         public async Task<IActionResult> Confirmation([FromBody] ConfimationRequest request)
         {
             try
@@ -32,7 +34,7 @@ namespace Minimart_Api.Controllers
             ;
         }
 
-        [HttpPost("Validation")]
+        [HttpPost("validation")]
         public async Task<IActionResult> Validation([FromBody] ValidationRequest request)
         {
             try

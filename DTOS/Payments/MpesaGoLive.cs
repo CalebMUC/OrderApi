@@ -15,5 +15,6 @@
         public string ShortCode { get; set; }
         public string PassKey { get; set; }
         public string CallbackUrl { get; set; }
+        public string RegisterUrl { get; set; }
     }
 }

@@ -396,6 +396,20 @@ builder.Services.AddSwaggerGen(c =>
 
 });
 // Add services to the container.
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowFrontend", builder =>
+//    {
+//        //https://minimart-nine.vercel.app
+//        //http://localhost:3000
+//        builder.WithOrigins("http://localhost:3000")
+//               .AllowAnyMethod()
+//               .AllowAnyHeader()
+//               .AllowCredentials();
+//    });
+//});
+
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
