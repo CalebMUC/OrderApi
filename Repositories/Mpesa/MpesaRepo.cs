@@ -15,13 +15,16 @@ namespace Minimart_Api.Repositories.Mpesa
         private readonly ILogger<MpesaRepo> _logger;
         private readonly IHttpClientFactory _clientFactory;
         private readonly MpesaGoLive mpesaGoLive;
+        private readonly IConfiguration _config;
+
         public MpesaRepo(MinimartDBContext dBContext, ILogger<MpesaRepo> logger,
-            IHttpClientFactory clientFactory,IOptions<MpesaGoLive> options )
+            IHttpClientFactory clientFactory, IOptions<MpesaGoLive> options, IConfiguration config)
         {
             _dbContext = dBContext;
             _logger = logger;
             _clientFactory = clientFactory;
             mpesaGoLive = options.Value;
+            _config = config;
         }
         public async Task<ConfirmationResponse> Confirmation(ConfimationRequest request)
         {
@@ -94,56 +97,60 @@ namespace Minimart_Api.Repositories.Mpesa
                 var client = _clientFactory.CreateClient();
                 client.BaseAddress = new Uri("https://api.safaricom.co.ke/");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var registerUrlRequest = new 
+
+                var registerUrlRequest = new
                 {
                     ShortCode = mpesaGoLive.ShortCode,
                     ResponseType = "Completed",
                     ConfirmationURL = mpesaGoLive.ConfirmationUrl,
                     ValidationURL = mpesaGoLive.ValidationUrl
                 };
-                var jsonContent = JsonConvert.SerializeObject(registerUrlRequest);
-                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.PostAsync("mpesa/c2b/v1/registerurl", content);
+
+                var response = await client.PostAsJsonAsync("mpesa/c2b/v1/registerurl", registerUrlRequest);
+
                 if (response.IsSuccessStatusCode)
                 {
-                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
                     var registerUrlResponse = JsonConvert.DeserializeObject<RegisterUrlResponse>(jsonResponse);
-                    return registerUrlResponse;
+                    return registerUrlResponse!;
                 }
                 else
                 {
-                    string errorResponse = await response.Content.ReadAsStringAsync();
+                    var errorResponse = await response.Content.ReadAsStringAsync();
                     _logger.LogError("Failed to register URL. Status: {Status}, Response: {Response}", response.StatusCode, errorResponse);
-                    throw new Exception($"Failed to register URL. Status: {response.StatusCode}");
+                    throw new Exception($"Failed to register URL. Status: {response.StatusCode}, Response: {errorResponse}");
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, "Error registering URL");
                 throw;
             }
         }
 
-        private async Task<string> GetAccessTokenAsync()
+
+        public async Task<string> GetAccessTokenAsync()
         {
-            var client = _clientFactory.CreateClient();
-            client.BaseAddress = new Uri("https://api.safaricom.co.ke/");
+            using var client = new HttpClient();
 
-            string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{mpesaGoLive.ConsumerKey}:{mpesaGoLive.ConsumerSecret}"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+            // Encode ConsumerKey:ConsumerSecret
+            var authBytes = Encoding.UTF8.GetBytes($"{_config["MpesaGoLive:ConsumerKey"]}:{_config["MpesaGoLive:ConsumerSecret"]}");
+            var authHeader = Convert.ToBase64String(authBytes);
 
-            HttpResponseMessage response = await client.GetAsync("oauth/v1/generate?grant_type=client_credentials");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authHeader);
 
-            if (response.IsSuccessStatusCode)
+            var response = await client.GetAsync(_config["MpesaGoLive:MpesaGoLiveUrl"]);
+            var result = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
             {
-                string jsonResponse = await response.Content.ReadAsStringAsync();
-                dynamic tokenResponse = JsonConvert.DeserializeObject(jsonResponse);
-                return tokenResponse.access_token;
+                throw new Exception($"❌ Failed to get token: {response.StatusCode} - {result}");
             }
-            else
-            {
-                throw new Exception($"Failed to get access token. Status: {response.StatusCode}");
-            }
+
+            dynamic json = JsonConvert.DeserializeObject(result);
+            string token = json.access_token;
+            return token;
         }
+
     }
 }
