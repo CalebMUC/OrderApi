@@ -16,5 +16,7 @@
         public string PassKey { get; set; }
         public string CallbackUrl { get; set; }
         public string RegisterUrl { get; set; }
+        public string ConfirmationUrl { get; set; }
+        public string ValidationUrl { get; set; }
     }
 }

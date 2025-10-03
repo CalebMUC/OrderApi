@@ -49,5 +49,20 @@ namespace Minimart_Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterUrl() {
+
+            try
+            {
+                var response = await _mpesaService.RegisterUrl();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in registering url");
+                return BadRequest(ex.Message);
+            }
+
+        }
     }
 }

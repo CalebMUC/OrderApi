@@ -17,5 +17,8 @@ namespace Minimart_Api.Services.Mpesa
         {
             return await _mpesaRepo.Validation(request);
         }
+        public async Task<RegisterUrlResponse> RegisterUrl() {
+            return await _mpesaRepo.Register();
+        }
     }
 }
