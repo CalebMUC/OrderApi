@@ -87,6 +87,8 @@ namespace Minimart_Api.Repositories.Mpesa
         public async Task<RegisterUrlResponse> Register()
         {
             string accessToken = await GetAccessTokenAsync();
+            _logger.LogInformation("AccessToken: {Token}", accessToken);
+
             try
             {
                 var client = _clientFactory.CreateClient();
