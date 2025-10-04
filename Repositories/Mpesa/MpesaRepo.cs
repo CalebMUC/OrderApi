@@ -127,78 +127,85 @@ namespace Minimart_Api.Repositories.Mpesa
                 throw;
             }
         }
-       public async Task<StkPushResponse> StkPush(StkPushRequest request)
+      public async Task<StkPushResponse> StkPush(StkPushRequest request)
 {
     try
     {
-        // STEP 1: Get Access Token
+        // Get Access Token
         string accessToken = await GetAccessTokenAsync();
         _logger.LogInformation("AccessToken: {Token}", accessToken);
 
-        var client = _clientFactory.CreateClient();
+        // Create HttpClient with proper configuration
+        var handler = new HttpClientHandler();
+        var client = new HttpClient(handler);
         client.BaseAddress = new Uri("https://api.safaricom.co.ke/");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        client.DefaultRequestHeaders.Accept.Clear();
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-        // STEP 2: Generate Timestamp in EAT (UTC+3)
-        var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-
-
-        // STEP 3: Generate Password (ShortCode + Passkey + Timestamp → Base64)
+        // Generate timestamp and password
+        var timestamp = DateTime.UtcNow.AddHours(3).ToString("yyyyMMddHHmmss"); // EAT timezone
         var passwordRaw = $"{mpesaGoLive.ShortCode}{mpesaGoLive.Passkey}{timestamp}";
         var password = Convert.ToBase64String(Encoding.UTF8.GetBytes(passwordRaw));
 
-        // STEP 4: Log important debug information
-        _logger.LogInformation("STK Push Details:");
-        _logger.LogInformation(" - ShortCode: {Shortcode}", mpesaGoLive.ShortCode);
-        _logger.LogInformation(" - Passkey: {Passkey}", mpesaGoLive.Passkey.Substring(0, 10) + "**********");
-        _logger.LogInformation(" - Timestamp: {Timestamp}", timestamp);
-        _logger.LogInformation(" - Generated Password (first 30 chars): {Password}", password.Substring(0, Math.Min(30, password.Length)));
-        _logger.LogInformation(" - CallbackURL: {CallbackUrl}", mpesaGoLive.CallbackUrl);
-        _logger.LogInformation(" - System Time (Local): {LocalTime}", DateTime.Now);
-        _logger.LogInformation(" - System Time (UTC): {UtcTime}", DateTime.UtcNow);
+        // Log all details for debugging
+        _logger.LogInformation("=== STK Push Debug Information ===");
+        _logger.LogInformation("ShortCode: {ShortCode}", mpesaGoLive.ShortCode);
+        _logger.LogInformation("ShortCode Type: {Type}", mpesaGoLive.ShortCode.GetType());
+        _logger.LogInformation("Passkey (first 10): {Passkey}", mpesaGoLive.Passkey.Substring(0, Math.Min(10, mpesaGoLive.Passkey.Length)));
+        _logger.LogInformation("Timestamp: {Timestamp}", timestamp);
+        _logger.LogInformation("Password Raw: {Raw}", passwordRaw);
+        _logger.LogInformation("Password Base64: {Base64}", password);
+        _logger.LogInformation("Callback URL: {Url}", mpesaGoLive.CallbackUrl);
+        _logger.LogInformation("Amount: {Amount}", request.Amount);
+        _logger.LogInformation("Phone: {Phone}", request.PhoneNumber);
 
-        // STEP 5: Build Safaricom STK Push request payload
+        // Create request payload
         var stkPushRequest = new
         {
-            BusinessShortCode = mpesaGoLive.ShortCode,
+            BusinessShortCode = mpesaGoLive.ShortCode.Trim(),
             Password = password,
             Timestamp = timestamp,
             TransactionType = "CustomerPayBillOnline",
-            Amount = request.Amount,
-            PartyA = request.PhoneNumber,
-            PartyB = mpesaGoLive.ShortCode,
-            PhoneNumber = request.PhoneNumber,
-            CallBackURL = mpesaGoLive.CallbackUrl,
-            AccountReference = request.AccountReference,
-            TransactionDesc = request.TransactionDesc
+            Amount = Math.Round(decimal.Parse(request.Amount), 0).ToString(), // Ensure whole number
+            PartyA = request.PhoneNumber.Trim(),
+            PartyB = mpesaGoLive.ShortCode.Trim(),
+            PhoneNumber = request.PhoneNumber.Trim(),
+            CallBackURL = mpesaGoLive.CallbackUrl.Trim(),
+            AccountReference = request.AccountReference.Trim(),
+            TransactionDesc = request.TransactionDesc.Trim()
         };
 
-        // STEP 6: Log payload before sending
-        _logger.LogInformation("STK Push Request Payload: {@Payload}", stkPushRequest);
+        // Log the exact JSON being sent
+        var jsonPayload = JsonConvert.SerializeObject(stkPushRequest, Formatting.Indented);
+        _logger.LogInformation("Final JSON Payload:\n{Payload}", jsonPayload);
 
-        // STEP 7: Send request to Safaricom STK Push API
-        var response = await client.PostAsJsonAsync("mpesa/stkpush/v1/processrequest", stkPushRequest);
+        // Send request
+        var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+        
+        _logger.LogInformation("Sending request to Safaricom API...");
+        var response = await client.PostAsync("mpesa/stkpush/v1/processrequest", content);
+        
+        var responseContent = await response.Content.ReadAsStringAsync();
+        _logger.LogInformation("Response Status: {StatusCode}", response.StatusCode);
+        _logger.LogInformation("Response Content: {Content}", responseContent);
 
-        // STEP 8: Log response
         if (response.IsSuccessStatusCode)
         {
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            _logger.LogInformation("STK Push Success Response: {Response}", jsonResponse);
-
-            var stkPushResponse = JsonConvert.DeserializeObject<StkPushResponse>(jsonResponse);
+            var stkPushResponse = JsonConvert.DeserializeObject<StkPushResponse>(responseContent);
+            _logger.LogInformation("STK Push initiated successfully. CheckoutID: {CheckoutId}", 
+                stkPushResponse?.CheckoutRequestID);
             return stkPushResponse!;
         }
         else
         {
-            var errorResponse = await response.Content.ReadAsStringAsync();
-            _logger.LogError("STK Push Failed. Status: {Status}, Response: {Response}", response.StatusCode, errorResponse);
-
-            throw new Exception($"Failed to initiate STK Push. Status: {response.StatusCode}, Response: {errorResponse}");
+            _logger.LogError("STK Push failed with status: {StatusCode}", response.StatusCode);
+            throw new Exception($"STK Push failed: {responseContent}");
         }
     }
     catch (Exception ex)
     {
-        _logger.LogError(ex, "Error in STK Push");
+        _logger.LogError(ex, "STK Push encountered an exception");
         throw;
     }
 }
