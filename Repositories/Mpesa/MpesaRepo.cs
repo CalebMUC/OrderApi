@@ -106,7 +106,7 @@ namespace Minimart_Api.Repositories.Mpesa
                     ValidationURL = mpesaGoLive.ValidationUrl
                 };
 
-                var response = await client.PostAsJsonAsync("mpesa/c2b/v1/registerurl", registerUrlRequest);
+                var response = await client.PostAsJsonAsync("mpesa/c2b/v2/registerurl", registerUrlRequest);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -165,7 +165,7 @@ namespace Minimart_Api.Repositories.Mpesa
                 _logger.LogInformation("STK Push Request Payload: {@StkPushRequest}", stkPushRequest);
 
                 // Call Safaricom STK Push API (v2 endpoint for production)
-                var response = await client.PostAsJsonAsync("mpesa/stkpush/v2/processrequest", stkPushRequest);
+                var response = await client.PostAsJsonAsync("mpesa/stkpush/v1/processrequest", stkPushRequest);
 
                 if (response.IsSuccessStatusCode)
                 {
