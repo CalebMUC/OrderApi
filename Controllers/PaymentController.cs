@@ -81,36 +81,76 @@ namespace Minimart_Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
         [HttpPost("stkcallback")]
-        public async Task<IActionResult> STKCallback([FromBody] StkCallbackRequest callbackRequest)
+        public async Task<IActionResult> STKCallback([FromBody] JObject callbackData)
         {
+            _logger.LogInformation("STK Callback Received: {Data}", callbackData?.ToString());
+
             try
             {
-                _logger.LogInformation("STK Callback Received: {@Callback}", callbackRequest);
+                // Safaricom callback structure: { "Body": { "stkCallback": { ... } } }
+                var stkCallback = callbackData?["Body"]?["stkCallback"];
 
-                if (callbackRequest?.Body?.StkCallback == null)
+                if (stkCallback == null)
                 {
-                    _logger.LogWarning("Invalid callback structure");
+                    _logger.LogWarning("No stkCallback found in callback data");
                     return Ok(new { ResultCode = 0, ResultDesc = "Success" });
                 }
 
-                var callback = callbackRequest.Body.StkCallback;
+                var resultCode = stkCallback["ResultCode"]?.Value<int>() ?? -1;
+                var resultDesc = stkCallback["ResultDesc"]?.ToString();
+                var checkoutRequestId = stkCallback["CheckoutRequestID"]?.ToString();
+                var callbackMetadata = stkCallback["CallbackMetadata"];
 
-                if (callback.ResultCode == 0)
+                _logger.LogInformation("Callback Processing - ResultCode: {ResultCode}, Desc: {ResultDesc}", resultCode, resultDesc);
+
+                if (resultCode == 0)
                 {
-                    // Process successful payment
-                    var amount = callback.CallbackMetadata?.Item?.FirstOrDefault(x => x.Name == "Amount")?.Value?.ToString();
-                    var mpesaReceipt = callback.CallbackMetadata?.Item?.FirstOrDefault(x => x.Name == "MpesaReceiptNumber")?.Value?.ToString();
-                    var phone = callback.CallbackMetadata?.Item?.FirstOrDefault(x => x.Name == "PhoneNumber")?.Value?.ToString();
+                    // Payment successful
+                    string amount = "";
+                    string mpesaReceipt = "";
+                    string phone = "";
+                    string transactionDate = "";
+
+                    if (callbackMetadata?["Item"] is JArray items)
+                    {
+                        foreach (var item in items)
+                        {
+                            var name = item["Name"]?.ToString();
+                            var value = item["Value"]?.ToString();
+
+                            switch (name)
+                            {
+                                case "Amount":
+                                    amount = value;
+                                    break;
+                                case "MpesaReceiptNumber":
+                                    mpesaReceipt = value;
+                                    break;
+                                case "PhoneNumber":
+                                    phone = value;
+                                    break;
+                                case "TransactionDate":
+                                    transactionDate = value;
+                                    break;
+                            }
+                        }
+                    }
 
                     _logger.LogInformation($"✅ Payment Success | Receipt: {mpesaReceipt} | Amount: {amount} | Phone: {phone}");
+
+                    // TODO: Save to database
+                    // await _paymentService.ProcessSuccessfulPayment(mpesaReceipt, amount, phone, transactionDate, checkoutRequestId);
                 }
                 else
                 {
-                    _logger.LogWarning($"❌ Payment Failed | Code: {callback.ResultCode} | Desc: {callback.ResultDesc}");
+                    _logger.LogWarning($"❌ Payment Failed | Code: {resultCode} | Desc: {resultDesc}");
+
+                    // TODO: Handle failed payment
+                    // await _paymentService.ProcessFailedPayment(checkoutRequestId, resultCode.ToString(), resultDesc);
                 }
 
+                // Always return success to Safaricom
                 return Ok(new { ResultCode = 0, ResultDesc = "Success" });
             }
             catch (Exception ex)
