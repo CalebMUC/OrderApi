@@ -127,19 +127,25 @@ namespace Minimart_Api.Repositories.Mpesa
                 throw;
             }
         }
-
         public async Task<StkPushResponse> StkPush(StkPushRequest request)
         {
             try
             {
                 string accessToken = await GetAccessTokenAsync();
                 _logger.LogInformation("AccessToken: {Token}", accessToken);
+
                 var client = _clientFactory.CreateClient();
                 client.BaseAddress = new Uri("https://api.safaricom.co.ke/");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                // Generate Timestamp (format yyyyMMddHHmmss)
                 var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+                // Generate Password (ShortCode + Passkey + Timestamp → Base64)
                 var passwordStr = $"{mpesaGoLive.ShortCode}{mpesaGoLive.Passkey}{timestamp}";
                 var password = Convert.ToBase64String(Encoding.UTF8.GetBytes(passwordStr));
+
+                // Build Safaricom STK Push request payload
                 var stkPushRequest = new
                 {
                     BusinessShortCode = mpesaGoLive.ShortCode,
@@ -154,23 +160,32 @@ namespace Minimart_Api.Repositories.Mpesa
                     AccountReference = request.AccountReference,
                     TransactionDesc = request.TransactionDesc
                 };
-                var response = await client.PostAsJsonAsync("mpesa/stkpush/v1/processrequest", stkPushRequest);
+
+                // Log the request payload BEFORE sending
+                _logger.LogInformation("STK Push Request Payload: {@StkPushRequest}", stkPushRequest);
+
+                // Call Safaricom STK Push API (v2 endpoint for production)
+                var response = await client.PostAsJsonAsync("mpesa/stkpush/v2/processrequest", stkPushRequest);
+
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
+                    _logger.LogInformation("STK Push Success Response: {Response}", jsonResponse);
+
                     var stkPushResponse = JsonConvert.DeserializeObject<StkPushResponse>(jsonResponse);
                     return stkPushResponse!;
                 }
                 else
                 {
                     var errorResponse = await response.Content.ReadAsStringAsync();
-                    _logger.LogError("Failed to initiate STK Push. Status: {Status}, Response: {Response}", response.StatusCode, errorResponse);
+                    _logger.LogError("STK Push Failed. Status: {Status}, Response: {Response}", response.StatusCode, errorResponse);
+
                     throw new Exception($"Failed to initiate STK Push. Status: {response.StatusCode}, Response: {errorResponse}");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error in stk push");
+                _logger.LogError(ex, "Error in STK Push");
                 throw;
             }
         }
