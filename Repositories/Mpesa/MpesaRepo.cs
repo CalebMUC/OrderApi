@@ -140,7 +140,8 @@ namespace Minimart_Api.Repositories.Mpesa
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         // STEP 2: Generate Timestamp in EAT (UTC+3)
-        var timestamp = DateTime.UtcNow.AddHours(3).ToString("yyyyMMddHHmmss");
+        var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+
 
         // STEP 3: Generate Password (ShortCode + Passkey + Timestamp → Base64)
         var passwordRaw = $"{mpesaGoLive.ShortCode}{mpesaGoLive.Passkey}{timestamp}";
