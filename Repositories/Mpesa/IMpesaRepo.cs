@@ -7,5 +7,6 @@ namespace Minimart_Api.Repositories.Mpesa
         public Task<ConfirmationResponse> Confirmation(ConfimationRequest request);
         public Task<ValidationResponse> Validation(ValidationRequest request);
         public Task<RegisterUrlResponse> Register();
+        public Task<StkPushResponse> StkPush(StkPushRequest request);
     }
 }

@@ -20,5 +20,9 @@ namespace Minimart_Api.Services.Mpesa
         public async Task<RegisterUrlResponse> RegisterUrl() {
             return await _mpesaRepo.Register();
         }
+
+        public async Task<StkPushResponse> StkPush(StkPushRequest request) {
+            return await _mpesaRepo.StkPush(request);
+        }
     }
 }

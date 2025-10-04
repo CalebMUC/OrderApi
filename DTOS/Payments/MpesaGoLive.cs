@@ -18,5 +18,6 @@
         public string RegisterUrl { get; set; }
         public string ConfirmationUrl { get; set; }
         public string ValidationUrl { get; set; }
+        public string Passkey { get; set; }
     }
 }

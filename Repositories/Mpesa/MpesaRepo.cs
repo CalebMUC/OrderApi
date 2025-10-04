@@ -128,6 +128,53 @@ namespace Minimart_Api.Repositories.Mpesa
             }
         }
 
+        public async Task<StkPushResponse> StkPush(StkPushRequest request)
+        {
+            try
+            {
+                string accessToken = await GetAccessTokenAsync();
+                _logger.LogInformation("AccessToken: {Token}", accessToken);
+                var client = _clientFactory.CreateClient();
+                client.BaseAddress = new Uri("https://api.safaricom.co.ke/");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+                var passwordStr = $"{mpesaGoLive.ShortCode}{mpesaGoLive.Passkey}{timestamp}";
+                var password = Convert.ToBase64String(Encoding.UTF8.GetBytes(passwordStr));
+                var stkPushRequest = new
+                {
+                    BusinessShortCode = mpesaGoLive.ShortCode,
+                    Password = password,
+                    Timestamp = timestamp,
+                    TransactionType = "CustomerPayBillOnline",
+                    Amount = request.Amount,
+                    PartyA = request.PhoneNumber,
+                    PartyB = mpesaGoLive.ShortCode,
+                    PhoneNumber = request.PhoneNumber,
+                    CallBackURL = mpesaGoLive.CallbackUrl,
+                    AccountReference = request.AccountReference,
+                    TransactionDesc = request.TransactionDesc
+                };
+                var response = await client.PostAsJsonAsync("mpesa/stkpush/v1/processrequest", stkPushRequest);
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    var stkPushResponse = JsonConvert.DeserializeObject<StkPushResponse>(jsonResponse);
+                    return stkPushResponse!;
+                }
+                else
+                {
+                    var errorResponse = await response.Content.ReadAsStringAsync();
+                    _logger.LogError("Failed to initiate STK Push. Status: {Status}, Response: {Response}", response.StatusCode, errorResponse);
+                    throw new Exception($"Failed to initiate STK Push. Status: {response.StatusCode}, Response: {errorResponse}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in stk push");
+                throw;
+            }
+        }
+
 
         public async Task<string> GetAccessTokenAsync()
         {
