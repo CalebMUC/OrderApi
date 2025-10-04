@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text;
+using Microsoft.AspNetCore.Mvc;
 using Minimart_Api.DTOS.Mpesa;
 using Minimart_Api.Services.Mpesa;
 using Newtonsoft.Json.Linq;
@@ -81,83 +82,173 @@ namespace Minimart_Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpPost("stkcallback")]
-        public async Task<IActionResult> STKCallback([FromBody] JObject callbackData)
+        [Consumes("application/json")]
+        public async Task<IActionResult> STKCallback()
         {
-            _logger.LogInformation("STK Callback Received: {Data}", callbackData?.ToString());
+            string rawRequestBody = string.Empty;
 
             try
             {
-                // Safaricom callback structure: { "Body": { "stkCallback": { ... } } }
-                var stkCallback = callbackData?["Body"]?["stkCallback"];
+                // Read the raw request body first
+                Request.EnableBuffering(); // This allows us to read the stream multiple times
+
+                using (var reader = new StreamReader(Request.Body, Encoding.UTF8, leaveOpen: true))
+                {
+                    rawRequestBody = await reader.ReadToEndAsync();
+                }
+
+                // Reset the stream position so other middleware can read it
+                Request.Body.Position = 0;
+
+                _logger.LogInformation("📥 RAW STK Callback Received: {RawData}", rawRequestBody);
+
+                if (string.IsNullOrWhiteSpace(rawRequestBody))
+                {
+                    _logger.LogWarning("Empty callback received");
+                    return Ok(new { ResultCode = 0, ResultDesc = "Success" });
+                }
+
+                // Parse the JSON manually to avoid model binding issues
+                var callbackData = JObject.Parse(rawRequestBody);
+
+                // Log the parsed structure for debugging
+                _logger.LogInformation("📋 Parsed Callback Structure: {@CallbackData}", callbackData);
+
+                // Extract the stkCallback object - Safaricom uses this structure
+                var stkCallback = callbackData["Body"]?["stkCallback"] ?? callbackData["stkCallback"];
 
                 if (stkCallback == null)
                 {
-                    _logger.LogWarning("No stkCallback found in callback data");
+                    _logger.LogWarning("❌ No stkCallback found in callback data. Available keys: {Keys}",
+                        string.Join(", ", callbackData.Properties().Select(p => p.Name)));
                     return Ok(new { ResultCode = 0, ResultDesc = "Success" });
                 }
 
                 var resultCode = stkCallback["ResultCode"]?.Value<int>() ?? -1;
                 var resultDesc = stkCallback["ResultDesc"]?.ToString();
                 var checkoutRequestId = stkCallback["CheckoutRequestID"]?.ToString();
+                var merchantRequestId = stkCallback["MerchantRequestID"]?.ToString();
                 var callbackMetadata = stkCallback["CallbackMetadata"];
 
-                _logger.LogInformation("Callback Processing - ResultCode: {ResultCode}, Desc: {ResultDesc}", resultCode, resultDesc);
+                _logger.LogInformation("🔍 Callback Processing - ResultCode: {ResultCode}, Desc: {ResultDesc}, CheckoutID: {CheckoutId}",
+                    resultCode, resultDesc, checkoutRequestId);
 
                 if (resultCode == 0)
                 {
-                    // Payment successful
-                    string amount = "";
-                    string mpesaReceipt = "";
-                    string phone = "";
-                    string transactionDate = "";
+                    // Payment successful - extract transaction details
+                    var paymentData = ExtractPaymentDetails(callbackMetadata);
 
-                    if (callbackMetadata?["Item"] is JArray items)
-                    {
-                        foreach (var item in items)
-                        {
-                            var name = item["Name"]?.ToString();
-                            var value = item["Value"]?.ToString();
-
-                            switch (name)
-                            {
-                                case "Amount":
-                                    amount = value;
-                                    break;
-                                case "MpesaReceiptNumber":
-                                    mpesaReceipt = value;
-                                    break;
-                                case "PhoneNumber":
-                                    phone = value;
-                                    break;
-                                case "TransactionDate":
-                                    transactionDate = value;
-                                    break;
-                            }
-                        }
-                    }
-
-                    _logger.LogInformation($"✅ Payment Success | Receipt: {mpesaReceipt} | Amount: {amount} | Phone: {phone}");
+                    _logger.LogInformation($"✅ PAYMENT SUCCESS | Receipt: {paymentData.MpesaReceiptNumber} | Amount: {paymentData.Amount} | Phone: {paymentData.PhoneNumber} | Date: {paymentData.TransactionDate}");
 
                     // TODO: Save to database
-                    // await _paymentService.ProcessSuccessfulPayment(mpesaReceipt, amount, phone, transactionDate, checkoutRequestId);
+                    await ProcessSuccessfulPayment(paymentData, checkoutRequestId, merchantRequestId);
                 }
                 else
                 {
-                    _logger.LogWarning($"❌ Payment Failed | Code: {resultCode} | Desc: {resultDesc}");
+                    _logger.LogWarning($"❌ PAYMENT FAILED | Code: {resultCode} | Desc: {resultDesc} | CheckoutID: {checkoutRequestId}");
 
                     // TODO: Handle failed payment
-                    // await _paymentService.ProcessFailedPayment(checkoutRequestId, resultCode.ToString(), resultDesc);
+                    await ProcessFailedPayment(checkoutRequestId, merchantRequestId, resultCode, resultDesc);
                 }
 
-                // Always return success to Safaricom
+                // Always return success to Safaricom to prevent retries
                 return Ok(new { ResultCode = 0, ResultDesc = "Success" });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error processing STK Callback");
+                _logger.LogError(ex, "💥 ERROR processing STK Callback. Raw request: {RawRequest}", rawRequestBody);
+
+                // Still return success to Safaricom even if we have processing errors
                 return Ok(new { ResultCode = 0, ResultDesc = "Success" });
             }
+        }
+
+
+        // Add this private method to your PaymentController
+        private PaymentData ExtractPaymentDetails(JToken callbackMetadata)
+        {
+            var paymentData = new PaymentData();
+
+            if (callbackMetadata?["Item"] is JArray items)
+            {
+                foreach (var item in items)
+                {
+                    var name = item["Name"]?.ToString();
+                    var value = item["Value"]?.ToString();
+
+                    switch (name)
+                    {
+                        case "Amount":
+                            paymentData.Amount = value;
+                            break;
+                        case "MpesaReceiptNumber":
+                            paymentData.MpesaReceiptNumber = value;
+                            break;
+                        case "PhoneNumber":
+                            paymentData.PhoneNumber = value;
+                            break;
+                        case "TransactionDate":
+                            paymentData.TransactionDate = value;
+                            break;
+                        case "AccountReference":
+                            paymentData.AccountReference = value;
+                            break;
+                    }
+                }
+            }
+
+            return paymentData;
+        }
+
+        private async Task ProcessSuccessfulPayment(PaymentData paymentData, string checkoutRequestId, string merchantRequestId)
+        {
+            try
+            {
+                // TODO: Implement your payment processing logic here
+                // Example:
+                // await _paymentService.ProcessSuccessfulPaymentAsync(
+                //     paymentData.MpesaReceiptNumber,
+                //     paymentData.Amount,
+                //     paymentData.PhoneNumber,
+                //     paymentData.TransactionDate,
+                //     checkoutRequestId,
+                //     merchantRequestId
+                // );
+
+                _logger.LogInformation("💰 Payment processed successfully for Receipt: {Receipt}", paymentData.MpesaReceiptNumber);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving successful payment for Receipt: {Receipt}", paymentData.MpesaReceiptNumber);
+            }
+        }
+
+        private async Task ProcessFailedPayment(string checkoutRequestId, string merchantRequestId, int resultCode, string resultDesc)
+        {
+            try
+            {
+                // TODO: Implement your failed payment handling logic here
+                // Example:
+                // await _paymentService.ProcessFailedPaymentAsync(checkoutRequestId, merchantRequestId, resultCode, resultDesc);
+
+                _logger.LogInformation("💸 Failed payment recorded for CheckoutID: {CheckoutId}", checkoutRequestId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving failed payment for CheckoutID: {CheckoutId}", checkoutRequestId);
+            }
+        }
+
+        // Add this class to your DTOS/Mpesa folder or in the same file
+        public class PaymentData
+        {
+            public string Amount { get; set; } = string.Empty;
+            public string MpesaReceiptNumber { get; set; } = string.Empty;
+            public string PhoneNumber { get; set; } = string.Empty;
+            public string TransactionDate { get; set; } = string.Empty;
+            public string AccountReference { get; set; } = string.Empty;
         }
 
 
