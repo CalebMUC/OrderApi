@@ -83,38 +83,40 @@ namespace Minimart_Api.Controllers
         }
 
         [HttpPost("stkcallback")]
-        public async Task<IActionResult> STKCallback([FromBody] JObject callbackData)
+        public async Task<IActionResult> STKCallback([FromBody] StkCallbackRequest callbackRequest)
         {
-            _logger.LogInformation("STK Callback Received: {Data}", callbackData.ToString());
-
             try
             {
-                var resultCode = callbackData["Body"]?["stkCallback"]?["ResultCode"]?.ToString();
-                var resultDesc = callbackData["Body"]?["stkCallback"]?["ResultDesc"]?.ToString();
-                var checkoutRequestId = callbackData["Body"]?["stkCallback"]?["CheckoutRequestID"]?.ToString();
-                var metadata = callbackData["Body"]?["stkCallback"]?["CallbackMetadata"];
+                _logger.LogInformation("STK Callback Received: {@Callback}", callbackRequest);
 
-                if (resultCode == "0")
+                if (callbackRequest?.Body?.StkCallback == null)
                 {
-                    // Payment successful — extract transaction details
-                    string amount = metadata?["Item"]?.FirstOrDefault(i => i["Name"]?.ToString() == "Amount")?["Value"]?.ToString();
-                    string mpesaReceipt = metadata?["Item"]?.FirstOrDefault(i => i["Name"]?.ToString() == "MpesaReceiptNumber")?["Value"]?.ToString();
-                    string phone = metadata?["Item"]?.FirstOrDefault(i => i["Name"]?.ToString() == "PhoneNumber")?["Value"]?.ToString();
+                    _logger.LogWarning("Invalid callback structure");
+                    return Ok(new { ResultCode = 0, ResultDesc = "Success" });
+                }
 
-                    // Save to database
+                var callback = callbackRequest.Body.StkCallback;
+
+                if (callback.ResultCode == 0)
+                {
+                    // Process successful payment
+                    var amount = callback.CallbackMetadata?.Item?.FirstOrDefault(x => x.Name == "Amount")?.Value?.ToString();
+                    var mpesaReceipt = callback.CallbackMetadata?.Item?.FirstOrDefault(x => x.Name == "MpesaReceiptNumber")?.Value?.ToString();
+                    var phone = callback.CallbackMetadata?.Item?.FirstOrDefault(x => x.Name == "PhoneNumber")?.Value?.ToString();
+
                     _logger.LogInformation($"✅ Payment Success | Receipt: {mpesaReceipt} | Amount: {amount} | Phone: {phone}");
                 }
                 else
                 {
-                    _logger.LogWarning($"❌ STK Push Failed | ResultCode: {resultCode} | Desc: {resultDesc}");
+                    _logger.LogWarning($"❌ Payment Failed | Code: {callback.ResultCode} | Desc: {callback.ResultDesc}");
                 }
 
-                return Ok();
+                return Ok(new { ResultCode = 0, ResultDesc = "Success" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing STK Callback");
-                return BadRequest();
+                return Ok(new { ResultCode = 0, ResultDesc = "Success" });
             }
         }
 
