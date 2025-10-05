@@ -13,6 +13,8 @@ namespace Minimart_Api.Models
 
         [Required]
         public int UserID { get; set; }
+        [Required]
+        public int Status { get; set; }
 
         [Required]
         [Column(TypeName = "timestamp")]
