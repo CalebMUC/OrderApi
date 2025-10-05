@@ -17,9 +17,13 @@ namespace Minimart_Api.Models
         [Column(TypeName = "varchar(500)")]
         public string Description { get; set; }
 
+        // 🔹 Foreign key to Orders
         [Required]
-        [Column(TypeName = "varchar(100)")]
+        [Column(TypeName = "varchar(50)")]
         public string OrderID { get; set; }
+
+        [ForeignKey(nameof(OrderID))]
+        public Orders Order { get; set; }
 
         [Required]
         [Column(TypeName = "timestamp")]
@@ -38,8 +42,5 @@ namespace Minimart_Api.Models
         [MaxLength(100)]
         [Column(TypeName = "varchar(100)")]
         public string UpdatedBy { get; set; }
-
-        // No Orders navigation property needed here
     }
-
 }
