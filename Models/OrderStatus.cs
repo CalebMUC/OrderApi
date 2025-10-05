@@ -18,8 +18,8 @@ namespace Minimart_Api.Models
         public string Description { get; set; }
 
         [Required]
-        [Column(TypeName = "int")]
-        public int Order { get; set; }
+        [Column(TypeName = "varchar(100)")]
+        public string OrderID { get; set; }
 
         [Required]
         [Column(TypeName = "timestamp")]

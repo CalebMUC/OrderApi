@@ -1,4 +1,5 @@
-﻿using Minimart_Api.DTOS.Mpesa;
+﻿using Minimart_Api.DTOS.General;
+using Minimart_Api.DTOS.Mpesa;
 using Minimart_Api.Repositories.Mpesa;
 
 namespace Minimart_Api.Services.Mpesa
@@ -23,6 +24,11 @@ namespace Minimart_Api.Services.Mpesa
 
         public async Task<StkPushResponse> StkPush(StkPushRequest request) {
             return await _mpesaRepo.StkPush(request);
+        }
+
+        public async Task<bool> ProcessSuccessfulPayment(PaymentData paymentData, string checkOutRequestData, string merchantRequestId)
+        {
+            return await _mpesaRepo.ProcessSuccessfulPayment(paymentData, checkOutRequestData, merchantRequestId);
         }
     }
 }

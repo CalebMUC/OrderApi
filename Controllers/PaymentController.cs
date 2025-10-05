@@ -143,7 +143,8 @@ namespace Minimart_Api.Controllers
                     _logger.LogInformation($"✅ PAYMENT SUCCESS | Receipt: {paymentData.MpesaReceiptNumber} | Amount: {paymentData.Amount} | Phone: {paymentData.PhoneNumber} | Date: {paymentData.TransactionDate}");
 
                     // TODO: Save to database
-                    await ProcessSuccessfulPayment(paymentData, checkoutRequestId, merchantRequestId);
+                    //await ProcessSuccessfulPayment(paymentData, checkoutRequestId, merchantRequestId);
+                    await _mpesaService.ProcessSuccessfulPayment(paymentData, checkoutRequestId, merchantRequestId);
                 }
                 else
                 {
@@ -241,15 +242,7 @@ namespace Minimart_Api.Controllers
             }
         }
 
-        // Add this class to your DTOS/Mpesa folder or in the same file
-        public class PaymentData
-        {
-            public string Amount { get; set; } = string.Empty;
-            public string MpesaReceiptNumber { get; set; } = string.Empty;
-            public string PhoneNumber { get; set; } = string.Empty;
-            public string TransactionDate { get; set; } = string.Empty;
-            public string AccountReference { get; set; } = string.Empty;
-        }
+      
 
 
 

@@ -1,7 +1,9 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Minimart_Api.Data;
+using Minimart_Api.DTOS.General;
 using Minimart_Api.DTOS.Mpesa;
 using Minimart_Api.DTOS.Payments;
 using Minimart_Api.Models;
@@ -209,6 +211,72 @@ namespace Minimart_Api.Repositories.Mpesa
         throw;
     }
 }
+
+
+        public async Task<bool> ProcessSuccessfulPayment(PaymentData paymentData, string checkoutRequestId, string merchantRequestId)
+        {
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                _logger.LogInformation("🔄 Processing successful payment for CheckoutRequestID: {CheckoutRequestId}", checkoutRequestId);
+
+                // 1️⃣ Find the existing payment using the checkout request ID
+                var payment = await _dbContext.PaymentDetails
+                    .Include(p => p.Order) // Include related order
+                    .FirstOrDefaultAsync(p => p.TrxReference == checkoutRequestId);
+
+                if (payment == null)
+                {
+                    _logger.LogWarning("⚠️ Payment not found for CheckoutRequestID: {CheckoutRequestId}", checkoutRequestId);
+                    return false;
+                }
+
+                // 2️⃣ Update payment details
+                payment.Status = "Success";
+                payment.PaymentReference = paymentData.MpesaReceiptNumber;
+                payment.PaymentDate = DateTime.UtcNow;
+                payment.Amount = decimal.Parse(paymentData.Amount);
+                payment.Phonenumber = long.Parse(paymentData.PhoneNumber);
+
+                _dbContext.PaymentDetails.Update(payment);
+                await _dbContext.SaveChangesAsync();
+
+                _logger.LogInformation("💰 Payment updated successfully: Receipt {Receipt}, Amount {Amount}",
+                    paymentData.MpesaReceiptNumber, paymentData.Amount);
+
+                // 3️⃣ Update the related order
+                if (payment.OrderID != null)
+                {
+                    var order = await _dbContext.Orders.FindAsync(payment.OrderID);
+
+                    if (order != null)
+                    {
+                        order.StatusEnum = Models.Enums.OrderStatusEnum.Paid;
+                        order.StatusMessage = "Payment confirmed via M-Pesa";
+                        _dbContext.Orders.Update(order);
+
+                        _logger.LogInformation("📦 Order {OrderId} marked as PAID.", order.OrderID);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("⚠️ Order not found for PaymentID: {PaymentID}", payment.PaymentID);
+                    }
+                }
+
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "💥 Error processing successful payment for CheckoutRequestID: {CheckoutRequestId}", checkoutRequestId);
+                throw;
+            }
+        }
+
 
 
 

@@ -9,10 +9,12 @@ using Minimart_Api.Data;
 using Minimart_Api.DTOS.Address;
 using Minimart_Api.DTOS.General;
 using Minimart_Api.DTOS.Merchants;
+using Minimart_Api.DTOS.Mpesa;
 using Minimart_Api.DTOS.Orders;
 using Minimart_Api.DTOS.Payments;
 using Minimart_Api.DTOS.Products;
 using Minimart_Api.Models;
+using Minimart_Api.Repositories.Mpesa;
 using Minimart_Api.Repositories.Order;
 using Minimart_Api.Services.RabbitMQ;
 using Minimart_Api.Services.SignalR;
@@ -35,9 +37,13 @@ public class OrderRepository : IorderRepository
 
     private readonly MpesaSandBox _mpesaSandBox;
 
+    private readonly MpesaGoLive _mpesaGoLive;
+
     private readonly IHubContext<ActivityHub> _hubContext;
 
     private readonly ISystemMerchants _systemMerchants;
+
+    private readonly IMpesaRepo _mpesaRepo;
 
     private readonly IHttpClientFactory _clientFactory;
     private const string ConsumerKey = "vM5KjasAGTVzdddzpP8tENa1Z9us6G6CDjeZzEAHQKzVbQu4";
@@ -47,9 +53,11 @@ public class OrderRepository : IorderRepository
     public OrderRepository(MinimartDBContext dbContext,
         IOrderEventPublisher orderEventPublisher,
         IOptions<MpesaSandBox> mpesaSandBox,
+        IOptions<MpesaGoLive> mpesaGoLive,
         IHttpClientFactory clientFactory,
         IHubContext<ActivityHub> hubContext,
-        ISystemMerchants systemMerchants
+        ISystemMerchants systemMerchants,
+        IMpesaRepo mpesaRepo
         /*IConfiguration configuration*/)
     {
         _dbContext = dbContext;
@@ -58,6 +66,8 @@ public class OrderRepository : IorderRepository
         _mpesaSandBox = mpesaSandBox.Value;
         _clientFactory = clientFactory;
         _systemMerchants = systemMerchants;
+        _mpesaRepo = mpesaRepo;
+        _mpesaGoLive = mpesaGoLive.Value;
 
     }
 
@@ -134,7 +144,7 @@ public class OrderRepository : IorderRepository
                 {
                     StatusId = o.StatusId,
                     Status = o.Status,
-                    Order = o.Order,
+                    OrderID = o.OrderID,
                     Description = o.Description,
                     CreatedBy = o.CreatedBy,
                     CreatedOn = o.CreatedOn,
@@ -646,14 +656,29 @@ public class OrderRepository : IorderRepository
                     //if (string.IsNullOrEmpty(paymentDetailDto.Phonenumber))
                     //    throw new Exception("Phone number is required for M-Pesa");
 
+                    var stkPushRequest = new StkPushRequest
+                    {
+                        BusinessShortCode = BusinessShortCode,
+                        Amount = paymentDetailDto.Amount.ToString(),
+                        PartyA = paymentDetailDto.Phonenumber.ToString(),
+                        PartyB = BusinessShortCode,
+                        PhoneNumber = paymentDetailDto.Phonenumber.ToString(),
+                        CallBackURL = _mpesaGoLive.CallbackUrl,
+                        AccountReference = "QuickCrate Express Payment",
+                        TransactionDesc = "Payment for Order"
+                    };
+
                     // Initiate STK Push
-                    var stkPushResponse = await InitiateMpesaSTKPush(paymentDetailDto);
+                    //var stkPushResponse = await InitiateMpesaSTKPush(paymentDetailDto);
+                    var stkPushResponse = await _mpesaRepo.StkPush(stkPushRequest);
 
                     if (stkPushResponse == null)
                         throw new Exception("M-Pesa service unavailable");
 
-                    if (stkPushResponse.ResponseCode != "0")
+                    if (stkPushResponse.ResponseCode != 0)
                         throw new Exception($"STK Push failed: {stkPushResponse.CustomerMessage}");
+
+
 
                     // Record payment
                     var newPayment = new PaymentDetails

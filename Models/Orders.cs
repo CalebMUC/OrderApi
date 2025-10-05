@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Minimart_Api.Models.Enums;
 
 namespace Minimart_Api.Models
 {
@@ -26,7 +27,21 @@ namespace Minimart_Api.Models
         public string? OrderedBy { get; set; }
 
         [Required]
-        public int Status { get; set; }  // Consider using enum instead of raw int
+        [Column(TypeName = "int")]
+        public OrderStatusEnum StatusEnum { get; set; }
+
+        [Required]
+        [ForeignKey(nameof(OrderStatuses))]
+        public int Status { get; set; }
+
+        [MaxLength(100)]
+        [Column(TypeName = "varchar(100)")]
+        public string? StatusMessage { get; set; }
+
+        //[Required]
+        //[ForeignKey(nameof(OrderStatuses))]
+        //public int OrderStatus { get; set; }
+
 
         [Required]
         [ForeignKey("PaymentDetails")]

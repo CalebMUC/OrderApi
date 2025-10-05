@@ -7,23 +7,23 @@ namespace Minimart_Api.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int PaymentID { get; set; } // Unique ID for the payment detail
+        public int PaymentID { get; set; }
 
         [Required]
-        [ForeignKey("Payments")]
+        [ForeignKey(nameof(Payments))]
         public int PaymentMethodID { get; set; }
 
         [Required]
         [MaxLength(100)]
         [Column(TypeName = "varchar(100)")]
-        public string TrxReference { get; set; }
+        public string TrxReference { get; set; } // CheckoutRequestID from M-Pesa
 
         [MaxLength(100)]
         [Column(TypeName = "varchar(100)")]
-        public string PaymentReference { get; set; }
+        public string PaymentReference { get; set; } // MpesaReceiptNumber
 
         [Required]
-        [Column(TypeName = "varchar(20)")]
+        [Column(TypeName = "bigint")]
         public long Phonenumber { get; set; }
 
         [Required]
@@ -31,13 +31,20 @@ namespace Minimart_Api.Models
         public decimal Amount { get; set; }
 
         [Required]
-        [Column(TypeName = "timestamp")]
         public DateTime PaymentDate { get; set; }
 
-        // Navigation property for related payments
-        public PaymentMethods Payments { get; set; }
+        [MaxLength(20)]
+        [Column(TypeName = "varchar(20)")]
+        public string Status { get; set; } = "Pending"; // e.g. Pending, Success, Failed
 
-        // Navigation property for related orders
-        public ICollection<Orders> Orders { get; set; }
+        // ✅ Add this property for linking to an Order
+        public string OrderID { get; set; }
+
+        [ForeignKey(nameof(OrderID))]
+        public Orders Order { get; set; }
+
+        // Navigation properties
+        public PaymentMethods Payments { get; set; }
     }
+
 }
