@@ -547,7 +547,7 @@ public class OrderRepository : IorderRepository
             {
                 foreach (var orderDto in transaction.Orders)
                 {
-                    int paymentMethodID = await HandlePaymentDetails(orderDto.PaymentDetails,orderDto.orderID);
+                    int paymentMethodID = await HandlePaymentDetails(orderDto.PaymentDetails,orderDto.OrderID);
 
                     var newOrder = await CreateOrder(orderDto, paymentMethodID);
 
