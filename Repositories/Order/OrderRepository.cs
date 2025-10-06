@@ -628,7 +628,7 @@ public class OrderRepository : IorderRepository
     //    return paymentMethodID;
     //}
 
-    private async Task<int> HandlePaymentDetails(List<PaymentDetailsDto> paymentDetails,orderID)
+    private async Task<int> HandlePaymentDetails(List<PaymentDetailsDto> paymentDetails,string orderID)
     {
         if (paymentDetails == null || !paymentDetails.Any())
             throw new ArgumentException("Payment details are required");
