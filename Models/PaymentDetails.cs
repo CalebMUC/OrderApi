@@ -23,8 +23,10 @@ namespace Minimart_Api.Models
         public string PaymentReference { get; set; } // MpesaReceiptNumber
 
         [Required]
-        [Column(TypeName = "bigint")]
-        public long Phonenumber { get; set; }
+        [MaxLength(20)]
+        [Column(TypeName = "varchar(20)")]
+        public string Phonenumber { get; set; }
+
 
         [Required]
         [Column(TypeName = "money")]
