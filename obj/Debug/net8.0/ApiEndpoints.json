@@ -714,6 +714,16 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.MpesaController",
+    "Method": "RegisterUrl",
+    "RelativePath": "api/Mpesa/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MpesaController",
     "Method": "Validation",
     "RelativePath": "api/Mpesa/validation",
     "HttpMethod": "POST",
@@ -839,6 +849,74 @@
       {
         "Name": "orderTracking",
         "Type": "Minimart_Api.DTOS.Merchants.OrderTrackingDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "Confirmation",
+    "RelativePath": "api/Payment/confirmation",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Mpesa.ConfimationRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "RegisterUrl",
+    "RelativePath": "api/Payment/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "STKCallback",
+    "RelativePath": "api/Payment/stkcallback",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "StkPush",
+    "RelativePath": "api/Payment/stkPush",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Mpesa.StkPushRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "Validation",
+    "RelativePath": "api/Payment/validation",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Mpesa.ValidationRequest",
         "IsRequired": true
       }
     ],

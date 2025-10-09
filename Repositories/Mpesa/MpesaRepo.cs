@@ -219,11 +219,35 @@ namespace Minimart_Api.Repositories.Mpesa
 
             try
             {
-                _logger.LogInformation("🔄 Processing successful payment for CheckoutRequestID: {CheckoutRequestId}", checkoutRequestId);
+                _logger.LogInformation("🔄 Processing successful payment for CheckoutRequestID: {CheckoutRequestId}, MerchantRequestID: {MerchantRequestId}, PaymentData: {@PaymentData}",
+                    checkoutRequestId, merchantRequestId, paymentData);
 
-                // 1️⃣ Find the existing payment using the checkout request ID
+                // Validate required fields
+                if (string.IsNullOrWhiteSpace(paymentData.MpesaReceiptNumber) ||
+                    string.IsNullOrWhiteSpace(paymentData.Amount) ||
+                    string.IsNullOrWhiteSpace(paymentData.PhoneNumber))
+                {
+                    _logger.LogError("Missing required payment data: {@PaymentData}", paymentData);
+                    return false;
+                }
+
+                // Parse amount
+                if (!decimal.TryParse(paymentData.Amount, out var amount))
+                {
+                    _logger.LogError("Invalid amount: {Amount}", paymentData.Amount);
+                    return false;
+                }
+
+                // Parse phone number
+                if (!long.TryParse(paymentData.PhoneNumber, out var phone))
+                {
+                    _logger.LogError("Invalid phone number: {PhoneNumber}", paymentData.PhoneNumber);
+                    return false;
+                }
+
+                // Find the existing payment using the checkout request ID
                 var payment = await _dbContext.PaymentDetails
-                    .Include(p => p.Order) // Include related order
+                    .Include(p => p.Order)
                     .FirstOrDefaultAsync(p => p.TrxReference == checkoutRequestId);
 
                 if (payment == null)
@@ -232,12 +256,12 @@ namespace Minimart_Api.Repositories.Mpesa
                     return false;
                 }
 
-                // 2️⃣ Update payment details
+                // Update payment details
                 payment.Status = "Success";
                 payment.PaymentReference = paymentData.MpesaReceiptNumber;
                 payment.PaymentDate = DateTime.UtcNow;
-                payment.Amount = decimal.Parse(paymentData.Amount);
-                payment.Phonenumber = long.Parse(paymentData.PhoneNumber);
+                payment.Amount = amount;
+                payment.Phonenumber = phone;
 
                 _dbContext.PaymentDetails.Update(payment);
                 await _dbContext.SaveChangesAsync();
@@ -245,8 +269,8 @@ namespace Minimart_Api.Repositories.Mpesa
                 _logger.LogInformation("💰 Payment updated successfully: Receipt {Receipt}, Amount {Amount}",
                     paymentData.MpesaReceiptNumber, paymentData.Amount);
 
-                // 3️⃣ Update the related order
-                if (payment.OrderID != null)
+                // Update the related order if present
+                if (!string.IsNullOrWhiteSpace(payment.OrderID))
                 {
                     var order = await _dbContext.Orders.FindAsync(payment.OrderID);
 
@@ -273,7 +297,7 @@ namespace Minimart_Api.Repositories.Mpesa
             {
                 await transaction.RollbackAsync();
                 _logger.LogError(ex, "💥 Error processing successful payment for CheckoutRequestID: {CheckoutRequestId}", checkoutRequestId);
-                throw;
+                return false;
             }
         }
 
