@@ -265,7 +265,7 @@ namespace Minimart_Api.Repositories.Mpesa
             payment.PaymentReference = paymentData.MpesaReceiptNumber;
             payment.PaymentDate = DateTime.UtcNow;
             payment.Amount = amount;
-            payment.Phonenumber = phone;
+            payment.Phonenumber = paymentData.PhoneNumber;
 
             _dbContext.PaymentDetails.Update(payment);
             await _dbContext.SaveChangesAsync();
