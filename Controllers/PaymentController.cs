@@ -67,6 +67,22 @@ namespace Minimart_Api.Controllers
 
         }
 
+        [HttpPost("stkPush")]
+        public async Task<IActionResult> StkPush([FromBody] StkPushRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("Received STK Push Request: {@Request}", request);
+                var response = await _mpesaService.StkPush(request);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in STK Push");
+                return BadRequest(ex.Message);
+            }
+        }
+
 
 
         [HttpPost("stkcallback")]
