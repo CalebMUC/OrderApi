@@ -547,7 +547,7 @@ public class OrderRepository : IorderRepository
             {
                 foreach (var orderDto in transaction.Orders)
                 {
-                    int paymentMethodID = await HandlePaymentDetails(orderDto.PaymentDetails);
+                    int paymentMethodID = await HandlePaymentDetails(orderDto.PaymentDetails,orderDto.OrderID);
 
                     var newOrder = await CreateOrder(orderDto, paymentMethodID);
 
@@ -628,7 +628,7 @@ public class OrderRepository : IorderRepository
     //    return paymentMethodID;
     //}
 
-    private async Task<int> HandlePaymentDetails(List<PaymentDetailsDto> paymentDetails)
+    private async Task<int> HandlePaymentDetails(List<PaymentDetailsDto> paymentDetails,string orderID)
     {
         if (paymentDetails == null || !paymentDetails.Any())
             throw new ArgumentException("Payment details are required");
@@ -689,6 +689,7 @@ public class OrderRepository : IorderRepository
                         PaymentDate = DateTime.UtcNow,
                         PaymentReference = paymentDetailDto.Phonenumber.ToString(),
                         //Status = "Pending" // Important for M-Pesa payments
+                        OrderID = orderID
                     };
 
                     _dbContext.PaymentDetails.Add(newPayment);
