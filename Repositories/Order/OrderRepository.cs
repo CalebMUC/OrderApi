@@ -685,6 +685,7 @@ public class OrderRepository : IorderRepository
                     {
                         PaymentMethodID = paymentDetailDto.PaymentID,
                         TrxReference = stkPushResponse.CheckoutRequestID,
+                        Phonenumber = paymentDetailDto.Phonenumber,
                         Amount = paymentDetailDto.Amount,
                         PaymentDate = DateTime.UtcNow,
                         PaymentReference = paymentDetailDto.Phonenumber.ToString(),
