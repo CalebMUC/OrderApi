@@ -77,7 +77,7 @@ public class OrderRepository : IorderRepository
         {
             // Step 1: Fetch orders with status messages
             var ordersWithStatus = await _dbContext.Orders
-                .Where(o => o.Status == status && o.UserID == userID)
+                .Where(o => o.Status == status && o.UserID == userID && o.StatusEnum == Minimart_Api.Models.Enums.OrderStatusEnum.Paid)
                 .Join(_dbContext.OrderStatuses,
                     o => o.Status, // Join condition for order status
                     os => os.StatusId,
@@ -688,7 +688,7 @@ public class OrderRepository : IorderRepository
                         Amount = paymentDetailDto.Amount,
                         PaymentDate = DateTime.UtcNow,
                         PaymentReference = paymentDetailDto.Phonenumber.ToString(),
-                        //Status = "Pending" // Important for M-Pesa payments
+                        Status = "Pending",
                         OrderID = orderID
                     };
 
