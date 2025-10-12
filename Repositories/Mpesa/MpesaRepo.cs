@@ -233,26 +233,12 @@ namespace Minimart_Api.Repositories.Mpesa
         {
             try
             {
-                var response = _dbContext.PaymentDetails
-                    .FirstOrDefault(p => p.TrxReference == query.CheckoutRequestID);
+                var response = await _dbContext.PaymentDetails
+                    .FirstOrDefaultAsync(p => p.TrxReference == query.CheckoutRequestID);
 
-                //check the response status
-                if (response != null && response.Status == "Success")
+                if (response == null)
                 {
-                    var result = new MpesaTrxQueryRes
-                    {
-                        ResultCode = "00",
-                        ResultDesc = response.Status == "Success" ? "Transaction successful" : "Transaction pending or failed",
-                        CheckoutRequestID = response.TrxReference,
-                        Amount = response.Amount,
-                        success = response.Status == "Success",
-                        MpesaReceiptNumber = response.PaymentReference,
-                        PhoneNumber = response.Phonenumber
-                    };
-                    return result;
-                }
-                else
-                {
+                    // Transaction does not exist in DB
                     return new MpesaTrxQueryRes
                     {
                         ResultCode = "99",
@@ -261,16 +247,66 @@ namespace Minimart_Api.Repositories.Mpesa
                     };
                 }
 
+                // Handle based on the status in the database
+                switch (response.Status?.ToLower())
+                {
+                    case "success":
+                        return new MpesaTrxQueryRes
+                        {
+                            ResultCode = "00",
+                            ResultDesc = "Transaction successful",
+                            CheckoutRequestID = response.TrxReference,
+                            Amount = response.Amount,
+                            Success = true,
+                            MpesaReceiptNumber = response.PaymentReference,
+                            PhoneNumber = response.Phonenumber
+                        };
+
+                    case "pending":
+                    case null: // no callback yet, still processing
+                        return new MpesaTrxQueryRes
+                        {
+                            ResultCode = "1032",
+                            ResultDesc = "Transaction is still being processed. Please wait.",
+                            CheckoutRequestID = response.TrxReference,
+                            Success = false
+                        };
+
+                    case "failed":
+                        return new MpesaTrxQueryRes
+                        {
+                            ResultCode = "01",
+                            ResultDesc = "Transaction failed",
+                            CheckoutRequestID = response.TrxReference,
+                            Success = false
+                        };
+
+                    default:
+                        return new MpesaTrxQueryRes
+                        {
+                            ResultCode = "02",
+                            ResultDesc = $"Unknown transaction status: {response.Status}",
+                            CheckoutRequestID = response.TrxReference,
+                            Success = false
+                        };
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error querying transaction status");
-                throw;
+                return new MpesaTrxQueryRes
+                {
+                    ResultCode = "98",
+                    ResultDesc = "Internal server error while querying transaction",
+                    CheckoutRequestID = query.CheckoutRequestID,
+                    Success = false
+                };
             }
         }
 
 
-      public async Task<bool> ProcessSuccessfulPayment(PaymentData paymentData, string checkoutRequestId, string merchantRequestId)
+
+        public async Task<bool> ProcessSuccessfulPayment(PaymentData paymentData, string checkoutRequestId, string merchantRequestId)
 {
     var strategy = _dbContext.Database.CreateExecutionStrategy();
 
