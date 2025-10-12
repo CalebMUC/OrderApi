@@ -40,7 +40,8 @@ namespace Minimart_Api.Models
         public string Status { get; set; } = "Pending"; // e.g. Pending, Success, Failed
 
         // ✅ Add this property for linking to an Order
-        public string OrderID { get; set; }
+        public string? OrderID { get; set; }
+
 
         [ForeignKey(nameof(OrderID))]
         public Orders Order { get; set; }

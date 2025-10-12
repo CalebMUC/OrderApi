@@ -208,7 +208,6 @@ namespace Minimart_Api.Repositories.Mpesa
                         PaymentDate = DateTime.UtcNow,
                         PaymentReference = request.PhoneNumber.Trim(),
                         Status = "Pending",
-                        OrderID= request.AccountReference
                     };
 
                     _dbContext.PaymentDetails.Add(newPayment);
