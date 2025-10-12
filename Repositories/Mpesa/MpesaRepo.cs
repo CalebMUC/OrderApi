@@ -237,7 +237,7 @@ namespace Minimart_Api.Repositories.Mpesa
                     .FirstOrDefault(p => p.TrxReference == query.CheckoutRequestID);
 
                 //check the response status
-                if (response != null)
+                if (response != null && response.Status == "Success")
                 {
                     var result = new MpesaTrxQueryRes
                     {
