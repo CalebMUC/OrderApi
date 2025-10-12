@@ -2,7 +2,7 @@
 {
     public class MpesaTrxQueryRes
     {
-        public bool success { get; set; }
+        public bool Success { get; set; }
         public string CheckoutRequestID { get; set; }
         public string MpesaReceiptNumber { get; set; }
         public string PhoneNumber { get; set; }
