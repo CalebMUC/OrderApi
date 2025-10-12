@@ -547,9 +547,30 @@ public class OrderRepository : IorderRepository
             {
                 foreach (var orderDto in transaction.Orders)
                 {
-                    int paymentMethodID = await HandlePaymentDetails(orderDto.PaymentDetails,orderDto.OrderID);
+                    //int paymentMethodID = await HandlePaymentDetails(orderDto.PaymentDetails,orderDto.OrderID);
 
-                    var newOrder = await CreateOrder(orderDto, paymentMethodID);
+                    var trxRef = orderDto.PaymentDetails.FirstOrDefault().TrxReference;
+
+                    var existingPayment = await _dbContext.PaymentDetails
+                        .FirstOrDefaultAsync(p => p.TrxReference == trxRef);
+
+                    if (existingPayment == null && existingPayment.Status != "Confirmed" ) 
+                        throw new Exception($"Payment with not confirmed.");
+
+                    var newOrder = await CreateOrder(orderDto,existingPayment);
+
+                    //update payment Details with OrderID
+                    if (existingPayment != null)
+                    {
+                        existingPayment.OrderID = newOrder.OrderID;
+                        //existingPayment.Status = "Completed";
+                        _dbContext.PaymentDetails.Update(existingPayment);
+                        await _dbContext.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        throw new Exception($"Payment with reference {trxRef} not found.");
+                    }
 
                     await UpdateProductStock(orderDto.Products);
 
@@ -745,7 +766,7 @@ public class OrderRepository : IorderRepository
     //    };
     //}
 
-    private async Task<Orders> CreateOrder(OrderDTO orderDto, int paymentMethodID)
+    private async Task<Orders> CreateOrder(OrderDTO orderDto,PaymentDetails payment)
     {
         return new Orders
         {
@@ -755,7 +776,7 @@ public class OrderRepository : IorderRepository
             DeliveryScheduleDate = orderDto.DeliveryScheduleDate,
             OrderedBy = orderDto.OrderedBy,
             Status = orderDto.Status,
-            PaymentID = paymentMethodID,
+            PaymentID = payment.PaymentID,
             PaymentConfirmation = orderDto.PaymentConfirmation,
             TotalOrderAmount = orderDto.TotalOrderAmount,
             TotalPaymentAmount = orderDto.TotalPaymentAmount,

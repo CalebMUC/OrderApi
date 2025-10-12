@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Minimart_Api.DTOS.Mpesa;
+using Minimart_Api.DTOS.Payments;
 using Minimart_Api.Services.Mpesa;
 using Newtonsoft.Json.Linq;
 
@@ -82,6 +83,23 @@ namespace Minimart_Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("query-status")]
+        public async Task<IActionResult> TrxQueryStatus([FromBody] MpesaTrxQuery query)
+        {
+            try
+            {
+                _logger.LogInformation("Received STK Push Request: {@Request}", query);
+                var response = await _mpesaService.TrxQueryStatus(query); 
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in STK Push");
+                return BadRequest(ex.Message);
+            }
+        }
+
 
 
 

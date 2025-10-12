@@ -6,6 +6,8 @@
         public int PaymentID { get; set; }
         public long PaymentReference { get; set; }
 
+        public string TrxReference { get; set; }
+
         public string PaymentMethod { get; set; }
 
         public string Phonenumber { get; set; }

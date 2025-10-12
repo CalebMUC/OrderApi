@@ -197,7 +197,24 @@ namespace Minimart_Api.Repositories.Mpesa
             var stkPushResponse = JsonConvert.DeserializeObject<StkPushResponse>(responseContent);
             _logger.LogInformation("STK Push initiated successfully. CheckoutID: {CheckoutId}", 
                 stkPushResponse?.CheckoutRequestID);
-            return stkPushResponse!;
+
+                    // Record payment
+                    var newPayment = new PaymentDetails
+                    {
+                        PaymentMethodID = 1,
+                        TrxReference = stkPushResponse.CheckoutRequestID,
+                        Phonenumber = request.PhoneNumber,
+                        Amount = Convert.ToDecimal(request.Amount),
+                        PaymentDate = DateTime.UtcNow,
+                        PaymentReference = request.PhoneNumber.Trim(),
+                        Status = "Pending",
+                    };
+
+                    _dbContext.PaymentDetails.Add(newPayment);
+                    await _dbContext.SaveChangesAsync();
+
+
+                    return stkPushResponse!;
         }
         else
         {
@@ -211,6 +228,46 @@ namespace Minimart_Api.Repositories.Mpesa
         throw;
     }
 }
+
+        public async Task<MpesaTrxQueryRes> TrxQueryStatus(MpesaTrxQuery query)
+        {
+            try
+            {
+                var response = _dbContext.PaymentDetails
+                    .FirstOrDefault(p => p.TrxReference == query.CheckoutRequestID);
+
+                //check the response status
+                if (response != null)
+                {
+                    var result = new MpesaTrxQueryRes
+                    {
+                        ResultCode = "00",
+                        ResultDesc = response.Status == "Success" ? "Transaction successful" : "Transaction pending or failed",
+                        CheckoutRequestID = response.TrxReference,
+                        Amount = response.Amount,
+                        success = response.Status == "Success",
+                        MpesaReceiptNumber = response.PaymentReference,
+                        PhoneNumber = response.Phonenumber
+                    };
+                    return result;
+                }
+                else
+                {
+                    return new MpesaTrxQueryRes
+                    {
+                        ResultCode = "99",
+                        ResultDesc = "Transaction not found",
+                        CheckoutRequestID = query.CheckoutRequestID
+                    };
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error querying transaction status");
+                throw;
+            }
+        }
 
 
       public async Task<bool> ProcessSuccessfulPayment(PaymentData paymentData, string checkoutRequestId, string merchantRequestId)
@@ -281,6 +338,7 @@ namespace Minimart_Api.Repositories.Mpesa
                 {
                     order.StatusEnum = Models.Enums.OrderStatusEnum.Paid;
                     order.StatusMessage = "Payment confirmed via M-Pesa";
+                    order.PaymentConfirmation = "Confirmed";
                     _dbContext.Orders.Update(order);
 
                     _logger.LogInformation("📦 Order {OrderId} marked as PAID.", order.OrderID);
