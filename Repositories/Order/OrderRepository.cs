@@ -20,6 +20,7 @@ using Minimart_Api.Services.RabbitMQ;
 using Minimart_Api.Services.SignalR;
 using Minimart_Api.Services.SystemMerchantService;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -777,7 +778,7 @@ public class OrderRepository : IorderRepository
             OrderedBy = orderDto.OrderedBy,
             Status = orderDto.Status,
             PaymentID = payment.PaymentID,
-            PaymentConfirmation = orderDto.PaymentConfirmation,
+            //PaymentConfirmation = orderDto.PaymentConfirmation,
             TotalOrderAmount = orderDto.TotalOrderAmount,
             TotalPaymentAmount = orderDto.TotalPaymentAmount,
             TotalDeliveryFees = orderDto.TotalDeliveryFees,
@@ -790,7 +791,10 @@ public class OrderRepository : IorderRepository
                 Quantity = p.Quantity
             }).ToList(),
             ShippingAddress = JsonConvert.SerializeObject(orderDto.ShippingAddress),
-            PickupLocation = JsonConvert.SerializeObject(orderDto.PickUpLocation)
+            PickupLocation = JsonConvert.SerializeObject(orderDto.PickUpLocation),
+            StatusEnum = Models.Enums.OrderStatusEnum.Paid,
+            StatusMessage = "Payment confirmed via M-Pesa",
+            PaymentConfirmation = "Confirmed",
         };
     }
 
