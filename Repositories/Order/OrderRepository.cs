@@ -792,7 +792,7 @@ public class OrderRepository : IorderRepository
             }).ToList(),
             ShippingAddress = JsonConvert.SerializeObject(orderDto.ShippingAddress),
             PickupLocation = JsonConvert.SerializeObject(orderDto.PickUpLocation),
-            StatusEnum = Models.Enums.OrderStatusEnum.Paid,
+            StatusEnum = Minimart_Api.Models.Enums.OrderStatusEnum.Paid,
             StatusMessage = "Payment confirmed via M-Pesa",
             PaymentConfirmation = "Confirmed",
         };
