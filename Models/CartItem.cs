@@ -12,8 +12,7 @@ namespace Minimart_Api.Models
         public int? CartId { get; set; }
 
         //[ForeignKey("Product")]
-        [Column(TypeName = "varchar(50)")]  
-        public string? ProductId { get; set; }
+        public Guid? ProductId { get; set; }
 
         [Required]
         public int Quantity { get; set; } 
@@ -21,14 +20,14 @@ namespace Minimart_Api.Models
         public bool IsActive { get; set; }
         public bool IsBought { get; set; }
 
-        [Column(TypeName = "timestamp")]  
+        [Column(TypeName = "timestamp with time zone")]  
         public DateTime? CreatedOn { get; set; }
 
-        [Column(TypeName = "timestamp")]  
+        [Column(TypeName = "timestamp with time zone")]  
         public DateTime? UpdatedOn { get; set; }
 
         public virtual Cart? Cart { get; set; }
         [ForeignKey("ProductId")]
-        public virtual Products? Products { get; set; }
+        public virtual Product? Product { get; set; }
     }
 }

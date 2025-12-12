@@ -1,57 +1,77 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Minimart_Api.Models
 {
     public class OrderTracking
     {
         [Key]
+        [MaxLength(50)]
         [Column(TypeName = "varchar(50)")]
-        public string TrackingID { get; set; }
+        public string TrackingID { get; set; } = string.Empty;
 
         [Required]
+        [MaxLength(50)]
         [Column(TypeName = "varchar(50)")]
-        public string OrderID { get; set; }
+        public string OrderID { get; set; } = string.Empty;
 
         [Required]
-        [Column(TypeName = "varchar(50)")]
-        public string ProductID { get; set; }
+        public Guid ProductId { get; set; }
 
-        [Column(TypeName = "timestamp")]
-        public DateTime TrackingDate { get; set; } = DateTime.Now;
+        [Required]
+        public Guid MerchantID { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp with time zone")]
+        public DateTime TrackingDate { get; set; } = DateTime.UtcNow;
+
+        [Column(TypeName = "timestamp with time zone")]
         public DateTime ExpectedDeliveryDate { get; set; }
 
-        [Required]
-        public int PreviousStatus { get; set; }
-
-        [ForeignKey("PreviousStatus")]
-        public OrderStatus PreviousStatusNavigation { get; set; }
+        [MaxLength(50)]
+        [Column(TypeName = "varchar(50)")]
+        public string? PreviousStatus { get; set; }
 
         [Required]
-        public int CurrentStatus { get; set; }
+        [MaxLength(50)]
+        [Column(TypeName = "varchar(50)")]
+        public string CurrentStatus { get; set; } = "Processing";
 
-        [ForeignKey("CurrentStatus")]
-        public OrderStatus CurrentStatusNavigation { get; set; }
-
+        [MaxLength(100)]
         [Column(TypeName = "varchar(100)")]
-        public string Carrier { get; set; }
+        public string? Carrier { get; set; }
 
-        [Column(TypeName = "varchar(50)")]
-        public string CreatedBy { get; set; }
+        [MaxLength(500)]
+        [Column(TypeName = "varchar(500)")]
+        public string? TrackingNotes { get; set; }
 
-        [Column(TypeName = "timestamp")]
-        public DateTime CreatedOn { get; set; }
+        [MaxLength(255)]
+        [Column(TypeName = "varchar(255)")]
+        public string? Location { get; set; }
 
-        [Column(TypeName = "varchar(50)")]
-        public string UpdatedBy { get; set; }
+        // Audit fields
+        [Required]
+        [MaxLength(255)]
+        [Column(TypeName = "varchar(255)")]
+        public string CreatedBy { get; set; } = string.Empty;
 
-        [Column(TypeName = "timestamp")]
-        public DateTime UpdatedOn { get; set; }
+        [Column(TypeName = "timestamp with time zone")]
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
-        public virtual Orders Order { get; set; }
-        public virtual Products product { get; set; }
+        [MaxLength(255)]
+        [Column(TypeName = "varchar(255)")]
+        public string? UpdatedBy { get; set; }
+
+        [Column(TypeName = "timestamp with time zone")]
+        public DateTime? UpdatedOn { get; set; }
+
+        // Navigation properties - only modern relationships, no legacy OrderStatus references
+        [ForeignKey("OrderID")]
+        public virtual Order Order { get; set; } = null!;
+
+        [ForeignKey("ProductId")]
+        public virtual Product Product { get; set; } = null!;
+
+        [ForeignKey("MerchantID")]
+        public virtual Merchants Merchant { get; set; } = null!;
     }
-
 }

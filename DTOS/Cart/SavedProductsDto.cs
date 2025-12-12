@@ -2,7 +2,7 @@
 {
     public class SavedProductsDto
     {
-        public string ProductID { get; set; }
+        public Guid ProductID { get; set; }
         public string ProductName { get; set; }
         public string ProductImage { get; set; }
         public decimal Price { get; set; }

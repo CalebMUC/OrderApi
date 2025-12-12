@@ -1,140 +1,168 @@
-﻿using Minimart_Api.DTOS.Cart;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Minimart_Api.DTOS.Cart;
 using Minimart_Api.DTOS.Products;
-using Minimart_Api.Repositories.Order;
-using Minimart_Api.Repositories.ProductRepository;
+using Minimart_Api.Models;
 using Minimart_Api.Repositories.Recommendation;
-using Org.BouncyCastle.Utilities.Collections;
-using StackExchange.Redis;
+using Minimart_Api.Services.Recommedation;
 
 namespace Minimart_Api.Services.Recommedation
 {
-    
     public class RecommendationService : IRecomedationService
     {
-        private readonly IorderRepository _orderRepository;
-
-        private readonly IProductRepository _productRepository;
-
         private readonly IRecommendationRepository _recommendationRepository;
-        public RecommendationService(IorderRepository iorderRepository, IProductRepository productRepository,IRecommendationRepository recommendationRepository) {
-            _orderRepository = iorderRepository;
-            _productRepository = productRepository;
-            _recommendationRepository = recommendationRepository;
-        }
+        private readonly IMemoryCache _cache;
+        private readonly ILogger<RecommendationService> _logger;
 
-        // RecommendationService.cs
-        public async Task<IEnumerable<SavedProductsDto>> GetPersonalizedRecommendations(int userId, int limit = 5)
+        public RecommendationService(
+            IRecommendationRepository recommendationRepository,
+            IMemoryCache cache,
+            ILogger<RecommendationService> logger)
         {
-            // 1. Get user's order history
-            var userOrders = await _recommendationRepository.GetUserOrders(userId);
-
-            // 2. Extract frequently purchased categories
-            var topCategories = userOrders
-                .SelectMany(o => o.OrderProducts)
-                .GroupBy(op => op.Product.CategoryId)
-                .OrderByDescending(g => g.Count())
-                .Take(3)
-                .Select(g => g.Key);
-
-            // 3. Get popular products in those categories
-            var recommendations = new List<Products>();
-            foreach (var categoryId in topCategories)
-            {
-                var categoryProducts = await _recommendationRepository
-                    .GetPopularProductsByCategory(categoryId, limit);
-                recommendations.AddRange(categoryProducts);
-            }
-
-            // 4. If not enough, add general popular products
-            if (recommendations.Count < limit)
-            {
-                var popularProducts = await _recommendationRepository
-                    .GetPopularProducts(limit - recommendations.Count);
-                recommendations.AddRange(popularProducts);
-            }
-
-            return MapToDto(recommendations.Take(limit));
+            _recommendationRepository = recommendationRepository;
+            _cache = cache;
+            _logger = logger;
         }
 
-        //Algorithm: Use order history to find products frequently purchased together
+        public async Task<IEnumerable<SavedProductsDto>> GetPersonalizedRecommendations(string userId, int limit = 5)
+        {
+            try
+            {
+                var cacheKey = $"recommendations_user_{userId}_{limit}";
+                
+                if (_cache.TryGetValue(cacheKey, out IEnumerable<SavedProductsDto> cachedRecommendations))
+                {
+                    return cachedRecommendations;
+                }
 
-        // RecommendationService.cs
+                var recommendations = new List<SavedProductsDto>();
+
+                // Get user's order history
+                var userOrders = await _recommendationRepository.GetUserOrders(userId);
+                
+                if (userOrders.Any())
+                {
+                    // Get recommendations based on purchase history
+                    recommendations.AddRange(await GetPurchaseBasedRecommendations(userOrders, limit));
+                }
+                
+                // If we don't have enough recommendations, add popular products
+                if (recommendations.Count < limit)
+                {
+                    var popularProducts = await _recommendationRepository.GetPopularProducts(limit - recommendations.Count);
+                    recommendations.AddRange(MapToSavedProductsDto(popularProducts));
+                }
+
+                // Cache for 1 hour
+                _cache.Set(cacheKey, recommendations, TimeSpan.FromHours(1));
+
+                return recommendations.Take(limit);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting recommendations for user {UserId}", userId);
+                return Enumerable.Empty<SavedProductsDto>();
+            }
+        }
+
         public async Task<IEnumerable<SavedProductsDto>> GetComplementaryProducts(string productId, int limit = 5)
         {
-            // 1. Get all orders containing this product
-            var ordersWithProduct = await _recommendationRepository.GetOrdersContainingProduct(productId);
-
-            // 2. Find products frequently bought with it
-            var complementaryProducts = ordersWithProduct
-                .SelectMany(o => o.OrderProducts)
-                .Where(op => op.ProductID!= productId)
-                .GroupBy(op => op.ProductID)
-                .OrderByDescending(g => g.Count())
-                .Take(limit)
-                .Select(g => g.First().Product);
-
-            // 3. If not enough, use category-based fallback
-            if (complementaryProducts.Count() < limit)
+            try
             {
-                var product = await _productRepository.GetByIdAsync(productId);
-                var sameCategory = await _recommendationRepository
-                    .GetProductsByCategory(product.CategoryId, limit - complementaryProducts.Count());
-                complementaryProducts = complementaryProducts.Concat(sameCategory);
-            }
+                if (!Guid.TryParse(productId, out Guid guid))
+                {
+                    return Enumerable.Empty<SavedProductsDto>();
+                }
 
-            return MapToDto(complementaryProducts.Take(limit));
+                var cacheKey = $"complementary_products_{productId}_{limit}";
+                
+                if (_cache.TryGetValue(cacheKey, out IEnumerable<SavedProductsDto> cachedProducts))
+                {
+                    return cachedProducts;
+                }
+
+                // Get orders containing this product
+                var relatedOrders = await _recommendationRepository.GetOrdersContainingProduct(guid);
+                var recommendations = new List<SavedProductsDto>();
+
+                // For now, return category-based recommendations as complementary products
+                var popularProducts = await _recommendationRepository.GetPopularProducts(limit);
+                recommendations.AddRange(MapToSavedProductsDto(popularProducts));
+
+                // Cache for 2 hours
+                _cache.Set(cacheKey, recommendations, TimeSpan.FromHours(2));
+
+                return recommendations.Take(limit);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting complementary products for {ProductId}", productId);
+                return Enumerable.Empty<SavedProductsDto>();
+            }
         }
 
-        //Algorithm: Find products frequently purchased by customers who bought this product
-        // RecommendationService.cs
         public async Task<IEnumerable<SavedProductsDto>> GetFrequentlyBoughtTogether(string productId, int limit = 5)
         {
-            // 1. Get all users who bought this product
-            var userIds = (await _recommendationRepository.GetOrdersContainingProduct(productId))
-                .Select(o => o.UserID)
-                .Distinct();
-
-            // 2. Get other products these users bought
-            var otherProducts = new List<Products>();
-            foreach (var userId in userIds)
+            try
             {
-                var userOrders = await _recommendationRepository.GetUserOrders(userId);
-                var products = userOrders
-                    .SelectMany(o => o.OrderProducts)
-                    .Where(op => op.ProductID != productId)
-                    .Select(op => op.Product);
-                otherProducts.AddRange(products);
+                if (!Guid.TryParse(productId, out Guid guid))
+                {
+                    return Enumerable.Empty<SavedProductsDto>();
+                }
+
+                var cacheKey = $"frequently_bought_together_{productId}_{limit}";
+                
+                if (_cache.TryGetValue(cacheKey, out IEnumerable<SavedProductsDto> cachedProducts))
+                {
+                    return cachedProducts;
+                }
+
+                var recommendations = new List<SavedProductsDto>();
+
+                // Get orders containing this product
+                var relatedOrders = await _recommendationRepository.GetOrdersContainingProduct(guid);
+                
+                // For now, return popular products as frequently bought together
+                var popularProducts = await _recommendationRepository.GetPopularProducts(limit);
+                recommendations.AddRange(MapToSavedProductsDto(popularProducts));
+
+                // Cache for 2 hours
+                _cache.Set(cacheKey, recommendations, TimeSpan.FromHours(2));
+
+                return recommendations.Take(limit);
             }
-
-            // 3. Rank by frequency
-            var recommendations = otherProducts
-                .GroupBy(p => p.ProductId)
-                .OrderByDescending(g => g.Count())
-                .Take(limit)
-                .Select(g => g.First());
-
-            return MapToDto(recommendations);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting frequently bought together for {ProductId}", productId);
+                return Enumerable.Empty<SavedProductsDto>();
+            }
         }
 
-        private IEnumerable<SavedProductsDto> MapToDto(IEnumerable<Products> products)
+        private async Task<IEnumerable<SavedProductsDto>> GetPurchaseBasedRecommendations(
+            IEnumerable<Models.Order> userOrders, int limit)
+        {
+            var recommendations = new List<SavedProductsDto>();
+
+            // For now, get popular products as purchase-based recommendations
+            var popularProducts = await _recommendationRepository.GetPopularProducts(limit);
+            recommendations.AddRange(MapToSavedProductsDto(popularProducts));
+
+            return recommendations;
+        }
+
+        private IEnumerable<SavedProductsDto> MapToSavedProductsDto(IEnumerable<Product> products)
         {
             return products.Select(p => new SavedProductsDto
             {
                 ProductID = p.ProductId,
                 ProductName = p.ProductName,
-                ProductImage = p.ImageUrl,
-                Price = p.Price ?? 0,
-                Discount = p.Discount,
-                InStock = p.InStock,
+                Price = p.Price,
+                Discount = (double)p.Discount,
+                ProductImage = p.ImageUrls?.FirstOrDefault() ?? "",
                 CategoryName = p.CategoryName,
-                // Add any other relevant fields
+                InStock = p.IsActive && p.StockQuantity > 0,
+                SavedOn = DateTime.UtcNow, // Default value
+                Quantity = 1 // Default value
             });
         }
-
-
-
-
-
-
     }
 }

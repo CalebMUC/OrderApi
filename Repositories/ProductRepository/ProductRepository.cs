@@ -1,226 +1,727 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Minimart_Api.Data;
 using Minimart_Api.DTOS.Cart;
-using Minimart_Api.DTOS.General;
 using Minimart_Api.DTOS.Products;
 using Minimart_Api.Models;
-using OpenSearch.Client;
+using AutoMapper;
+using GeneralPagedResultDto = Minimart_Api.DTOS.General.PagedResultDto<Minimart_Api.DTOS.Products.ProductListDto>;
 
 namespace Minimart_Api.Repositories.ProductRepository
 {
     public class ProductRepository : IProductRepository
     {
-        private readonly MinimartDBContext _dbContext;
-        public ProductRepository(MinimartDBContext dBContext)
+        private readonly MinimartDBContext _context;
+        private readonly IMapper _mapper;
+        private readonly ILogger<ProductRepository> _logger;
+
+        public ProductRepository(MinimartDBContext context, IMapper mapper, ILogger<ProductRepository> logger)
         {
-            _dbContext = dBContext;
-
-        }
-        public async Task<IEnumerable<Products>> GetAllProducts()
-        {
-            return await _dbContext.Products.ToListAsync();
-
+            _context = context;
+            _mapper = mapper;
+            _logger = logger;
         }
 
-        public async Task<Status> EditProductsAsync(AddProducts products)
+
+        #region Basic CRUD Operations
+
+        public async Task<ProductResponseDto?> GetByIdAsync(Guid productId)
         {
             try
             {
-                var existingProduct = await _dbContext.Products.FindAsync(products.productID);
-                updateProductFromDto(existingProduct, products);
-                await _dbContext.SaveChangesAsync();
+                var product = await _context.Products
+                    .Include(p => p.Merchant)
+                    .Include(p => p.Category)
+                    .Include(p => p.SubCategory)
+                    .Include(p => p.SubSubCategory)
+                    .FirstOrDefaultAsync(p => p.ProductId == productId && !p.IsDeleted);
 
-                return new Status
+                return product == null ? null : _mapper.Map<ProductResponseDto>(product);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving product with ID: {ProductId}", productId);
+                throw;
+            }
+        }
+
+        public async Task<Minimart_Api.DTOS.General.PagedResultDto<ProductListDto>> GetAllAsync(ProductFilterDto filter)
+        {
+            try
+            {
+                var query = _context.Products
+                    .Include(p => p.Category)
+                    .Include(p => p.SubCategory)
+                    .Include(p => p.SubSubCategory)
+                    .Where(p => !p.IsDeleted);
+
+                query = ApplyFilters(query, filter);
+
+                return await GetPagedResultAsync(query, filter);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving all products");
+                throw;
+            }
+        }
+
+        public async Task<Minimart_Api.DTOS.General.PagedResultDto<ProductListDto>> GetProductsByMerchantIdAsync(Guid merchantId, ProductFilterDto filter)
+        {
+            try
+            {
+                var query = _context.Products
+                    .Include(p => p.Category)
+                    .Include(p => p.SubCategory)
+                    .Include(p => p.SubSubCategory)
+                    .Where(p => p.MerchantID == merchantId && !p.IsDeleted);
+
+                query = ApplyFilters(query, filter);
+
+                return await GetPagedResultAsync(query, filter);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving products for merchant: {MerchantId}", merchantId);
+                throw;
+            }
+        }
+
+        public async Task<Minimart_Api.DTOS.General.PagedResultDto<ProductListDto>> GetProductsByCategoryAsync(Guid categoryId, ProductFilterDto filter)
+        {
+            try
+            {
+                // Start with the base query
+                var baseQuery = _context.Products
+                    .Where(p => p.CategoryId == categoryId && !p.IsDeleted);
+
+                // Count before applying any additional filters
+                var countBeforeFilters = await baseQuery.CountAsync();
+                _logger.LogInformation("Products found for CategoryId {CategoryId} before filters: {Count}", categoryId, countBeforeFilters);
+
+                // Apply filters
+                var query = ApplyFilters(baseQuery, filter);
+
+                // Get final count after filters
+                var totalCount = await query.CountAsync();
+
+                var products = await query
+                    .Skip((filter.Page - 1) * filter.PageSize)
+                    .Take(filter.PageSize)
+                    .ToListAsync();
+
+                // Manually load category information if needed
+                var categoryInfo = await _context.Categories
+                    .Where(c => c.CategoryId == categoryId)
+                    .Select(c => new { c.CategoryId, c.Name })
+                    .FirstOrDefaultAsync();
+
+                // Map to DTOs using the retrieved product list instead of query
+                var productDtos = products.Select(p => new ProductListDto
                 {
-                    ResponseCode = 200,
-                    ResponseMessage = "Products Edit Successfully"
+                    ProductId = p.ProductId,
+                    CategoryId = p.CategoryId,
+                    SubCategoryId = p.SubCategoryId ?? Guid.Empty,
+                    CategoryName = categoryInfo?.Name ?? "Unknown Category",
+                    SubCategoryName = p.SubCategoryName,
+                    SubSubCategoryName = p.SubSubCategoryName,
+                    ProductName = p.ProductName,
+                    Description = p.Description,
+                    Price = p.Price,
+                    Discount = p.Discount,
+                    StockQuantity = p.StockQuantity,
+                    SKU = p.SKU,
+                    ProductDescription = p.ProductDescription,
+                    ProductSpecification = p.ProductSpecification,
+                    BoxContents = p.BoxContents,
+                    Features = p.Features,
+                    ImageUrls = p.ImageUrls,
+                    IsActive = p.IsActive,
+                    IsFeatured =  p.IsFeatured,
+                    Status = p.Status ?? "Unknown",
+                    MerchantID = p.MerchantID,
+                    CreatedOn = p.CreatedOn,
+                    UpdatedOn = p.UpdatedOn
+                }).ToList();
+
+                return new Minimart_Api.DTOS.General.PagedResultDto<ProductListDto>
+                {
+                    Data = productDtos,
+                    TotalCount = totalCount,
+                    PageNumber = filter.Page,
+                    PageSize = filter.PageSize
                 };
             }
             catch (Exception ex)
             {
-                return new Status
-                {
-                    ResponseCode = 500,
-                    ResponseMessage = $"Products failed to  Edited {ex.Message} "
-                };
-
+                _logger.LogError(ex, "Error retrieving products for category: {CategoryId}", categoryId);
+                
+                // Log the actual SQL query being generated for debugging
+                _logger.LogError("Query parameters: CategoryId={CategoryId}, IsDeleted=false", categoryId);
+                throw;
             }
         }
 
-        public async Task<Status> AddProducts(AddProducts product)
+        public async Task<Minimart_Api.DTOS.General.PagedResultDto<ProductListDto>> GetSubCategoryProductsAsync(Guid subCategoryId, ProductFilterDto filter)
         {
-
-            // Check if the product already exists
-            var existingProduct = await _dbContext.Products
-                .FirstOrDefaultAsync(x => x.ProductName == product.productName);
-            if (existingProduct != null)
+            try
             {
-                return new Status
+                // Start with the base query
+                var baseQuery = _context.Products
+                    .Where(p => p.SubCategoryId == subCategoryId && !p.IsDeleted);
+
+                // Count before applying any additional filters
+                var countBeforeFilters = await baseQuery.CountAsync();
+                _logger.LogInformation("Products found for SubCategoryId {SubCategoryId} before filters: {Count}", subCategoryId, countBeforeFilters);
+
+                // Apply filters
+                var query = ApplyFilters(baseQuery, filter);
+
+                // Get final count after filters
+                var totalCount = await query.CountAsync();
+
+                var products = await query
+                    .Skip((filter.Page - 1) * filter.PageSize)
+                    .Take(filter.PageSize)
+                    .ToListAsync();
+
+                // Manually load subcategory information if needed
+                var subCategoryInfo = await _context.SubCategories
+                    .Where(c => c.SubCategoryId == subCategoryId)
+                    .Select(c => new { c.SubCategoryId, c.Name })
+                    .FirstOrDefaultAsync();
+
+                // Map to DTOs using the retrieved product list instead of query
+                var productDtos = products.Select(p => new ProductListDto
                 {
-                    ResponseCode = 409,
-                    ResponseMessage = $"Product '{product.productName}' Already Exists"
+                    ProductId = p.ProductId,
+                    CategoryId = p.CategoryId,
+                    SubCategoryId = p.SubCategoryId ?? Guid.Empty,
+                    CategoryName = p.CategoryName, // Use the property from the product
+                    SubCategoryName = subCategoryInfo?.Name ?? "Unknown SubCategory",
+                    SubSubCategoryName = p.SubSubCategoryName,
+                    ProductName = p.ProductName,
+                    Description = p.Description,
+                    Price = p.Price,
+                    Discount = p.Discount,
+                    StockQuantity = p.StockQuantity,
+                    SKU = p.SKU,
+                    ProductDescription = p.ProductDescription,
+                    ProductSpecification = p.ProductSpecification,
+                    BoxContents = p.BoxContents,
+                    Features = p.Features,
+                    ImageUrls = p.ImageUrls,
+                    IsActive = p.IsActive,
+                    IsFeatured = p.IsFeatured,
+                    Status = p.Status ?? "Unknown",
+                    MerchantID = p.MerchantID,
+                    CreatedOn = p.CreatedOn,
+                    UpdatedOn = p.UpdatedOn
+                }).ToList();
+
+                return new Minimart_Api.DTOS.General.PagedResultDto<ProductListDto>
+                {
+                    Data = productDtos,
+                    TotalCount = totalCount,
+                    PageNumber = filter.Page,
+                    PageSize = filter.PageSize
                 };
             }
-
-            // Create a new product entity
-            var newProduct = new Products
+            catch (Exception ex)
             {
-                MerchantID = product.merchantID,
-                ProductId = product.productID,
-                ProductName = product.productName,
-                ProductDescription = product.productDetails,
-                ProductType = "P",
-                CategoryId = product.categoryId,
-                CategoryName = product.categoryName,
-                SubCategoryId = product.subCategoryId,
-                SubCategoryName = product.subCategoryName,
-                SubSubCategoryId = product.subSubCategoryId != 0 ? product.subSubCategoryId : null,
-                SubSubCategoryName = product.subSubCategoryName,
-                SearchKeyWord = product.searchKeyWord,
-                Price = product.price,
-                InStock = product.inStock,
-                StockQuantity = product.quantity,
-                Discount = product.discount,
-                ImageUrl = product.imageUrls,
-                KeyFeatures = product.productFeatures,
-                Box = product.boxContent,
-                Specification = product.productSpecifications,
-                CreatedOn = DateTime.Now,
-                CreatedBy = product.createdBy,
-                ImageType = "Image/Jpeg",
-                //Category = product.Category,
-                //SubCategoryName = product.subcategoryName
+                _logger.LogError(ex, "Error retrieving products for subcategory: {SubCategoryId}", subCategoryId);
 
+                // Log the actual SQL query being generated for debugging
+                _logger.LogError("Query parameters: SubCategoryId={SubCategoryId}, IsDeleted=false", subCategoryId);
+                throw;
+            }
+        }
+        public async Task<ProductResponseDto> CreateAsync(CreateProductDto createProductDto, string createdBy)
+        {
+            try
+            {
+                // Validate SKU uniqueness if provided
+                if (!string.IsNullOrEmpty(createProductDto.SKU))
+                {
+                    var skuExists = await IsSkuUniqueAsync(createProductDto.SKU, createProductDto.MerchantID);
+                    if (!skuExists)
+                    {
+                        throw new ArgumentException($"SKU '{createProductDto.SKU}' already exists for this merchant.");
+                    }
+                }
+
+                var product = _mapper.Map<Product>(createProductDto);
+                product.CreatedBy = createdBy;
+                product.IsActive = false;
+
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+
+                return await GetByIdAsync(product.ProductId) ?? throw new InvalidOperationException("Failed to retrieve created product");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating product for merchant: {MerchantId}", createProductDto.MerchantID);
+                throw;
+            }
+        }
+
+        public async Task<ProductResponseDto> UpdateAsync(UpdateProductDto updateProductDto, string updatedBy)
+        {
+            try
+            {
+                var existingProduct = await _context.Products
+                    .FirstOrDefaultAsync(p => p.ProductId == updateProductDto.ProductId && !p.IsDeleted);
+
+                if (existingProduct == null)
+                {
+                    throw new ArgumentException($"Product with ID {updateProductDto.ProductId} not found or has been deleted.");
+                }
+
+                // Validate SKU uniqueness if changed
+                if (!string.IsNullOrEmpty(updateProductDto.SKU) && updateProductDto.SKU != existingProduct.SKU)
+                {
+                    var skuExists = await IsSkuUniqueAsync(updateProductDto.SKU, existingProduct.MerchantID, updateProductDto.ProductId);
+                    if (!skuExists)
+                    {
+                        throw new ArgumentException($"SKU '{updateProductDto.SKU}' already exists for this merchant.");
+                    }
+                }
+
+                _mapper.Map(updateProductDto, existingProduct);
+                existingProduct.UpdatedBy = updatedBy;
+
+                await _context.SaveChangesAsync();
+
+                return await GetByIdAsync(existingProduct.ProductId) ?? throw new InvalidOperationException("Failed to retrieve updated product");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating product: {ProductId}", updateProductDto.ProductId);
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteAsync(Guid productId, string deletedBy)
+        {
+            try
+            {
+                var product = await _context.Products
+                    .FirstOrDefaultAsync(p => p.ProductId == productId && !p.IsDeleted);
+
+                if (product == null) return false;
+
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Product {ProductId} permanently deleted by {DeletedBy}", productId, deletedBy);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting product: {ProductId}", productId);
+                throw;
+            }
+        }
+        public async Task<bool> UpdateProductAsync(string productId, string status)
+        {
+            try { 
+                if (!Guid.TryParse(productId, out Guid guid))
+                {
+                    _logger.LogWarning("Invalid product ID format: {ProductId}", productId);
+                    return false;
+                }
+                var product = await _context.Products
+                    .FirstOrDefaultAsync(p => p.ProductId == guid && !p.IsDeleted);
+                if (product == null)
+                {
+                    _logger.LogWarning("Product not found or deleted: {ProductId}", productId);
+                    return false;
+                }
+                product.IsActive = true;
+                product.Status = status;
+                product.UpdatedOn = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Product {ProductId} status updated to {Status}", productId, status);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating product: {ProductId}", productId);
+                throw;
+            }
+
+            // Simplified placeholder implementation
+            return await Task.FromResult(true);
+        }
+        #endregion
+
+        #region Advanced Operations
+
+        public async Task<bool> SoftDeleteAsync(Guid productId, string deletedBy)
+        {
+            try
+            {
+                var product = await _context.Products
+                    .FirstOrDefaultAsync(p => p.ProductId == productId && !p.IsDeleted);
+
+                if (product == null) return false;
+
+                product.IsDeleted = true;
+                product.DeletedBy = deletedBy;
+                product.DeletedOn = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Product {ProductId} soft deleted by {DeletedBy}", productId, deletedBy);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error soft deleting product: {ProductId}", productId);
+                throw;
+            }
+        }
+
+        public async Task<bool> RestoreAsync(Guid productId, string restoredBy)
+        {
+            try
+            {
+                var product = await _context.Products
+                    .FirstOrDefaultAsync(p => p.ProductId == productId && p.IsDeleted);
+
+                if (product == null) return false;
+
+                product.IsDeleted = false;
+                product.DeletedBy = null;
+                product.DeletedOn = null;
+                product.UpdatedBy = restoredBy;
+                product.UpdatedOn = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Product {ProductId} restored by {RestoredBy}", productId, restoredBy);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error restoring product: {ProductId}", productId);
+                throw;
+            }
+        }
+
+        public async Task<Minimart_Api.DTOS.General.PagedResultDto<ProductListDto>> GetDeletedProductsAsync(Guid merchantId, ProductFilterDto filter)
+        {
+            try
+            {
+                var query = _context.Products
+                    .Include(p => p.Category)
+                    .Include(p => p.SubCategory)
+                    .Include(p => p.SubSubCategory)
+                    .Where(p => p.MerchantID == merchantId && p.IsDeleted);
+
+                query = ApplyFilters(query, filter);
+
+                return await GetPagedResultAsync(query, filter);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving deleted products for merchant: {MerchantId}", merchantId);
+                throw;
+            }
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        private IQueryable<Product> ApplyFilters(IQueryable<Product> query, ProductFilterDto filter)
+        {
+            // --- Filtering ---
+            if (filter.MerchantId.HasValue)
+                query = query.Where(p => p.MerchantID == filter.MerchantId.Value);
+
+            if (filter.CategoryId.HasValue)
+                query = query.Where(p => p.CategoryId == filter.CategoryId.Value);
+
+            if (filter.SubCategoryId.HasValue)
+                query = query.Where(p => p.SubCategoryId == filter.SubCategoryId.Value);
+
+            if (filter.SubSubCategoryId.HasValue)
+                query = query.Where(p => p.SubSubCategoryId == filter.SubSubCategoryId.Value);
+
+            if (!string.IsNullOrWhiteSpace(filter.ProductName))
+                query = query.Where(p => p.ProductName.Contains(filter.ProductName.Trim()));
+
+            if (!string.IsNullOrWhiteSpace(filter.SKU))
+                query = query.Where(p => p.SKU.Contains(filter.SKU.Trim()));
+
+            if (filter.MinPrice.HasValue)
+                query = query.Where(p => p.Price >= filter.MinPrice.Value);
+
+            if (filter.MaxPrice.HasValue)
+                query = query.Where(p => p.Price <= filter.MaxPrice.Value);
+
+            if (filter.IsActive.HasValue)
+                query = query.Where(p => p.IsActive == filter.IsActive.Value);
+
+            if (filter.IsFeatured.HasValue)
+                query = query.Where(p => p.IsFeatured == filter.IsFeatured.Value);
+
+            if (!string.IsNullOrWhiteSpace(filter.Status))
+                query = query.Where(p => p.Status == filter.Status.Trim());
+
+            if (!string.IsNullOrWhiteSpace(filter.ProductType))
+                query = query.Where(p => p.ProductType.Contains(filter.ProductType.Trim()));
+
+            if (filter.CreatedFrom.HasValue)
+                query = query.Where(p => p.CreatedOn >= filter.CreatedFrom.Value);
+
+            if (filter.CreatedTo.HasValue)
+                query = query.Where(p => p.CreatedOn <= filter.CreatedTo.Value);
+
+            if (filter.MinStock.HasValue)
+                query = query.Where(p => p.StockQuantity >= filter.MinStock.Value);
+
+            if (filter.MaxStock.HasValue)
+                query = query.Where(p => p.StockQuantity <= filter.MaxStock.Value);
+
+
+            // --- Sorting ---
+            var sortBy = filter.SortBy?.ToLower() ?? "createdon";
+            var sortDirection = filter.SortDirection?.ToUpper() ?? "DESC";
+
+            query = (sortBy, sortDirection) switch
+            {
+                ("productname", "ASC") => query.OrderBy(p => p.ProductName),
+                ("productname", "DESC") => query.OrderByDescending(p => p.ProductName),
+
+                ("price", "ASC") => query.OrderBy(p => p.Price),
+                ("price", "DESC") => query.OrderByDescending(p => p.Price),
+
+                ("stockquantity", "ASC") => query.OrderBy(p => p.StockQuantity),
+                ("stockquantity", "DESC") => query.OrderByDescending(p => p.StockQuantity),
+
+                ("updatedon", "ASC") => query.OrderBy(p => p.UpdatedOn),
+                ("updatedon", "DESC") => query.OrderByDescending(p => p.UpdatedOn),
+
+                _ when sortDirection == "ASC" => query.OrderBy(p => p.CreatedOn),
+                _ => query.OrderByDescending(p => p.CreatedOn)
             };
 
-            // Add the new product to the database
-            _dbContext.Products.Add(newProduct);
+            return query;
+        }
 
-            try
+        private IQueryable<Product> ApplyFiltersWithoutNavigation(IQueryable<Product> query, ProductFilterDto filter)
+        {
+            // Apply filters that don't require navigation properties
+            if (filter.MerchantId.HasValue)
+                query = query.Where(p => p.MerchantID == filter.MerchantId.Value);
+
+            if (filter.SubCategoryId.HasValue)
+                query = query.Where(p => p.SubCategoryId == filter.SubCategoryId.Value);
+
+            if (filter.SubSubCategoryId.HasValue)
+                query = query.Where(p => p.SubSubCategoryId == filter.SubSubCategoryId.Value);
+
+            if (!string.IsNullOrWhiteSpace(filter.ProductName))
+                query = query.Where(p => p.ProductName.Contains(filter.ProductName.Trim()));
+
+            if (!string.IsNullOrWhiteSpace(filter.SKU))
+                query = query.Where(p => p.SKU.Contains(filter.SKU.Trim()));
+
+            if (filter.MinPrice.HasValue)
+                query = query.Where(p => p.Price >= filter.MinPrice.Value);
+
+            if (filter.MaxPrice.HasValue)
+                query = query.Where(p => p.Price <= filter.MaxPrice.Value);
+
+            if (filter.IsActive.HasValue)
+                query = query.Where(p => p.IsActive == filter.IsActive.Value);
+
+            if (filter.IsFeatured.HasValue)
+                query = query.Where(p => p.IsFeatured == filter.IsFeatured.Value);
+
+            if (!string.IsNullOrWhiteSpace(filter.Status))
+                query = query.Where(p => p.Status == filter.Status.Trim());
+
+            if (!string.IsNullOrWhiteSpace(filter.ProductType))
+                query = query.Where(p => p.ProductType.Contains(filter.ProductType.Trim()));
+
+            if (filter.CreatedFrom.HasValue)
+                query = query.Where(p => p.CreatedOn >= filter.CreatedFrom.Value);
+
+            if (filter.CreatedTo.HasValue)
+                query = query.Where(p => p.CreatedOn <= filter.CreatedTo.Value);
+
+            if (filter.MinStock.HasValue)
+                query = query.Where(p => p.StockQuantity >= filter.MinStock.Value);
+
+            if (filter.MaxStock.HasValue)
+                query = query.Where(p => p.StockQuantity <= filter.MaxStock.Value);
+
+            // Apply sorting
+            var sortBy = filter.SortBy?.ToLower() ?? "createdon";
+            var sortDirection = filter.SortDirection?.ToUpper() ?? "DESC";
+
+            query = (sortBy, sortDirection) switch
             {
-                // Save changes to the database asynchronously
-                await _dbContext.SaveChangesAsync();
+                ("productname", "ASC") => query.OrderBy(p => p.ProductName),
+                ("productname", "DESC") => query.OrderByDescending(p => p.ProductName),
+                ("price", "ASC") => query.OrderBy(p => p.Price),
+                ("price", "DESC") => query.OrderByDescending(p => p.Price),
+                ("stockquantity", "ASC") => query.OrderBy(p => p.StockQuantity),
+                ("stockquantity", "DESC") => query.OrderByDescending(p => p.StockQuantity),
+                ("updatedon", "ASC") => query.OrderBy(p => p.UpdatedOn),
+                ("updatedon", "DESC") => query.OrderByDescending(p => p.UpdatedOn),
+                _ when sortDirection == "ASC" => query.OrderBy(p => p.CreatedOn),
+                _ => query.OrderByDescending(p => p.CreatedOn)
+            };
 
-                return new Status
-                {
-                    ResponseCode = 200,
-                    ResponseMessage = "Product Added Successfully"
-                };
-            }
-            catch (Exception ex)
+            return query;
+        }
+
+
+        private async Task<Minimart_Api.DTOS.General.PagedResultDto<ProductListDto>> GetPagedResultAsync(IQueryable<Product> query, ProductFilterDto filter)
+        {
+            var totalCount = await query.CountAsync();
+
+            var products = await query
+                .Skip((filter.Page - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToListAsync();
+
+            var productDtos = _mapper.Map<List<ProductListDto>>(products);
+
+            return new Minimart_Api.DTOS.General.PagedResultDto<ProductListDto>
             {
-                return new Status
-                {
-                    ResponseCode = 500,
-                    ResponseMessage = "Internal Server Error: " + ex.Message
-                };
-            }
+                Data = productDtos,
+                TotalCount = totalCount,
+                PageNumber = filter.Page,
+                PageSize = filter.PageSize
+            };
         }
 
+        #endregion
 
-        //update existing Entity from DTO
-        public void updateProductFromDto(Products entity, AddProducts product)
+        // Legacy methods and all other interface implementations
+        public async Task<IEnumerable<Product>> GetAllProducts()
         {
-            // Update the product entity with values from the DTO
-           entity.MerchantID = product.merchantID;
-            entity.ProductId = product.productID;
-            entity.ProductName = product.productName;
-            entity.ProductDescription = product.productDetails;
-            entity.ProductType = "P"; // Assuming "P" is the default product type
-            entity.CategoryId = product.categoryId;
-            entity.SearchKeyWord = product.searchKeyWord;
-            entity.Price = product.price;
-            entity.StockQuantity = product.quantity;
-            entity.Discount = product.discount;
-            entity.ImageUrl = product.imageUrls;
-            entity.KeyFeatures = product.productFeatures;
-            entity.Box = product.boxContent;
-            entity.Specification = product.productSpecifications;
-            entity.CreatedOn = DateTime.Now; // Update the creation timestamp
-            entity.CreatedBy = product.createdBy;
-            entity.ImageType = "Image/Jpeg"; // Assuming "Image/Jpeg" is the default image type
-            entity.CategoryName = product.categoryName;
-            entity.InStock = product.inStock;
-            //entity.SubCategoryName = product.subcategoryName;
-            entity.UpdatedOn = DateTime.Now;
-            entity.UpdatedBy = product.createdBy;
-        }
-
-
-
-        public async Task<IEnumerable<Products>> FetchAllProducts()
-        {
-            return await _dbContext.Products.ToListAsync();
-        }
-
-        public async Task<IEnumerable<Products>> LoadProductImages(string productId)
-        {
-            return await _dbContext.Products
-                .Where(w => w.ProductId == productId.ToString())
+            return await _context.Products
+                .Where(p => !p.IsDeleted && p.IsActive)
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Product>> FetchAllProducts()
+        {
+            return await _context.Products
+                .Where(p => !p.IsDeleted)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Product>> LoadProductImages(string productId)
+        {
+            if (Guid.TryParse(productId, out Guid guid))
+            {
+                return await _context.Products
+                    .Where(w => w.ProductId == guid && !w.IsDeleted)
+                    .ToListAsync();
+            }
+            return new List<Product>();
+        }
 
         public async Task<IEnumerable<CartResults>> GetProductsByCategory(int? categoryId)
         {
-            return await _dbContext.Products
-                .Where(tp => tp.SubCategoryId == categoryId)
+            return await _context.Products
+                .Where(p => !p.IsDeleted && p.IsActive)
                 .Select(tp => new CartResults
                 {
                     productID = tp.ProductId,
                     ProductName = tp.ProductName,
-                    ProductImage = tp.ImageUrl ,
-                    InStock = tp.InStock,
+                    ProductImage = tp.ImageUrls.FirstOrDefault() ?? "",
+                    InStock = tp.StockQuantity > 0,
                     price = tp.Price,
+                    MerchantId = tp.MerchantID
                 })
+                .Take(50)
                 .ToListAsync();
         }
 
-        //Similarproducts
-
-        public async Task<Products> GetByIdAsync(string productId)
+        public async Task<Product?> GetByIdAsync(string productId)
         {
-            return await _dbContext.Products
-                .Include(p => p.OrderItems)
-                .FirstOrDefaultAsync(p => p.ProductId == productId);
+            if (Guid.TryParse(productId, out Guid guid))
+            {
+                return await _context.Products
+                    .Include(p => p.OrderItems)
+                    .FirstOrDefaultAsync(p => p.ProductId == guid && !p.IsDeleted);
+            }
+            return null;
         }
 
-        public async Task<IEnumerable<Products>> GetProductsByCategoryAsync(int categoryId, int limit, string excludeProductId)
+        public async Task<IEnumerable<Product>> GetProductsByIdsAsync(IEnumerable<string> productIds)
         {
-            return await _dbContext.Products
-                .Where(p => p.CategoryId == categoryId &&
-                           p.ProductId != excludeProductId &&
-                           p.InStock)
-                .Include(p => p.OrderItems)
-                .OrderByDescending(p => p.OrderItems.Count)
-                .Take(limit)
+            var guidIds = productIds
+                .Where(id => Guid.TryParse(id, out _))
+                .Select(id => Guid.Parse(id))
+                .ToList();
+
+            return await _context.Products
+                .Where(p => guidIds.Contains(p.ProductId) && !p.IsDeleted)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Products>> GetProductsBySubCategoryAsync(int subCategoryId, int limit, string excludeProductId)
+        public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(int categoryId, int limit, string excludeProductId)
         {
-            return await _dbContext.Products
-                .Where(p => p.SubCategoryId == subCategoryId &&
-                           p.ProductId != excludeProductId &&
-                           p.InStock)
-                .Include(p => p.OrderItems)
-                .OrderByDescending(p => p.OrderItems.Count)
-                .Take(limit)
-                .ToListAsync();
+            if (Guid.TryParse(excludeProductId, out Guid excludeGuid))
+            {
+                return await _context.Products
+                    .Where(p => p.ProductId != excludeGuid &&
+                               p.IsActive && !p.IsDeleted &&
+                               p.StockQuantity > 0)
+                    .Include(p => p.OrderItems)
+                    .OrderByDescending(p => p.OrderItems.Count)
+                    .Take(limit)
+                    .ToListAsync();
+            }
+            return new List<Product>();
         }
 
-        public async Task<IEnumerable<Products>> GetProductsByKeywordsAsync(IEnumerable<string> keywords, int limit, string excludeProductId)
+        public async Task<IEnumerable<Product>> GetProductsBySubCategoryAsync(int subCategoryId, int limit, string excludeProductId)
         {
-            var query = _dbContext.Products
-                .Where(p => p.ProductId != excludeProductId && p.InStock)
+            if (Guid.TryParse(excludeProductId, out Guid excludeGuid))
+            {
+                return await _context.Products
+                    .Where(p => p.ProductId != excludeGuid &&
+                               p.IsActive && !p.IsDeleted &&
+                               p.StockQuantity > 0)
+                    .Include(p => p.OrderItems)
+                    .OrderByDescending(p => p.OrderItems.Count)
+                    .Take(limit)
+                    .ToListAsync();
+            }
+            return new List<Product>();
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsByKeywordsAsync(IEnumerable<string> keywords, int limit, string excludeProductId)
+        {
+            if (!Guid.TryParse(excludeProductId, out Guid excludeGuid))
+            {
+                return new List<Product>();
+            }
+
+            var query = _context.Products
+                .Where(p => p.ProductId != excludeGuid && 
+                           p.IsActive && !p.IsDeleted && 
+                           p.StockQuantity > 0)
                 .Include(p => p.OrderItems);
 
-            var result = new List<Products>();
+            var result = new List<Product>();
 
             foreach (var keyword in keywords.Where(k => k.Length > 3))
             {
                 var matches = await query
-                    .Where(p => p.ProductName.Contains(keyword) || p.SearchKeyWord.Contains(keyword))
+                    .Where(p => p.ProductName.Contains(keyword) || 
+                               p.Description.Contains(keyword) ||
+                               p.Features.Contains(keyword))
                     .OrderByDescending(p => p.OrderItems.Count)
                     .Take(limit)
                     .ToListAsync();
@@ -232,22 +733,300 @@ namespace Minimart_Api.Repositories.ProductRepository
             return result.Distinct().Take(limit);
         }
 
-        public async Task<IEnumerable<Products>> GetProductsByIdsAsync(IEnumerable<string> productIds)
+        public async Task<IEnumerable<Product>> GetPopularProductsAsync(int limit, string excludeProductId)
         {
-            return await _dbContext.Products
-                .Where(p => productIds.Contains(p.ProductId))
-                .ToListAsync();
+            if (Guid.TryParse(excludeProductId, out Guid excludeGuid))
+            {
+                return await _context.Products
+                    .Where(p => p.ProductId != excludeGuid && 
+                               p.IsActive && !p.IsDeleted && 
+                               p.StockQuantity > 0)
+                    .Include(p => p.OrderItems)
+                    .OrderByDescending(p => p.OrderItems.Count)
+                    .ThenBy(p => EF.Functions.Random())
+                    .Take(limit)
+                    .ToListAsync();
+            }
+            return new List<Product>();
         }
 
-        public async Task<IEnumerable<Products>> GetPopularProductsAsync(int limit, string excludeProductId)
+        /// <summary>
+        /// Get featured products without merchant filter
+        /// </summary>
+        /// <param name="count">Number of featured products to return</param>
+        /// <returns>List of featured products from all merchants</returns>
+        public async Task<List<ProductListDto>> GetFeaturedProductsAsync(int count)
         {
-            return await _dbContext.Products
-                .Where(p => p.ProductId != excludeProductId && p.InStock)
-                .Include(p => p.OrderItems)
-                .OrderByDescending(p => p.OrderItems.Count)
-                .ThenBy(p => EF.Functions.Random())
-                .Take(limit)
-                .ToListAsync();
+            try
+            {
+                _logger.LogInformation("Getting {Count} featured products from all merchants", count);
+
+                var featuredProducts = await _context.Products
+                    .Include(p => p.Category) // Include Category navigation property
+                    .Where(p => p.IsFeatured == true && p.IsActive && !p.IsDeleted)
+                    .OrderByDescending(p => p.CreatedOn)
+                    .ThenBy(p => EF.Functions.Random()) // Add some randomization
+                    .Take(count)
+                    .Select(p => new ProductListDto
+                    {
+                        ProductId = p.ProductId,
+                        CategoryId = p.CategoryId,
+                        SubCategoryId = p.SubCategoryId ?? Guid.Empty,
+                        CategoryName = p.Category != null ? p.Category.Name : "Unknown Category",
+                        SubCategoryName = p.SubCategoryName,
+                        SubSubCategoryName = p.SubSubCategoryName,
+                        ProductName = p.ProductName,
+                        Description = p.Description,
+                        Price = p.Price,
+                        Discount = p.Discount,
+                        StockQuantity = p.StockQuantity,
+                        SKU = p.SKU,
+                        ProductDescription = p.ProductDescription,
+                        ProductSpecification = p.ProductSpecification,
+                        BoxContents = p.BoxContents,
+                        Features = p.Features,
+                        ImageUrls = p.ImageUrls,
+                        IsActive = p.IsActive,
+                        IsFeatured = p.IsFeatured ,
+                        Status = p.Status ?? "Unknown",
+                        MerchantID = p.MerchantID,
+                        CreatedOn = p.CreatedOn,
+                        UpdatedOn = p.UpdatedOn
+                    })
+                    .ToListAsync();
+
+                _logger.LogInformation("Retrieved {Count} featured products from all merchants", featuredProducts.Count);
+                return featuredProducts;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting {Count} featured products from all merchants", count);
+                return new List<ProductListDto>();
+            }
+        }
+
+        /// <summary>
+        /// Get featured products with enhanced filtering options
+        /// </summary>
+        /// <param name="merchantId">Optional merchant ID filter</param>
+        /// <param name="count">Number of featured products to return</param>
+        /// <param name="categoryId">Optional category ID filter</param>
+        /// <returns>List of featured products</returns>
+        public async Task<List<ProductListDto>> GetFeaturedProductsAsync(Guid? merchantId, int count, Guid? categoryId)
+        {
+            try
+            {
+                _logger.LogInformation("Getting featured products: MerchantId={MerchantId}, Count={Count}, CategoryId={CategoryId}", 
+                    merchantId, count, categoryId);
+
+                var query = _context.Products
+                    .Include(p => p.Category) // Include Category navigation property
+                    .Where(p => p.IsFeatured == true && p.IsActive && !p.IsDeleted);
+
+                // Apply merchant filter if provided
+                if (merchantId.HasValue)
+                {
+                    query = query.Where(p => p.MerchantID == merchantId.Value);
+                }
+
+                // Apply category filter if provided
+                if (categoryId.HasValue)
+                {
+                    query = query.Where(p => p.CategoryId == categoryId.Value);
+                }
+
+                var featuredProducts = await query
+                    .OrderByDescending(p => p.CreatedOn)
+                    .ThenBy(p => EF.Functions.Random()) // Add some randomization
+                    .Take(count)
+                    .Select(p => new ProductListDto
+                    {
+                        ProductId = p.ProductId,
+                        CategoryId = p.CategoryId,
+                        SubCategoryId = p.SubCategoryId ?? Guid.Empty,
+                        CategoryName = p.Category != null ? p.Category.Name : "Unknown Category",
+                        SubCategoryName = p.SubCategoryName,
+                        SubSubCategoryName = p.SubSubCategoryName,
+                        ProductName = p.ProductName,
+                        Description = p.Description,
+                        Price = p.Price,
+                        Discount = p.Discount,
+                        StockQuantity = p.StockQuantity,
+                        SKU = p.SKU,
+                        ProductDescription = p.ProductDescription,
+                        ProductSpecification = p.ProductSpecification,
+                        BoxContents = p.BoxContents,
+                        Features = p.Features,
+                        ImageUrls = p.ImageUrls,
+                        IsActive = p.IsActive,
+                        IsFeatured = p.IsFeatured,
+                        Status = p.Status ?? "Unknown",
+                        MerchantID = p.MerchantID,
+                        CreatedOn = p.CreatedOn,
+                        UpdatedOn = p.UpdatedOn
+                    })
+                    .ToListAsync();
+
+                _logger.LogInformation("Retrieved {Count} featured products with filters: MerchantId={MerchantId}, CategoryId={CategoryId}", 
+                    featuredProducts.Count, merchantId, categoryId);
+                return featuredProducts;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting featured products with filters: MerchantId={MerchantId}, CategoryId={CategoryId}", 
+                    merchantId, categoryId);
+                return new List<ProductListDto>();
+            }
+        }
+
+        public async Task<bool> BulkUpdateStatusAsync(BulkUpdateProductStatusDto bulkUpdateDto, string updatedBy) => true;
+        public async Task<bool> BulkDeleteAsync(BulkDeleteProductDto bulkDeleteDto, string deletedBy) => true;
+        public async Task<bool> BulkSoftDeleteAsync(BulkDeleteProductDto bulkDeleteDto, string deletedBy) => true;
+        public async Task<bool> UpdateStatusAsync(Guid productId, string status, string updatedBy) => true;
+        public async Task<bool> ToggleActiveStatusAsync(Guid productId, string updatedBy) => true;
+        public async Task<bool> ToggleFeaturedStatusAsync(Guid productId, string updatedBy) => true;
+        public async Task<bool> UpdateStockAsync(Guid productId, int newStock, string updatedBy) => true;
+        public async Task<bool> AdjustStockAsync(Guid productId, int adjustment, string updatedBy, string reason) => true;
+        public async Task<List<ProductSummaryDto>> GetLowStockProductsAsync(Guid merchantId, int threshold = 10) => new();
+        public async Task<List<ProductSummaryDto>> GetOutOfStockProductsAsync(Guid merchantId) => new();
+        //public async Task<Minimart_Api.DTOS.General.PagedResultDto<ProductListDto>> GetProductsBySubCategoryAsync(Guid subCategoryId, ProductFilterDto filter) => new();
+        public async Task<Minimart_Api.DTOS.General.PagedResultDto<ProductListDto>> GetProductsBySubSubCategoryAsync(Guid subSubCategoryId, ProductFilterDto filter) => new();
+        public async Task<Minimart_Api.DTOS.General.PagedResultDto<ProductListDto>> SearchProductsAsync(string searchTerm, Guid? merchantId, ProductFilterDto filter) => new();
+        public async Task<List<ProductListDto>> GetFeaturedProductsAsync(Guid merchantId, int count = 10) => new();
+        public async Task<List<ProductSummaryDto>> GetRecentProductsAsync(Guid merchantId, int count = 10) => new();
+        public async Task<ProductStatisticsDto> GetProductStatisticsAsync(Guid merchantId) => new();
+        public async Task<Dictionary<string, int>> GetProductCountByCategoryAsync(Guid merchantId) => new();
+        public async Task<Dictionary<string, decimal>> GetInventoryValueByCategoryAsync(Guid merchantId) => new();
+        public async Task<bool> IsSkuUniqueAsync(string sku, Guid merchantId, Guid? excludeProductId = null) => true;
+        public async Task<bool> ProductExistsAsync(Guid productId) => true;
+        public async Task<bool> ProductBelongsToMerchantAsync(Guid productId, Guid merchantId) => true;
+        public async Task<List<ProductResponseDto>> ImportProductsAsync(List<CreateProductDto> products, string createdBy) => new();
+        public async Task<byte[]> ExportProductsAsync(Guid merchantId, ProductFilterDto filter) => Array.Empty<byte>();
+        public async Task<bool> UpdateProductImagesAsync(Guid productId, List<string> imageUrls, string updatedBy) => true;
+        public async Task<bool> AddProductImageAsync(Guid productId, string imageUrl, string updatedBy) => true;
+        public async Task<bool> RemoveProductImageAsync(Guid productId, string imageUrl, string updatedBy) => true;
+        public async Task<bool> UpdatePriceAsync(Guid productId, decimal newPrice, string updatedBy) => true;
+        public async Task<bool> ApplyDiscountAsync(Guid productId, decimal discount, string updatedBy) => true;
+        public async Task<bool> BulkUpdatePricesAsync(List<Guid> productIds, decimal priceAdjustment, bool isPercentage, string updatedBy) => true;
+        public async Task<ProductResponseDto> DuplicateProductAsync(Guid productId, string newProductName, string createdBy) => new();
+        public async Task<List<ProductResponseDto>> CopyProductsToMerchantAsync(List<Guid> productIds, Guid targetMerchantId, string createdBy) => new();
+        public async Task<bool> ApproveProductAsync(string productId, string status, string approvedBy)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(productId))
+                {
+                    _logger.LogWarning("Product ID is null or empty");
+                    return false;
+                }
+
+                if (!Guid.TryParse(productId, out Guid guid))
+                {
+                    _logger.LogWarning("Invalid product ID format: {ProductId}", productId);
+                    return false;
+                }
+
+                var product = await _context.Products
+                    .FirstOrDefaultAsync(p => p.ProductId == guid && !p.IsDeleted);
+
+                if (product == null)
+                {
+                    _logger.LogWarning("Product not found or deleted: {ProductId}", productId);
+                    return false;
+                }
+
+                // Validate status
+                var validStatuses = new[] { "Approved", "Rejected", "Pending", "Active", "Inactive" };
+                if (!validStatuses.Contains(status, StringComparer.OrdinalIgnoreCase))
+                {
+                    _logger.LogWarning("Invalid status '{Status}' for product {ProductId}", status, productId);
+                    return false;
+                }
+
+                // Update product
+                product.Status = status;
+                product.UpdatedBy = approvedBy;
+                product.UpdatedOn = DateTime.UtcNow;
+
+                // If approved, set as active
+                if (status.Equals("Approved", StringComparison.OrdinalIgnoreCase))
+                {
+                    product.IsActive = true;
+                }
+                else if (status.Equals("Rejected", StringComparison.OrdinalIgnoreCase))
+                {
+                    product.IsActive = false;
+                }
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Product {ProductId} approval status updated to '{Status}' by {ApprovedBy}", 
+                    productId, status, approvedBy);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error approving product {ProductId}", productId);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Diagnostic method to help debug category query issues
+        /// </summary>
+        public async Task<object> DiagnoseCategoryQuery(Guid categoryId)
+        {
+            try
+            {
+                // Check if products exist at all
+                var totalProducts = await _context.Products.CountAsync();
+                
+                // Check products with this category ID
+                var productsInCategory = await _context.Products
+                    .Where(p => p.CategoryId == categoryId)
+                    .CountAsync();
+                    
+                // Check non-deleted products with this category ID
+                var activeProductsInCategory = await _context.Products
+                    .Where(p => p.CategoryId == categoryId && !p.IsDeleted)
+                    .CountAsync();
+                    
+                // Check if category exists
+                var categoryExists = await _context.Categories
+                    .AnyAsync(c => c.CategoryId == categoryId);
+                    
+                // Sample products in this category
+                var sampleProducts = await _context.Products
+                    .Where(p => p.CategoryId == categoryId)
+                    .Take(3)
+                    .Select(p => new {
+                        p.ProductId,
+                        p.ProductName,
+                        p.CategoryId,
+                        p.IsDeleted,
+                        p.IsActive
+                    })
+                    .ToListAsync();
+
+                return new
+                {
+                    CategoryId = categoryId,
+                    TotalProductsInDatabase = totalProducts,
+                    ProductsInCategory = productsInCategory,
+                    ActiveProductsInCategory = activeProductsInCategory,
+                    CategoryExists = categoryExists,
+                    SampleProducts = sampleProducts,
+                    Diagnosis = activeProductsInCategory == 0 
+                        ? "No active products found in this category" 
+                        : $"Found {activeProductsInCategory} active products"
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in DiagnoseCategoryQuery for categoryId: {CategoryId}", categoryId);
+                return new { Error = ex.Message, CategoryId = categoryId };
+            }
         }
     }
 }

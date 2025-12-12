@@ -3,8 +3,9 @@
     public class RegisterResponse
     {
         public int ResponseCode { get; set; }
-        public string ResponseMessage { get; set; }
-        public int? UserID { get; set; }
-        public string Username { get; set; }
+        public string ResponseMessage { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty; // Identity User ID only
+        public string Username { get; set; } = string.Empty;
+        public string? Role { get; set; }
     }
 }

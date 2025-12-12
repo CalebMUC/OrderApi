@@ -1,119 +1,141 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json;
-using Minimart_Api.Models;
-using OpenSearch.Client;
+using Minimart_Api.DTOS.Products;
 
-public class Products
+namespace Minimart_Api.Models
 {
-    [Required]
-    public int MerchantID { get; set; }
-
-    [MaxLength(255)]
-    [Column(TypeName = "varchar(255)")]  // Changed from nvarchar
-    public string? ProductName { get; set; }
-
-    [Column(TypeName = "text")]  // Changed from nvarchar(max)
-    public string? Description { get; set; }
-
-    [Column(TypeName = "numeric(18,2)")]  // Changed from decimal
-    public decimal? Price { get; set; }
-
-    public int StockQuantity { get; set; }
-
-    public int? CategoryId { get; set; }
-
-    [Required]
-    [MaxLength(50)]
-    [Column(TypeName = "varchar(50)")]  // Changed from nvarchar
-    [Key]
-    public string ProductId { get; set; } = null!;
-
-    [Required]
-    [Column(TypeName = "text")]  // Changed from nvarchar(max)
-    public string ProductDescription { get; set; } = null!;
-
-    [Required]
-    [MaxLength(100)]
-    [Column(TypeName = "varchar(100)")]  // Changed from nvarchar
-    public string CategoryName { get; set; } = null!;
-
-    [Required]
-    [MaxLength(50)]
-    [Column(TypeName = "varchar(50)")]  // Changed from nvarchar
-    public string ImageType { get; set; } = null!;
-
-    [Required]
-    [Column(TypeName = "text")]  // Changed from nvarchar(Max)
-    public string ImageUrl { get; set; } = "[]";
-
-    [NotMapped]
-    public string[] ImageUrlJson
+    public class Product
     {
-        get => JsonSerializer.Deserialize<string[]>(ImageUrl) ?? Array.Empty<string>();
-        set => ImageUrl = JsonSerializer.Serialize(value);
+        [Key]
+        public Guid ProductId { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string ProductName { get; set; } = string.Empty;
+
+        [MaxLength(2000)]
+        public string Description { get; set; } = string.Empty;
+
+        [MaxLength(2000)]
+        public string ProductDescription { get; set; } = string.Empty;
+
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Price { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Discount { get; set; }
+
+        [Required]
+        public int StockQuantity { get; set; }
+
+        [MaxLength(100)]
+        public string SKU { get; set; } = string.Empty;
+
+        // Category Information
+        public Guid CategoryId { get; set; }
+
+        [MaxLength(255)]
+        public string CategoryName { get; set; } = string.Empty;
+
+        public Guid? SubCategoryId { get; set; }
+
+        [MaxLength(255)]
+        public string? SubCategoryName { get; set; }
+
+        public Guid? SubSubCategoryId { get; set; }
+
+        [MaxLength(255)]
+        public string? SubSubCategoryName { get; set; }
+
+        [MaxLength(4000)]
+        public string ProductSpecification { get; set; } = string.Empty; //save as Json
+
+        [MaxLength(2000)]
+        public string Features { get; set; } = string.Empty;
+
+        [MaxLength(1000)]
+        public string BoxContents { get; set; } = string.Empty;
+
+        [MaxLength(100)]
+        public string ProductType { get; set; } = string.Empty;
+
+        // Status & Features
+        public bool IsActive { get; set; } = true;
+        public bool IsFeatured { get; set; } = false;
+
+        [MaxLength(50)]
+        public string Status { get; set; } = "pending";
+
+        // Images - stored as JSON string array
+        [Column(TypeName = "text[]")]
+        public List<string> ImageUrls { get; set; } = new();
+
+        // Merchant Relationship
+        public Guid MerchantID { get; set; }
+
+        // Audit Fields
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+
+        [Required]
+        [MaxLength(255)]
+        public string CreatedBy { get; set; } = string.Empty;
+
+        public DateTime? UpdatedOn { get; set; }
+
+        [MaxLength(255)]
+        public string? UpdatedBy { get; set; }
+
+        public bool IsDeleted { get; set; } = false;
+        public DateTime? DeletedOn { get; set; }
+
+        [MaxLength(255)]
+        public string? DeletedBy { get; set; }
+
+        // Backward compatibility properties for legacy code
+        [NotMapped]
+        public string SearchKeyWord { get; set; } = string.Empty;
+
+        [NotMapped]
+        public bool InStock => IsActive && StockQuantity > 0;
+
+        [NotMapped]
+        public string KeyFeatures => Features;
+
+        [NotMapped]
+        public string Specification => ProductSpecification;
+
+        [NotMapped]
+        public string Box => BoxContents;
+
+        [NotMapped]
+        public string ImageUrl => ImageUrls?.FirstOrDefault() ?? "";
+
+        [NotMapped]
+        public string ImageType { get; set; } = string.Empty;
+
+        // Navigation Properties
+        [ForeignKey("MerchantID")]
+        public virtual Merchants Merchant { get; set; } = null!;
+
+        [ForeignKey("CategoryId")]
+        public virtual Category Category { get; set; } = null!;
+
+        [ForeignKey("SubCategoryId")]
+        public virtual SubCategory? SubCategory { get; set; }
+
+        [ForeignKey("SubSubCategoryId")]
+        public virtual SubSubCategory? SubSubCategory { get; set; }
+
+        // Legacy collections
+        public virtual ICollection<OrderTracking> OrderTrackings { get; set; } = new List<OrderTracking>();
+        public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+        public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        public virtual ICollection<Reviews> Reviews { get; set; } = new List<Reviews>();
+
+        // Legacy category navigation removed on purpose to avoid EF creating implicit FK 'CategoriesCategoryId'
+        // public virtual Categories? Categories { get; set; }  <-- REMOVED
     }
-
-    public bool InStock { get; set; }
-
-    [Column(TypeName = "double precision")]  // Changed from float
-    public double Discount { get; set; }
-
-    [Required]
-    [Column(TypeName = "varchar(500)")]  // Changed from nvarchar
-    public string SearchKeyWord { get; set; } = null!;
-
-    [Required]
-    [Column(TypeName = "text")]  // Changed from nvarchar(max)
-    public string KeyFeatures { get; set; } = null!;
-
-    [Required]
-    [Column(TypeName = "text")]  // Changed from nvarchar(max)
-    public string Specification { get; set; } = null!;
-
-    [Required]
-    [Column(TypeName = "text")]  // Changed from nvarchar(max)
-    public string Box { get; set; } = null!;
-
-    public int? SubCategoryId { get; set; }
-
-    [MaxLength(100)]
-    [Column(TypeName = "varchar(100)")]  // Changed from nvarchar
-    public string? SubCategoryName { get; set; }
-
-    public int? SubSubCategoryId { get; set; }
-
-    [MaxLength(100)]
-    [Column(TypeName = "varchar(100)")]  // Changed from nvarchar
-    public string? SubSubCategoryName { get; set; }
-
-    [MaxLength(100)]
-    [Column(TypeName = "varchar(100)")]  // Changed from nvarchar
-    public string? ProductType { get; set; }
-
-    [Column(TypeName = "timestamp")]  // Changed from datetime
-    public DateTime? CreatedOn { get; set; }
-
-    [MaxLength(100)]
-    [Column(TypeName = "varchar(100)")]  // Changed from nvarchar
-    public string? CreatedBy { get; set; }
-
-    [Column(TypeName = "timestamp")]  // Changed from datetime
-    public DateTime? UpdatedOn { get; set; }
-
-    [MaxLength(100)]
-    [Column(TypeName = "varchar(100)")]  // Changed from nvarchar
-    public string? UpdatedBy { get; set; }
-
-    public bool IsSaved { get; set; }
-
-    [NotMapped]
-    public CompletionField Suggest { get; set; }
-
-    // Navigation properties remain unchanged
-    public ICollection<OrderTracking> OrderTrackings { get; set; }
-    public virtual Categories Categories { get; set; }
-    public virtual ICollection<CartItem> CartItems { get; set; }
-    public virtual ICollection<OrderItem> OrderItems { get; set; }
-    public virtual ICollection<Reviews> Reviews { get; set; }
 }

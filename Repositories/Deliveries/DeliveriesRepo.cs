@@ -7,13 +7,14 @@ namespace Minimart_Api.Repositories.Deliveries
     public class DeliveriesRepo:IDeliveriesRepo
     {
         private readonly MinimartDBContext _dbContext;
-        private readonly ILogger<Categories> _logger;
+        private readonly ILogger<DeliveriesRepo> _logger;  // Fixed: Changed from Categories to DeliveriesRepo
 
-        public DeliveriesRepo(MinimartDBContext dBContext, ILogger<Categories> logger)
+        public DeliveriesRepo(MinimartDBContext dBContext, ILogger<DeliveriesRepo> logger)
         {
             _dbContext = dBContext;
             _logger = logger;
         }
+
         public async Task<IEnumerable<Counties>> GetAllCountiesAsync()
         {
             return await _dbContext.Counties.ToListAsync();

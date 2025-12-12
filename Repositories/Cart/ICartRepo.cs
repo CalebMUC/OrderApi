@@ -15,9 +15,9 @@ namespace Minimart_Api.Repositories.Cart
         Task<Status> DeleteCartItems(CartItemsDTO CartItems);
 
         Task<SavedItems> SaveItemAsync(SavedItems item);
-        Task<bool> RemoveItemAsync(int userId, string productId);
+        Task<bool> RemoveItemAsync(int userId, Guid productId);
         Task<IEnumerable<SavedItems>> GetSavedItemsAsync(int userId);
-        Task<SavedItems> GetSavedItemAsync(int userId, string productId);
+        Task<SavedItems> GetSavedItemAsync(int userId, Guid productId);
         //Task<IEnumerable<Products>> GetSavedItems();
         //Task<Status> SaveItems(SaveItemsDTO saveItems);
     }

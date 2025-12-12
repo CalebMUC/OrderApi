@@ -2,8 +2,8 @@
 {
     public class CartResults
     {
-        public string productID { get; set; }
-        public int MerchantId { get; set; }
+        public Guid productID { get; set; }
+        public Guid MerchantId { get; set; }
         public string ProductName { get; set; } = string.Empty;
         public string ProductImage { get; set; } = string.Empty;
 

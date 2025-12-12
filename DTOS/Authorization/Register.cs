@@ -11,5 +11,8 @@
         public string? password { get; set; }
 
         public string? ReEnteredpassword { get; set; }
+
+        // Role for registration - defaults to "User" if not specified
+        public string? Role { get; set; } = "User";
     }
 }

@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace Minimart_Api.Models
@@ -11,26 +10,25 @@ namespace Minimart_Api.Models
         public int Id { get; set; }
 
         [Required]
-        public int UserId { get; set; }
-
-        [Required]
-        [Column(TypeName = "varchar(50)")]
-        public string ProductId { get; set; }
-
-        [Required]
-        public DateTime SavedOn { get; set; } = DateTime.UtcNow;
+        public Guid ProductId { get; set; }
 
         [Required]
         public int Quantity { get; set; }
 
-        public bool IsActive{get; set;}
+        public bool IsActive { get; set; } = true;
+
+        [Required]
+        [Column(TypeName = "timestamp with time zone")]
+        public DateTime SavedOn { get; set; } = DateTime.UtcNow;
+
+        // Modern Identity support only
+        public string? ApplicationUserId { get; set; }
 
         // Navigation Properties
-        [ForeignKey("UserId")]
-        public virtual Users User { get; set; }
-
         [ForeignKey("ProductId")]
-        public virtual Products Products { get; set; }
-    }
+        public virtual Product Product { get; set; } = null!;
 
+        [ForeignKey("ApplicationUserId")]
+        public virtual ApplicationUser? User { get; set; }
+    }
 }

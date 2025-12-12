@@ -1,11 +1,11 @@
-﻿using Minimart_Api.DTOS.Cart;
-using Minimart_Api.Repositories.Search;
-using Minimart_Api.Services.SearchService.SearchService;
-using Minimart_Api.Models;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Minimart_Api.DTOS.Cart;
 using Minimart_Api.DTOS.General;
 using Minimart_Api.DTOS.Products;
-using Microsoft.Extensions.Caching.Memory;
 using Minimart_Api.DTOS.Search;
+using Minimart_Api.Models;
+using Minimart_Api.Repositories.Search;
+using Minimart_Api.Services.SearchService.SearchService;
 
 namespace Minimart_Api.Services.SearchService
 {
@@ -22,55 +22,119 @@ namespace Minimart_Api.Services.SearchService
             _memoryCache = memoryCache;
         }
 
-        public async Task<IEnumerable<string>> GetSearchSuggestion(string queryName, int limit = 10) {
-
-            //check if the query is Null or Empty
-            if (string.IsNullOrWhiteSpace(queryName))
-                return Enumerable.Empty<string>();
-
-            var cacheKey = $"search_suggestions_{queryName.ToLower()}";
-
-            //Check if there was previously fetched suggestions
-            if (!_memoryCache.TryGetValue(cacheKey, out IEnumerable<string> suggestions)) {
-
-                suggestions = await _searchRepo.GetSearchSuggestion(queryName, limit);
-
-                //set cacheOptions //set SlidingExpirtion and AbsoluteExpiration
-                var cacheOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(15))
-                    .SetAbsoluteExpiration(TimeSpan.FromHours(1));
-
-                _memoryCache.Set(cacheKey, suggestions, cacheOptions);
-            }
-
-            return suggestions;
-
-        }
-
-        public async Task<IEnumerable<GetProductsDto>> SearchProductsAsync(string queryName) {
-
-            return await _searchRepo.SearchProductsAsync(queryName);
-        }
-        public async Task<IEnumerable<Categories>> GetSearchResults(string queryname)
+        public async Task<IEnumerable<string>> GetSearchSuggestion(string queryName, int limit = 10)
         {
-            return await _searchRepo.GetSearchResults(queryname);
+            try
+            {
+                // Check cache first
+                var cacheKey = $"search_suggestions_{queryName}_{limit}";
+                
+                if (_memoryCache.TryGetValue(cacheKey, out IEnumerable<string> cachedSuggestions))
+                {
+                    return cachedSuggestions;
+                }
+
+                var suggestions = await _searchRepo.GetSearchSuggestion(queryName, limit);
+
+                // Cache for 5 minutes
+                var cacheEntryOptions = new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                };
+
+                _memoryCache.Set(cacheKey, suggestions, cacheEntryOptions);
+
+                return suggestions;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting search suggestions for: {QueryName}", queryName);
+                return Enumerable.Empty<string>();
+            }
+        }
+
+        public async Task<IEnumerable<GetProductsDto>> SearchProductsAsync(string queryName)
+        {
+            try
+            {
+                return await _searchRepo.SearchProductsAsync(queryName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error searching products for: {QueryName}", queryName);
+                return Enumerable.Empty<GetProductsDto>();
+            }
+        }
+
+        public async Task<IEnumerable<Models.Category>> GetSearchResults(string queryname)
+        {
+            try
+            {
+                return await _searchRepo.GetSearchResults(queryname);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting search results for: {QueryName}", queryname);
+                return Enumerable.Empty<Models.Category>();
+            }
         }
 
         public async Task<Status> UpdateColumnJson()
         {
-            return await _searchRepo.UpdateColumnJson();
+            try
+            {
+                return await _searchRepo.UpdateColumnJson();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating column JSON");
+                return new Status
+                {
+                    ResponseCode = 500,
+                    ResponseMessage = "Error updating column JSON"
+                };
+            }
         }
 
         public async Task<IEnumerable<CartResults>> GetSearchProducts(int CategoryID)
         {
-            return await _searchRepo.GetSearchProducts(CategoryID);
+            try
+            {
+                return await _searchRepo.GetSearchProducts(CategoryID);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting search products for category: {CategoryId}", CategoryID);
+                return Enumerable.Empty<CartResults>();
+            }
         }
 
-
-        public async Task<PaginatedResult<Products>> GetFilteredProducts(ProductFilterParams filterParams)
+        public async Task<PaginatedResult<Product>> GetFilteredProducts(ProductFilterParams filterParams)
         {
-            return await _searchRepo.GetFilteredProducts(filterParams);
+            try
+            {
+                var result = await _searchRepo.GetFilteredProducts(filterParams);
+                return new PaginatedResult<Product>
+                {
+                    Items = result.Items,
+                    TotalCount = result.TotalCount,
+                    PageNumber = result.PageNumber,
+                    PageSize = result.PageSize,
+                    TotalPages = result.TotalPages
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting filtered products");
+                return new PaginatedResult<Product>
+                {
+                    Items = new List<Product>(),
+                    TotalCount = 0,
+                    PageNumber = filterParams.PageNumber,
+                    PageSize = filterParams.PageSize,
+                    TotalPages = 0
+                };
+            }
         }
-
     }
 }

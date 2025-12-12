@@ -11,13 +11,11 @@ namespace Minimart_Api.Repositories.Search
     {
         Task<IEnumerable<string>> GetSearchSuggestion(string queryName,int limit=10);
         Task<IEnumerable<GetProductsDto>> SearchProductsAsync(string queryName);
-        Task<IEnumerable<Categories>> GetSearchResults(string queryname);
+        Task<IEnumerable<Models.Category>> GetSearchResults(string queryname);
 
         Task<Status> UpdateColumnJson();
         Task<IEnumerable<CartResults>> GetSearchProducts(int CategoryID);
 
-        Task<PaginatedResult<Products>> GetFilteredProducts(ProductFilterParams filterParams);
-
-
+        Task<PaginatedResult<Product>> GetFilteredProducts(ProductFilterParams filterParams);
     }
 }

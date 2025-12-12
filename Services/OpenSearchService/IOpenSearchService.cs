@@ -7,8 +7,8 @@ namespace Minimart_Api.Services.OpenSearchService
     public interface IOpenSearchService
     {
         Task CreateIndexAsync(string indexname);
-        Task IndexProductAsync(Products product);
-        Task<IEnumerable<Products>> SearchProductsAsync(string query);
+        Task IndexProductAsync(Product product);
+        Task<IEnumerable<Product>> SearchProductsAsync(string query);
         Task<IEnumerable<string>> AutocompleteAsync(string query);
     }
 }

@@ -7,11 +7,12 @@ namespace Minimart_Api.Services.OrderService.OrderService
 {
     public interface IOrderService
     {
-        Task<List<GetOrdersDTO>> GetOrdersByStatusAsync(int status, int userID);
+        Task<List<GetOrdersDTO>> GetOrdersByStatusAsync(int status, string userID);
 
         Task<List<OrderStatus>> GetOrderStatusAsync();
         Task<Status> UpdateOrderStatusAsync(OrderTrackingDTO orderTracking);
-        Task<List<OrderTracking>> GetOrderTrackingAsync(GetOrderTrackingStatus trackingStatus);
+        //Task<List<OrderTracking>> GetOrderTrackingAsync(GetOrderTrackingStatus trackingStatus);
+        Task<List<GetOrderTracking>> GetOrderTrackingAsync(GetOrderTrackingStatus trackingStatus);
         Task<List<GetOrdersDTO>> GetOrdersByIdAsync(string OrderId);
         Task<List<MerchantOrderDto>> GetMerchantOrdersAsync(MerchantRequestDto requestDto); // This is the correct interface method declaration
         Task<List<MerchantOrderDto>> GetAdminOrdersAsync();

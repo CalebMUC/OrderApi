@@ -1,53 +1,44 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Minimart_Api.Models;
 
-namespace Minimart_Api.Models
+public class PaymentDetails
 {
-    public class PaymentDetails
-    {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int PaymentID { get; set; }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public Guid PaymentID { get; set; }
 
-        [Required]
-        [ForeignKey(nameof(Payments))]
-        public int PaymentMethodID { get; set; }
+    [Required]
+    public int PaymentMethodID { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        [Column(TypeName = "varchar(100)")]
-        public string TrxReference { get; set; } // CheckoutRequestID from M-Pesa
+    [Required]
+    [MaxLength(100)]
+    [Column(TypeName = "varchar(100)")]
+    public string TrxReference { get; set; }
 
-        [MaxLength(100)]
-        [Column(TypeName = "varchar(100)")]
-        public string PaymentReference { get; set; } // MpesaReceiptNumber
+    [MaxLength(100)]
+    [Column(TypeName = "varchar(100)")]
+    public string PaymentReference { get; set; }
 
-        [Required]
-        [MaxLength(20)]
-        [Column(TypeName = "varchar(20)")]
-        public string Phonenumber { get; set; }
+    [Required]
+    [MaxLength(20)]
+    [Column(TypeName = "varchar(20)")]
+    public string Phonenumber { get; set; }
 
+    [Required]
+    [Column(TypeName = "money")]
+    public decimal Amount { get; set; }
 
-        [Required]
-        [Column(TypeName = "money")]
-        public decimal Amount { get; set; }
+    [Required]
+    [Column(TypeName = "timestamp with time zone")]
+    public DateTime PaymentDate { get; set; }
 
-        [Required]
-        public DateTime PaymentDate { get; set; }
+    [MaxLength(20)]
+    [Column(TypeName = "varchar(20)")]
+    public string Status { get; set; } = "Pending";
 
-        [MaxLength(20)]
-        [Column(TypeName = "varchar(20)")]
-        public string Status { get; set; } = "Pending"; // e.g. Pending, Success, Failed
+    // ❌ REMOVE OrderID + FK to Order (this is what broke EF)
 
-        // ✅ Add this property for linking to an Order
-        public string? OrderID { get; set; }
-
-
-        [ForeignKey(nameof(OrderID))]
-        public Orders Order { get; set; }
-
-        // Navigation properties
-        public PaymentMethods Payments { get; set; }
-    }
-
+    [ForeignKey(nameof(PaymentMethodID))]
+    public PaymentMethods PaymentMethod { get; set; }
 }

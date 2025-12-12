@@ -10,7 +10,7 @@ namespace Minimart_Api.Services.Address
         Task<OperationResult> EditAddressAsync(EditAddressDTO address);
         Task<Addresses> GetAddressByIdAsync(int addressId);
 
-        Task<IEnumerable<GetAddressDTO>> GetAddressesByUserIdAsync(int userId);
+        Task<IEnumerable<GetAddressDTO>> GetAddressesByUserIdAsync(string userId);
 
     }
 }

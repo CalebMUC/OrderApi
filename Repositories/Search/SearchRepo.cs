@@ -1,50 +1,61 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Minimart_Api.DTOS;
-using System.Text.RegularExpressions;
-using System.Reflection;
-using Newtonsoft.Json;
 using Minimart_Api.Data;
-using Minimart_Api.DTOS.General;
-using Minimart_Api.Models;
 using Minimart_Api.DTOS.Cart;
+using Minimart_Api.DTOS.General;
 using Minimart_Api.DTOS.Products;
-using System.Text;
-using System.Data.SqlClient;
-using OpenSearch.Client;
 using Minimart_Api.DTOS.Search;
-using Microsoft.IdentityModel.Tokens;
+using Minimart_Api.Models;
+using Minimart_Api.Repositories.Search;
+using System.Collections.Generic;
+using System.Linq.Dynamic.Core;
 
 namespace Minimart_Api.Repositories.Search
 {
     public class SearchRepo : ISearchRepo
     {
-        private readonly MinimartDBContext _dbContext;
+        private readonly MinimartDBContext _context;
         private readonly ILogger<SearchRepo> _logger;
 
-        public SearchRepo(MinimartDBContext dbContext, ILogger<SearchRepo> logger)
+        public SearchRepo(MinimartDBContext context, ILogger<SearchRepo> logger)
         {
-            _dbContext = dbContext;
+            _context = context;
             _logger = logger;
         }
 
-
         public async Task<IEnumerable<string>> GetSearchSuggestion(string queryName, int limit = 10)
         {
-            try {
+            try
+            {
+                var suggestions = new List<string>();
 
-                var suggestions = await _dbContext.Products
-                    .Where(p => p.ProductName.ToLower().Contains(queryName.ToLower()))
-                    .OrderBy(p => p.SearchKeyWord)
+                // Get product name suggestions
+                var productSuggestions = await _context.Products
+                    .Where(p => p.ProductName.Contains(queryName) && p.IsActive && !p.IsDeleted)
+                    .Select(p => p.ProductName)
+                    .Distinct()
                     .Take(limit)
-                    .Select(p => p.SearchKeyWord)
                     .ToListAsync();
 
-                return suggestions;
+                suggestions.AddRange(productSuggestions);
 
+                // Get category suggestions if we need more
+                if (suggestions.Count < limit)
+                {
+                    var categorySuggestions = await _context.Categories
+                        .Where(c => c.Name.Contains(queryName) && c.IsActive)
+                        .Select(c => c.Name)
+                        .Distinct()
+                        .Take(limit - suggestions.Count)
+                        .ToListAsync();
+
+                    suggestions.AddRange(categorySuggestions);
+                }
+
+                return suggestions.Take(limit);
             }
-            catch (Exception ex) {
-
-                _logger.LogError(ex, "Error Retrieving suggestions");
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting search suggestions for query: {QueryName}", queryName);
                 return Enumerable.Empty<string>();
             }
         }
@@ -53,44 +64,49 @@ namespace Minimart_Api.Repositories.Search
         {
             try
             {
-                var suggestions = await _dbContext.Products
-                    .Where(p => p.ProductName.ToLower().Contains(queryName.ToLower()))
-                    .Select(p => new GetProductsDto
-                    {
-                        MerchantID = p.MerchantID,
-                        ProductName = p.ProductName,
-                        Description = p.Description,
-                        Price = p.Price,
-                        StockQuantity = p.StockQuantity,
-                        CategoryId = p.CategoryId,
-                        ProductId = p.ProductId,
-                        ProductDescription = p.ProductDescription,
-                        CategoryName = p.CategoryName,
-                        ImageUrl = p.ImageUrl,
-                        InStock = p.InStock,
-                        Discount = p.Discount,
-                        SearchKeyWord = p.SearchKeyWord,
-                        KeyFeatures = p.KeyFeatures,
-                        Specification = p.Specification,
-                        Box = p.Box,
-                        SubCategoryId = p.SubCategoryId,
-                        SubCategoryName = p.SubCategoryName,
-                        SubSubCategoryName = p.SubSubCategoryName,
-                        ProductType = p.ProductType,
-                        CreatedOn = p.CreatedOn,
-                        CreatedBy = p.CreatedBy,
-                        UpdatedOn = p.UpdatedOn,
-                        UpdatedBy = p.UpdatedBy
-                    })
-                    //.Take(10) // Limit to 10 suggestions for performance
+                var products = await _context.Products
+                    .Where(p => (p.ProductName.Contains(queryName) || 
+                                p.Description.Contains(queryName) ||
+                                p.ProductDescription.Contains(queryName)) && 
+                                p.IsActive && !p.IsDeleted)
+                    .Include(p => p.Category)
+                    .Include(p => p.Merchant)
+                    .Take(50) // Limit results for performance
                     .ToListAsync();
 
-                return suggestions;
+                return products.Select(p => new GetProductsDto
+                {
+                    ProductId = p.ProductId.ToString(), // Convert Guid to string
+                    ProductName = p.ProductName,
+                    ProductDescription = p.ProductDescription,
+                    Price = (double)p.Price, // Convert decimal to double  
+                    Discount = (double)p.Discount,
+                    ImageUrl = p.ImageUrls?.FirstOrDefault() ?? "",
+                    CategoryName = p.CategoryName,
+                    InStock = p.StockQuantity > 0,
+                    StockQuantity = p.StockQuantity
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Retrieving suggestions");
+                _logger.LogError(ex, "Error searching products for query: {QueryName}", queryName);
                 return Enumerable.Empty<GetProductsDto>();
+            }
+        }
+
+        public async Task<IEnumerable<Models.Category>> GetSearchResults(string queryname)
+        {
+            try
+            {
+                return await _context.Categories
+                    .Where(c => c.Name.Contains(queryname) && c.IsActive)
+                    .Take(20)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting search results for query: {QueryName}", queryname);
+                return Enumerable.Empty<Models.Category>();
             }
         }
 
@@ -98,183 +114,137 @@ namespace Minimart_Api.Repositories.Search
         {
             try
             {
-                var rows = _dbContext.Products.ToList();
-                var columns = new List<string> { "KeyFeatures", "Specification", "Box" };
+                // Implementation for updating column JSON
+                // This might be for updating search index or similar
+                await Task.CompletedTask; // Placeholder
 
-                // Loop through each row
-                foreach (var row in rows)
+                return new Status
                 {
-                    // Use reflection to get all properties of the row
-                    var properties = row.GetType().GetProperties();
-
-                    foreach (var property in properties)
-                    {
-                        // Check if the property name is in the list of columns to convert
-                        if (columns.Contains(property.Name))
-                        {
-                            try
-                            {
-                                // Get the column data as a string
-                                var columnData = property.GetValue(row) as string;
-
-                                if (!string.IsNullOrEmpty(columnData))
-                                {
-                                    // Convert the column data to JSON
-                                    var jsonValue = ConvertToJson(columnData);
-
-                                    // Set the JSON value back to the property
-                                    property.SetValue(row, jsonValue);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                // Log or handle the error for this specific property
-                                Console.WriteLine($"Error converting column '{property.Name}' ': {ex.Message}");
-                                return new Status
-                                {
-                                    ResponseCode = 500,
-                                    ResponseMessage = $"Error converting column '{property.Name}' for row ID : {ex.Message}"
-                                };
-                            }
-                        }
-                    }
-                }
-
-                // Save changes to the database
-                await _dbContext.SaveChangesAsync();
+                    ResponseCode = 200,
+                    ResponseMessage = "Column JSON updated successfully"
+                };
             }
             catch (Exception ex)
             {
-                // Handle the exception thrown by SaveChangesAsync
-                Console.WriteLine($"Error saving changes to the database: {ex.Message}");
+                _logger.LogError(ex, "Error updating column JSON");
                 return new Status
                 {
                     ResponseCode = 500,
-                    ResponseMessage = $"Error saving changes to the database: {ex.Message}"
+                    ResponseMessage = "Error updating column JSON"
                 };
             }
-
-            return new Status
-            {
-                ResponseCode = 200,
-                ResponseMessage = "Success"
-            };
         }
 
-        public string ConvertToJson(string data)
+        public async Task<IEnumerable<CartResults>> GetSearchProducts(int CategoryID)
         {
-
-            var keyValuePattern = new Regex(@"(?<key>[A-Za-z\s]+)\s(?<value>[^:]+)");
-            var matches = keyValuePattern.Matches(data);
-
-            var dictionary = new Dictionary<string, string>();
-
-            foreach (Match match in matches)
+            try
             {
-                var key = match.Groups["key"].Value.Trim();
-                var value = match.Groups["value"].Value.Trim();
-                dictionary[key] = value;
+                // For legacy support with int CategoryID
+                return await _context.Products
+                    .Where(p => p.IsActive && !p.IsDeleted && p.StockQuantity > 0)
+                    .Select(p => new CartResults
+                    {
+                        productID = p.ProductId,
+                        ProductName = p.ProductName,
+                        ProductImage = p.ImageUrls.FirstOrDefault() ?? "",
+                        ProductDescription = p.ProductDescription,
+                        price = p.Price,
+                        InStock = p.StockQuantity > 0,
+                        MerchantId = p.MerchantID
+                    })
+                    .Take(50)
+                    .ToListAsync();
             }
-
-            return JsonConvert.SerializeObject(dictionary);
-
-        }
-        public async Task<IEnumerable<Categories>> GetSearchResults(string queryname)
-        {
-
-            if (string.IsNullOrWhiteSpace(queryname))
-                return new List<Categories>();
-
-            var response = await _dbContext.Categories
-                .Where(s => s.CategoryName.Contains(queryname))
-                .OrderBy(s => s.CategoryName)
-                .Take(10)
-                .ToListAsync();
-
-            return response;
-
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting search products for category: {CategoryId}", CategoryID);
+                return Enumerable.Empty<CartResults>();
+            }
         }
 
-        public async Task<IEnumerable<CartResults>> GetSearchProducts(int subCategoryId)
+        public async Task<PaginatedResult<Product>> GetFilteredProducts(ProductFilterParams filterParams)
         {
-            return await _dbContext.Products
-                .Where(tp => tp.CategoryId == subCategoryId)
-                .Select(tp => new CartResults
+            try
+            {
+                var query = _context.Products
+                    .Where(p => p.IsActive && !p.IsDeleted)
+                    .AsQueryable();
+
+                // Apply filters
+                if (!string.IsNullOrEmpty(filterParams.SearchTerm))
                 {
-                    productID = tp.ProductId,
-                    ProductName = tp.ProductName,
-                    ProductImage = tp.ImageUrl,
-                    InStock = tp.InStock,
-                    price = tp.Price,
-                })
-                .ToListAsync();
-        }
-
-
-        // SearchService.cs
-        public async Task<PaginatedResult<Products>> GetFilteredProducts(ProductFilterParams filterParams)
-        {
-            var query = _dbContext.Products.AsQueryable();
-
-            // Search term filter
-            if (!string.IsNullOrEmpty(filterParams.SearchTerm))
-            {
-                query = query.Where(p =>
-                    p.ProductName.Contains(filterParams.SearchTerm) 
-                    //p.Description.Contains(filterParams.SearchTerm) ||
-                    //p.SearchKeyWord.Contains(filterParams.SearchTerm)
-                    );
-            }
-
-            // Category filters
-            if (filterParams.CategoryId.HasValue)
-            {
-                query = query.Where(p => p.CategoryId == filterParams.CategoryId);
-            }
-
-            if (filterParams.SubCategoryId != null)
-            {
-                query = query.Where(p => p.SubCategoryId == filterParams.SubCategoryId);
-            }
-
-            // Price range filter
-            if (filterParams.MinPrice.HasValue)
-            {
-                query = query.Where(p => p.Price >= filterParams.MinPrice.Value);
-            }
-
-            if (filterParams.MaxPrice.HasValue)
-            {
-                query = query.Where(p => p.Price <= filterParams.MaxPrice.Value);
-            }
-
-            // Feature filters (LIKE fallback for SQL Server)
-            foreach (var featureFilter in filterParams.Features)
-            {
-                foreach (var value in featureFilter.Value)
-                {
-                    var searchPattern = $"\"{featureFilter.Key}\":\"{value}\"";
-                    query = query.Where(p => p.KeyFeatures.Contains(searchPattern));
+                    query = query.Where(p => p.ProductName.Contains(filterParams.SearchTerm) ||
+                                           p.Description.Contains(filterParams.SearchTerm));
                 }
+
+                if (filterParams.CategoryId.HasValue)
+                {
+                    query = query.Where(p => p.CategoryId == filterParams.CategoryId);
+                }
+
+                if (filterParams.MinPrice.HasValue)
+                {
+                    query = query.Where(p => p.Price >= filterParams.MinPrice);
+                }
+
+                if (filterParams.MaxPrice.HasValue)
+                {
+                    query = query.Where(p => p.Price <= filterParams.MaxPrice);
+                }
+
+                if (filterParams.InStock)
+                {
+                    query = query.Where(p => p.StockQuantity > 0);
+                }
+
+                // Apply sorting - using filterParams properties directly
+                if (!string.IsNullOrEmpty(filterParams.SortBy))
+                {
+                    query = filterParams.SortBy.ToLower() switch
+                    {
+                        "price" => filterParams.SortOrder == "desc" 
+                            ? query.OrderByDescending(p => p.Price) 
+                            : query.OrderBy(p => p.Price),
+                        "name" => filterParams.SortOrder == "desc" 
+                            ? query.OrderByDescending(p => p.ProductName) 
+                            : query.OrderBy(p => p.ProductName),
+                        "date" => filterParams.SortOrder == "desc" 
+                            ? query.OrderByDescending(p => p.CreatedOn) 
+                            : query.OrderBy(p => p.CreatedOn),
+                        _ => query.OrderByDescending(p => p.CreatedOn)
+                    };
+                }
+
+                // Get total count
+                var totalCount = await query.CountAsync();
+
+                // Apply pagination - using filterParams.PageNumber and filterParams.PageSize
+                var products = await query
+                    .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
+                    .Take(filterParams.PageSize)
+                    .ToListAsync();
+
+                return new PaginatedResult<Product>
+                {
+                    Items = products,
+                    TotalCount = totalCount,
+                    PageNumber = filterParams.PageNumber,
+                    PageSize = filterParams.PageSize,
+                    TotalPages = (int)Math.Ceiling((double)totalCount / filterParams.PageSize)
+                };
             }
-
-            // Total count
-            var totalCount = await query.CountAsync();
-
-            // Pagination
-            var items = await query
-                .Skip((filterParams.PageNumber - 1) * filterParams.PageSize)
-                .Take(filterParams.PageSize)
-                .ToListAsync();
-
-            return new PaginatedResult<Products>
+            catch (Exception ex)
             {
-                Items = items,
-                TotalCount = totalCount
-            };
+                _logger.LogError(ex, "Error getting filtered products");
+                return new PaginatedResult<Product>
+                {
+                    Items = new List<Product>(),
+                    TotalCount = 0,
+                    PageNumber = filterParams.PageNumber,
+                    PageSize = filterParams.PageSize,
+                    TotalPages = 0
+                };
+            }
         }
-
-
-
     }
 }

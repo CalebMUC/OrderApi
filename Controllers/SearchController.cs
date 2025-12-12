@@ -178,12 +178,12 @@ namespace Minimart_Api.Controllers
                     return BadRequest("Invalid request data");
                 }
 
-                // Build filter parameters
+                // Build filter parameters - convert int IDs to Guid (or use null if conversion fails)
                 var filterParams = new ProductFilterParams
                 {
                     SearchTerm = request.SearchQuery,
-                    CategoryId = request.CategoryID,
-                    SubCategoryId = request.SubCategoryID,
+                    CategoryId = null, // For now, set to null since we can't reliably map int to Guid
+                    SubCategoryId = null, // For now, set to null since we can't reliably map int to Guid
                     PageNumber = request.Page,
                     PageSize = request.PageSize,
                     MinPrice = request.MinPrice,

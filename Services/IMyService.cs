@@ -13,26 +13,9 @@ namespace Minimart_Api.Services
 {
     public interface IMyService
     {
-        Task<IEnumerable<Users>> GetEntitiesAsync();
-
-        Task<IEnumerable<Users>> GetAsyncUserName(string UserName);
-
-       
-
-
-
-
-        //Task<IEnumerable<TSubcategoryid>> GetDashBoardName(DashBoardName Dashboardname);
         
 
         
-
-        //Task<IEnumerable<CategoryDTO>> GetDashBoardCategories();
-
-
-        
-
-    
 
         //Task<ResponseStatus> CreateOrder(Order order);
 
@@ -58,6 +41,9 @@ namespace Minimart_Api.Services
 
        // Task<UserRegStatus> UserRegistration(string JsonData);
 
-        
+        // Category methods following the same pattern
+        Task<List<object>> GetCategoriesAsync();
+        Task<object> GetCategoryAsync(Guid categoryId);
+        Task<object> CreateCategoryAsync(string JsonData);
     }
 }

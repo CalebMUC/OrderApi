@@ -31,319 +31,17 @@ namespace Minimart_Api.Controllers
     public class EntitiesController : ControllerBase
     {
         private readonly IMyService _myService;
-
         private readonly IConfiguration _config;
-
         private readonly CoreLibraries _coreLibraries;
-
         private readonly OrderMapper _orderMapper;
 
-
-
-        
-        public EntitiesController(IMyService myService, IConfiguration config, CoreLibraries coreLibraries,OrderMapper oderMapper)
+        public EntitiesController(IMyService myService, IConfiguration config, CoreLibraries coreLibraries, OrderMapper oderMapper)
         {
             _myService = myService;
             _config = config;
-            
             _coreLibraries = coreLibraries;
             _orderMapper = oderMapper;
         }
-
-        [HttpGet]
-        public async Task<IActionResult> GetEntities()
-        {
-            try
-            {
-                var entities = await _myService.GetEntitiesAsync();
-
-                return Ok(entities);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpGet("UserName")]
-        public async Task<IActionResult> GetAsyncUserName([FromQuery] string UserName)
-        {
-            var entities = await _myService.GetAsyncUserName(UserName);
-
-            return Ok(entities);
-        }
-
-    
-
-        //[HttpPost("GetDashBoardName")]
-        //public async Task<IActionResult> GetDashBoardName([FromBody] DashBoardName dashBoardName)
-        //{
-        //    var jsonSrting = JsonConvert.SerializeObject(dashBoardName);
-
-        //    try
-        //    {
-        //        var Response = await _myService.GetDashBoardName(dashBoardName);
-
-        //        return Ok(Response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-
-
-
-        //}
-
-
-
-        //[HttpGet("GetDashBoardCategories")]
-        //public async Task<IActionResult> GetDashBoardCategories()
-        //{
-        //    //var jsonSrting = JsonConvert.SerializeObject(dashBoardName);
-
-        //    try
-        //    {
-        //        var Response = await _myService.GetDashBoardCategories();
-
-        //        return Ok(Response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-
-
-
-        //}
-
-     
-
-
-        //[HttpPost("GetProductFeatures")]
-        //public async Task<IActionResult> GetProductFeatures([FromBody] AddToCart cartitems)
-        //{
-        //    var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-        //    try
-        //    {
-        //        var Response = await _myService.AddToCart(jsonSrting);
-
-        //        return Ok(Response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-
-
-
-        //}
-
-        
-
-
-        //[HttpPost("GetSearchItem")]
-        //public async Task<IActionResult> GetSearchItem([FromBody] AddToCart cartitems)
-        //{
-        //    var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-        //    try
-        //    {
-        //        var Response = await _myService.AddToCart(jsonSrting);
-
-        //        return Ok(Response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-
-
-
-        //}
-
-
-        //[HttpPost("Orders")]
-        //public async Task<IActionResult> Orders([FromBody] OrderDTO orders)
-        //{
-        //    //var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-        //    try
-        //    {
-        //        //var Response = await _myService.AddProducts(products);
-
-        //        var order = _orderMapper.MapToEntity(orders);
-
-        //        var response = _myService.CreateOrder(order);
-
-        //        return Ok(response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-
-
-
-        //}
-
-        //[HttpPost("GetOrders")]
-        //public async Task<IActionResult> GetOrders([FromBody] string orderID)
-        //{
-        //    //var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-        //    try
-        //    {
-        //        var order = await _myService.GetOrderByIdAsync(orderID); // Fetch from service/repo
-
-        //        if (order == null)
-
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        // Map the Order entity to OrderDto
-        //        var orderDto = _orderMapper.MapToDto(order);
-
-        //        return Ok(orderDto);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-
-
-
-        //}
-
-      
-
-       
-
-
-        //[AllowAnonymous]
-        //[HttpPost("Login")]
-        //public async Task<IActionResult> Login([FromBody] UserLogin userLogin)
-        //{
-        //    // Serialize User Credentials
-        //    var jsonDataUserCredentials = JsonConvert.SerializeObject(userLogin);
-
-        //    try
-        //    {
-        //        // Call the service to authenticate user
-        //        var response = await _myService.Login(jsonDataUserCredentials);
-
-        //        if ( Convert.ToBoolean(response.Status.ResponseCode))
-        //        {
-        //            // Generate access and refresh tokens
-        //            var token = _coreLibraries.GenerateToken(response);
-        //            var refreshToken = CoreLibraries.GenerateRefreshToken(response.Name);
-
-        //            // Save refresh token
-        //            _myService.SaveRefreshToken(JsonConvert.SerializeObject(refreshToken));
-
-        //            // Return success response
-        //            return Ok(new
-        //            {
-        //                responseCode = true,
-        //                responseMessage = "Login successful",
-        //                accessToken = token,
-        //                refreshToken = refreshToken.RefreshToken,
-        //                userID = response.UserInfoId,
-        //                userName = response.Name,
-        //                roleID = response.RoleID
-        //            });
-        //        }
-
-        //        // Invalid credentials or user not found
-        //        return NotFound(new
-        //        {
-        //            responseCode = false,
-        //            responseMessage = response.Status.ResponseMessage
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Handle unexpected errors
-        //        return BadRequest(new
-        //        {
-        //            responseCode = false,
-        //            responseMessage = "An error occurred during login.",
-        //            exceptionMessage = ex.Message
-        //        });
-        //    }
-        //}
-
-
-
-        //[AllowAnonymous]
-        //[HttpPost("Register")]
-        //public async Task<IActionResult> Register([FromBody] Register register)
-        //{
-        //    string userName = null;
-        //    string phoneNumber = null;
-        //    string Email = null;
-        //    string password = null;
-        //    string reEnteredPassword = null;
-        //    string message = null;
-
-
-        //    try
-        //    {
-        //        userName = register.UserName;
-        //        phoneNumber = register.PhoneNumber;
-        //        Email = register.Email;
-        //        password = register.password;
-        //        reEnteredPassword = register.ReEnteredpassword;
-
-        //       // myConnectionString = _config.GetConnectionString("myConnectionString");
-
-
-        //        //message = "You can successfuly created an Account with MiniMart, you can proceed shopping with us";
-
-        //        //logRequests
-        //        //logs.LogRequest($"UserName : {userName}, phoneNumber: {phoneNumber}, password: {password}, reEnteredPassword : {reEnteredPassword}", "registerlogs.txt");
-
-
-        //        // serialize json data
-
-        //        string jsodata = JsonConvert.SerializeObject(register);
-
-        //        //logs.LogRequest(jsodata, "registerlogs.txt");
-
-
-
-
-
-        //        // pass data for processing
-
-        //        var response = await  _myService.UserRegistration(jsodata);
-
-
-
-
-        //            var jsonResponse = new
-        //        {
-        //            message = response.ResponseMessage,
-        //            username = userName,
-        //            userID = response.UserID,
-        //            responseCode = response.ResponseCode
-
-        //        };
-
-        //        return new OkObjectResult(jsonResponse);
-
-
-
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return NotFound(ex);
-        //    }
-
-        //}
 
         [HttpPost("RefreshToken")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
@@ -361,176 +59,50 @@ namespace Minimart_Api.Controllers
             RefreshTokens refreshTokens = new RefreshTokens()
             {
                 RefreshToken = refreshToken,
-
-
                 UserName = UserID
             };
 
-            //refreshTokens.RefreshToken = refreshToken;
-
-
-
-            //myConnectionString = _config.GetConnectionString("myConnectionString");
-
-            //(new System.Linq.SystemCore_EnumerableDebugView<System.Collections.Generic.KeyValuePair<string, string>>(Request.Cookies).Items[0]).Value
-
             var jsonData = JsonConvert.SerializeObject(refreshTokens);
-
-            bool responseStatusCode = false;
 
             try
             {
                 UserInfo response = await _myService.GetRefreshToken(UserID);
 
-                //return response;
-
                 if (Convert.ToBoolean(response.Status.ResponseCode))//--true
                 {
                     //Generate a new Json Web Token
-
-                    //UserInfo usrInfo = new UserInfo
-                    //{
-                    //    Name = refreshTokenRequest.UserID,
-
-                    //    Password = response.Email,
-                    //    Email = "muchiricaleb05@gmail.com",
-                    //    Role = "Adminstrator"
-                    //};
-
                     //var token = _coreLibraries.GenerateToken(response);
                     var token = "";
 
                     newToken = token;
 
                     //Generate a new RefreshToken
-
                     var newrefreshToken = CoreLibraries.GenerateRefreshToken(UserID);
 
                     //Save RefreshToken
                     //Serialize RefreshToken
-
                     var jsonRefreshData = JsonConvert.SerializeObject(newrefreshToken);
-
 
                     _myService.SaveRefreshToken(jsonRefreshData);
 
-
                     //Set RefreshToken
-
                     //Set Refresh Token
-
                     var Cookie = CoreLibraries.SetRefreshToken(newrefreshToken);
 
                     Response.Cookies.Append("refereshToken", newrefreshToken.RefreshToken, Cookie);
 
-
-
-
-
                     return Ok(newToken);
-
-
-
                 }
                 else
                 {
                     return Ok(response.Status.ResponseMessage);
                 }
-
-
-
-
             }
             catch (Exception ex)
             {
                 return Ok(ex.Message);
             }
-
-
         }
-
-
-
-
-        //[HttpPost("AddToCart")]
-        //public async Task<IActionResult> CheckOut([FromBody] AddToCart cartitems)
-        //{
-        //    var jsonSrting = JsonConvert.SerializeObject(cartitems);
-
-        //    try
-        //    {
-        //        var Response = await _myService.AddToCart(jsonSrting);
-
-        //        return Ok(Response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-
-
-
-        //}
-
-
-
-        //[HttpPost("UploadImages")]
-        //public async Task<IActionResult> UploadImages(IFormFile file)
-        //{
-        //    if (file == null || file.Length == 0)
-        //    {
-        //        return BadRequest("No file uploaded");
-        //    }
-
-        //    var bucketName = "minimartke-products-upload";
-
-        //    var filename = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-
-        //    using var client = new AmazonS3Client();
-
-        //    using var newMemoryStream = new MemoryStream();
-        //    await file.CopyToAsync(newMemoryStream);
-
-        //    var uploaadRquest = new PutObjectRequest { 
-        //        InputStream = newMemoryStream,
-        //        BucketName = bucketName,
-        //        Key = $"product-images/{filename}",
-        //        ContentType = file.ContentType,
-        //        CannedACL = S3CannedACL.PublicRead
-        //    }
-
-        //    await client.PutObjectAsync(uploaadRquest);
-
-        //    var fileUrl = $"https://{bucketName}.s3.amazonaws.com/product-images/{fileName}";
-
-        //    // Define the path to the 'uploads' folder within the 'wwwroot' directory
-        //    //var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-
-
-        //    //var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-
-        //    //// Check if directory exists; if not, create it
-        //    //if (!Directory.Exists(uploadsDir))
-        //    //{
-        //    //    Directory.CreateDirectory(uploadsDir);
-        //    //}
-
-        //    //// Generate a unique filename to avoid collisions
-
-        //    //var filepath = Path.Combine(uploadsDir, filename);
-
-        //    //// Save the file to the uploads directory
-        //    //using (var stream = new FileStream(filepath, FileMode.Create))
-        //    //{
-        //    //    await file.CopyToAsync(stream);
-        //    //}
-
-        //    //// Generate the absolute URL to access the file
-        //    //var fileUrl = $"{Request.Scheme}://{Request.Host}/uploads/{filename}";
-
-        //    return Ok(new { Url = fileUrl });
-        //}
-
 
         [HttpPost("UploadImages")]
         public async Task<IActionResult> UploadImages(IFormFile file)
@@ -540,17 +112,17 @@ namespace Minimart_Api.Controllers
 
             try
             {
+                var region = (Environment.GetEnvironmentVariable("AWS_REGION") ?? "us-east-1").Trim();
+
                 // 1. Configure S3 Client with Environment Variables (Production/Development)
                 var s3Config = new AmazonS3Config
                 {
-                    RegionEndpoint = RegionEndpoint.GetBySystemName(
-                        Environment.GetEnvironmentVariable("AWS_REGION") ?? "us-east-1"
-                    )
+                    RegionEndpoint = RegionEndpoint.GetBySystemName(region)
                 };
 
                 using var client = new AmazonS3Client(
                     Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID") ?? "AKIARJHKLYVKSAVJHAPL",
-                    Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY")  ?? "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",
+                    Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY") ?? "nzD98baJIowoJeJobWSP2bxwrJCFIrLiRakn8gWH",
                     s3Config
                 );
 
@@ -589,24 +161,66 @@ namespace Minimart_Api.Controllers
             }
             catch (Exception ex)
             {
-                // Fallback to local storage if AWS fails (development only)
-                //if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
-                //{
-                //    try
-                //    {
-                //        var localPath = Path.Combine("wwwroot", "uploads", fileName);
-                //        using var stream = new FileStream(localPath, FileMode.Create);
-                //        await file.CopyToAsync(stream);
-                //        return Ok(new { Url = $"/uploads/{fileName}" });
-                //    }
-                //    catch
-                //    {
-                //        return StatusCode(500, "Both S3 and local storage failed");
-                //    }
-                //}
                 return StatusCode(500, "Upload failed");
             }
         }
 
+        // New Category endpoints - following same pattern as existing endpoints
+        [HttpGet("GetCategories")]
+        public async Task<IActionResult> GetCategories()
+        {
+            try
+            {
+                var categories = await _myService.GetCategoriesAsync();
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex.Message);
+            }
+        }
+
+        [HttpGet("GetCategory/{categoryId}")]
+        public async Task<IActionResult> GetCategory(Guid categoryId)
+        {
+            try
+            {
+                var category = await _myService.GetCategoryAsync(categoryId);
+                return Ok(category);
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex.Message);
+            }
+        }
+
+        [HttpPost("CreateCategory")]
+        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequest request)
+        {
+            try
+            {
+                var jsonData = JsonConvert.SerializeObject(request);
+                var result = await _myService.CreateCategoryAsync(jsonData);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex.Message);
+            }
+        }
+
+        // All other legacy endpoints have been removed
+        // Use the Identity system endpoints in IdentityController instead
+        // Use the new Order endpoints in OrderController instead
+        // Use the new Category endpoints in CategoryController instead
+    }
+
+    // Simple request model following the same pattern as RefreshTokenRequest
+    public class CreateCategoryRequest
+    {
+        public string Name { get; set; } = "";
+        public string? Description { get; set; }
+        public Guid MerchantId { get; set; }
+        public string UserId { get; set; } = "";
     }
 }

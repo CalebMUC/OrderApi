@@ -9,28 +9,31 @@ namespace Minimart_Api.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
-        public int UserId { get; set; }
+
+        // Modern Identity support
+        public string? ApplicationUserId { get; set; }
 
         [Required]
-        [MaxLength(50)]
-        [Column(TypeName = "varchar(50)")]
-        public string ProductId { get; set; }
+        public Guid ProductId { get; set; }
 
         [Required]
+        [Column(TypeName = "timestamp with time zone")]
         public DateTime PurchasedOn { get; set; } = DateTime.UtcNow;
 
         [Required]
         public int Quantity { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
-        // Navigation Properties
-        [ForeignKey("UserId")]
-        public virtual Users User { get; set; }
+        // Navigation Properties - Updated to use ApplicationUser
+        [ForeignKey("ApplicationUserId")]
+        public virtual ApplicationUser? User { get; set; }
 
         [ForeignKey("ProductId")]
-        public virtual Products Products { get; set; }
-    }
+        public virtual Product Product { get; set; } = null!;
 
+        // REMOVED: Legacy Users navigation property
+        // [ForeignKey("UserId")]
+        // public virtual Users User { get; set; }
+    }
 }

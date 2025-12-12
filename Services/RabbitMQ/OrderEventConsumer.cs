@@ -63,8 +63,8 @@ namespace Minimart_Api.Services.RabbitMQ
 
                     try
                     {
-                        //deserialize orderEvet
-                        var orderEvent = JsonSerializer.Deserialize<OrderEvent>(message);
+                        //deserialize orderEvet - use fully qualified DTO name
+                        var orderEvent = JsonSerializer.Deserialize<Minimart_Api.DTOS.Orders.OrderEvent>(message);
 
                         if (orderEvent == null)
                         {

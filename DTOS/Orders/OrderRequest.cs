@@ -3,6 +3,6 @@
     public class OrderRequest
     {
         public int Status { get; set; }
-        public int userID { get; set; }
+        public string ApplicationUserId { get; set; } = string.Empty; // Identity User ID
     }
 }

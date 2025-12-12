@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Minimart_Api.Data;
+using Minimart_Api.Models;
 using Minimart_Api.DTOS.Cart;
 using Minimart_Api.DTOS.Products;
 using OpenSearch.Client;
@@ -17,31 +18,30 @@ namespace Minimart_Api.Repositories.Recommendation
             _cache = cache;
         }
 
-
-
-        public async Task<IEnumerable<Models.Orders>> GetUserOrders(int userId)
+        public async Task<IEnumerable<Models.Order>> GetUserOrders(string userId)
         {
             return await _dbContext.Orders
                 .Include(o => o.OrderProducts)
-                    .ThenInclude(op => op.Product)
-                .Where(o => o.UserID == userId)
+                    //.ThenInclude(op => op.Product) // Comment out if this navigation doesn't exist
+                .Where(o => o.ApplicationUserId == userId) // Updated to use ApplicationUserId
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Products>> GetPopularProductsByCategory(int? categoryId, int limit)
+        public async Task<IEnumerable<Product>> GetPopularProductsByCategory(Guid? categoryId, int limit)
         {
             return await _dbContext.Products
-                .Where(p => p.CategoryId == categoryId)
+                .Where(p => p.CategoryId == categoryId && p.IsActive)
                 .Include(p => p.OrderItems) // Assuming OrderItems represents products in orders
                 .OrderByDescending(p => p.OrderItems.Count)
                 .Take(limit)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Products>> GetPopularProducts(int limit)
+        public async Task<IEnumerable<Product>> GetPopularProducts(int limit)
         {
             return await _dbContext.Products
+                .Where(p => p.IsActive)
                 .Include(p => p.OrderItems)
                 .OrderByDescending(p => p.OrderItems.Count)
                 .ThenBy(p => EF.Functions.Random()) // For variety if counts are equal
@@ -49,17 +49,17 @@ namespace Minimart_Api.Repositories.Recommendation
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Models.Orders>> GetOrdersContainingProduct(string productId)
+        public async Task<IEnumerable<Models.Order>> GetOrdersContainingProduct(Guid productId)
         {
             return await _dbContext.Orders
                 .Include(o => o.OrderProducts)
-                    .ThenInclude(op => op.Product)
-                .Where(o => o.OrderProducts.Any(op => op.ProductID == productId))
+                    //.ThenInclude(op => op.Product) // Comment out if this navigation doesn't exist
+                .Where(o => o.OrderProducts.Any(op => op.ProductId == productId))
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Products>> GetProductsByCategory(int? categoryId, int limit)
+        public async Task<IEnumerable<Product>> GetProductsByCategory(Guid? categoryId, int limit)
         {
             if (!categoryId.HasValue)
             {
@@ -68,13 +68,13 @@ namespace Minimart_Api.Repositories.Recommendation
 
             var cacheKey = $"category_products_{categoryId}_{limit}";
 
-            if (_cache.TryGetValue(cacheKey, out IEnumerable<Products> cachedProducts))
+            if (_cache.TryGetValue(cacheKey, out IEnumerable<Product> cachedProducts))
             {
                 return cachedProducts;
             }
 
             var products = await _dbContext.Products
-                .Where(p => p.CategoryId == categoryId && p.InStock)
+                .Where(p => p.CategoryId == categoryId && p.IsActive)
                 .Include(p => p.OrderItems)
                 .OrderByDescending(p => p.OrderItems.Count)
                 .ThenBy(p => Guid.NewGuid())

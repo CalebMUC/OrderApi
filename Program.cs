@@ -30,8 +30,8 @@ using Amazon;
 using Amazon.Extensions.NETCore.Setup;
 using Minimart_Api.Services.SystemSecurity;
 using Minimart_Api.Repositories.SystemSecurityRepo;
-using Minimart_Api.Services.SystemMerchantService;
-using Minimart_Api.Repositories.SystemMerchantsRepository;
+//using Minimart_Api.Services.SystemMerchantService;
+//using Minimart_Api.Repositories.SystemMerchantsRepository;
 using Minimart_Api.Services.ProductService;
 using Minimart_Api.Repositories.ProductRepository;
 using Minimart_Api.Services.CategoriesService;
@@ -68,6 +68,17 @@ using Minimart_Api.Repositories.AddressesRepo;
 using Microsoft.AspNetCore.HttpOverrides;
 using Minimart_Api.Services.Mpesa;
 using Minimart_Api.Repositories.Mpesa;
+using Minimart_Api.Services.Identity;
+using Minimart_Api.Services.Category;
+using Minimart_Api.DTOS.Configuration;
+using Minimart_Api.Repositories.Category;
+using Minimart_Api.Services.Merchant;
+using Minimart_Api.Repositories.Merchant;
+using Minimart_Api.Services.CurrentUserServices;
+using Minimart_Api.Services.PasswordGenerator;
+using Minimart_Api.Services.Dashboard;
+using Minimart_Api.Repositories.Dashboard;
+using Minimart_Api.Services.PaymentMethods;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -78,13 +89,21 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add AutoMapper
+builder.Services.AddAutoMapper(typeof(CategoryMappingProfile), typeof(ProductMappingProfile));
+
 builder.Services.AddScoped<IMyService, MyService>();
 builder.Services.AddScoped<IRepository, MyRepository>();
 builder.Services.AddScoped<IOrderService, OrderServices>();
 builder.Services.AddScoped<IorderRepository, OrderRepository>();
 
-//builder.Services.AddScoped<ICategoryService, CategoryService>();
-//builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
+// Add Order Validation Service
+builder.Services.AddScoped<Minimart_Api.Services.OrderService.IOrderValidationService, Minimart_Api.Services.OrderService.OrderValidationService>();
+
+// Add database-based Category service and repository - FIXED REGISTRATION
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
 
 builder.Services.AddScoped<ISearchService, SearchServices>();
 builder.Services.AddScoped<ISearchRepo,SearchRepo>();
@@ -98,20 +117,40 @@ builder.Services.AddScoped<IReportRepo, ReportRepo>();
 builder.Services.AddScoped<IFeatureService, FeatureService>();
 builder.Services.AddScoped<IFeatureRepo, FeatureRepo>();
 
-
+// Cart Services - Updated to use new implementation
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+
+// Add legacy cart repository for backward compatibility in CartService
 builder.Services.AddScoped<ICartRepo, CartRepo>();
 
 builder.Services.AddScoped<IDeliveryService, DeliveryService>();
 builder.Services.AddScoped<IDeliveriesRepo, DeliveriesRepo>();
 
-builder.Services.AddScoped<IAddress, AddressService>();
-builder.Services.AddScoped<IAddressRepo, AddressRepo>();
+// Enhanced Address Services with legacy support
+builder.Services.AddScoped<IAddressService, AddressServiceNew>();
+builder.Services.AddScoped<IAddress, AddressServiceNew>(); // Legacy interface pointing to enhanced service
+builder.Services.AddScoped<IAddressRepository, AddressRepositoryNew>();
+builder.Services.AddScoped<IAddressRepo, AddressRepositoryNew>(); // Legacy interface pointing to enhanced repository
+
+// Payment Method Services
+builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 
 builder.Services.AddScoped<ISimilarProductsService, SimilarProductsService>();
 
 builder.Services.AddScoped<IAuthentication, AuthenticationService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+
+builder.Services.AddScoped<IMerchantService, MerchantService>();
+builder.Services.AddScoped<IMerchantRepo, MerchantRepo>();
+
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ICurrentUserService,CurrentUserService>();
+
+builder.Services.AddScoped<IPasswordGeneratorService, PasswordServiceGenerator>();
+
+// Add Identity Services
+builder.Services.AddScoped<IIdentityService, IdentityService>();
 
 builder.Services.AddScoped<ISystemSecurity, SystemSecurity>();
 builder.Services.AddScoped<ISystemSecurityRepo, SystemSecurityRepo>();
@@ -123,14 +162,20 @@ builder.Services.AddScoped<IRecommendationRepository, RecommendationRepository>(
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
-builder.Services.AddScoped<ISystemMerchants, MerchantsService>();
-builder.Services.AddScoped<ISystemMerchantRepo, SystemMerchantRepo>();
+//builder.Services.AddScoped<ISystemMerchants, MerchantsService>();
+//builder.Services.AddScoped<ISystemMerchantRepo, SystemMerchantRepo>();
 
-builder.Services.AddScoped<ICategoriesService, CategoriesNewService>();
-builder.Services.AddScoped<ICategoryRepos, CategoryRepos>();
+//builder.Services.AddScoped<ICategoriesService, CategoriesNewService>();
+//builder.Services.AddScoped<ICategoryRepos, CategoryRepos>();
 
 builder.Services.AddScoped<IMpesaService, MpesaService>();
 builder.Services.AddScoped<IMpesaRepo, MpesaRepo>();
+
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IDashboardRepo, DashboardRepo>();
+
+// Add Enhanced Dashboard Services
+builder.Services.AddScoped<IEnhancedDashboardService, EnhancedDashboardService>();
 
 builder.Services.AddScoped<IOrderEventPublisher, OrderEventPublisher>();
 builder.Services.AddHostedService<OrderEventConsumer>();
@@ -174,14 +219,15 @@ builder.Services.AddDbContext<MinimartDBContext>(options =>
 {
     // options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
     //.LogTo(message => Log.Information(message), Microsoft.Extensions.Logging.LogLevel.Information) // Log to Serilog
-    //.EnableSensitiveDataLogging(); // Enable logging of sensitive data (like parameters)
+    //.EnableSensitiveDataLogging() // Enable logging of sensitive data (like parameters)
 
     //options.UseNpgsql(builder.Configuration.GetConnectionString("PostgressConnection"))
     //.LogTo(error => Log.Error(error))
     //.EnableSensitiveDataLogging();
 
     options.UseNpgsql(
-    builder.Configuration.GetConnectionString("PostgressConnection"),
+    //builder.Configuration.GetConnectionString("PostgressConnection"),
+    builder.Configuration.GetConnectionString("DefaultConnection"),
     npgsqlOptions =>
     {
         npgsqlOptions.EnableRetryOnFailure(
@@ -196,13 +242,40 @@ builder.Services.AddDbContext<MinimartDBContext>(options =>
 },
 ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
 
+// Configure ASP.NET Core Identity
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+{
+    // Password settings
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequiredUniqueChars = 1;
+
+    // Lockout settings
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+
+    // User settings
+    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    options.User.RequireUniqueEmail = true;
+
+    // Email confirmation settings
+    options.SignIn.RequireConfirmedEmail = false; // Set to true if you want email confirmation
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+})
+.AddEntityFrameworkStores<MinimartDBContext>()
+.AddDefaultTokenProviders();
+
 //Development
 //builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 //{
 //    var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
 
 //    var redisUrl = Environment.GetEnvironmentVariable("REDIS_URL")
-//                  ?? builder.Configuration.GetConnectionString("Redis");
+//                  ?? builder.Configuration.GetConnectionString("Redis"));
 
 //    if (string.IsNullOrWhiteSpace(redisUrl))
 //        throw new InvalidOperationException("Redis connection string is missing.");
@@ -239,57 +312,112 @@ ServiceLifetime.Scoped); // Scoped lifetime for the DbContext
 //    }
 //});
 
-
-
 //Production
+builder.Services.Configure<Minimart_Api.DTOS.Configuration.RedisSettings>(
+    builder.Configuration.GetSection("RedisSettings"));
+
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
+    var environment = sp.GetRequiredService<IWebHostEnvironment>();
+    var redisSettings = sp.GetRequiredService<IOptions<Minimart_Api.DTOS.Configuration.RedisSettings>>().Value;
 
-    // Get connection string from Render environment variable
+    // Get Redis URL from environment or configuration
     var redisUrl = Environment.GetEnvironmentVariable("REDIS_URL")
-                   ?? builder.Configuration.GetConnectionString("Redis")
-                   ?? throw new InvalidOperationException("Missing REDIS_URL");
+                   ?? builder.Configuration.GetConnectionString("Redis");
 
-    logger.LogInformation("Connecting to Redis: {Host}", redisUrl);
+    if (string.IsNullOrWhiteSpace(redisUrl))
+        throw new InvalidOperationException("Redis connection string is missing.");
+
+    logger.LogInformation("Environment: {Environment}", environment.EnvironmentName);
+    logger.LogInformation("Connecting to Redis: {RedisUrl}", redisUrl.Contains("@") ? "[PROTECTED]" : redisUrl);
 
     try
     {
+        ConfigurationOptions config;
 
-        // Explicit configuration to avoid port parsing bugs
-        var config = new ConfigurationOptions
+        if (environment.IsDevelopment())
         {
-            // Manually specify endpoint to prevent 6379:6380 issue
-            EndPoints = { "loved-airedale-34854.upstash.io:6379" },
-
-            // Extract password from URL (or use directly)
-            Password = redisUrl.Split('@')[0].Split(':')[2],
-
-            // Critical for Upstash
-            Ssl = true,
-            AbortOnConnectFail = false,
-            ConnectTimeout = 15000, // 15 seconds
-            SyncTimeout = 5000      // 5 seconds
-        };
+            // Development Configuration
+            logger.LogInformation("Using Development Redis configuration");
+            
+            config = ConfigurationOptions.Parse(redisUrl);
+            
+            // Apply development settings from configuration
+            config.AbortOnConnectFail = redisSettings.AbortOnConnectFail;
+            config.ConnectTimeout = redisSettings.ConnectTimeout;
+            config.SyncTimeout = redisSettings.SyncTimeout;
+            config.DefaultDatabase = redisSettings.Database;
+            config.Ssl = redisSettings.UseSSL;
+            
+            // Override SSL if cloud Redis is detected in development
+            if (redisUrl.Contains("upstash.io") || redisUrl.Contains("redis.cloud") || redisUrl.Contains("amazonaws.com"))
+            {
+                config.Ssl = true;
+                logger.LogInformation("Cloud Redis detected - enabling SSL for development");
+            }
+        }
+        else
+        {
+            // Production Configuration
+            logger.LogInformation("Using Production Redis configuration");
+            
+            if (redisSettings.IsUpstash && !string.IsNullOrEmpty(redisSettings.UpstashEndpoint))
+            {
+                // Upstash Redis configuration with settings from appsettings
+                config = new ConfigurationOptions
+                {
+                    EndPoints = { redisSettings.UpstashEndpoint },
+                    
+                    // Extract password from URL or use direct environment variable
+                    Password = Environment.GetEnvironmentVariable("REDIS_PASSWORD") 
+                              ?? (redisUrl.Contains("@") ? redisUrl.Split('@')[0].Split(':')[2] : null),
+                    
+                    Ssl = redisSettings.UseSSL,
+                    AbortOnConnectFail = redisSettings.AbortOnConnectFail,
+                    ConnectTimeout = redisSettings.ConnectTimeout,
+                    SyncTimeout = redisSettings.SyncTimeout,
+                    DefaultDatabase = redisSettings.Database
+                };
+                
+                logger.LogInformation("Using Upstash configuration with endpoint: {Endpoint}", redisSettings.UpstashEndpoint);
+            }
+            else
+            {
+                // Generic production Redis configuration
+                config = ConfigurationOptions.Parse(redisUrl);
+                config.Ssl = redisSettings.UseSSL;
+                config.AbortOnConnectFail = redisSettings.AbortOnConnectFail;
+                config.ConnectTimeout = redisSettings.ConnectTimeout;
+                config.SyncTimeout = redisSettings.SyncTimeout;
+                config.DefaultDatabase = redisSettings.Database;
+                
+                logger.LogInformation("Using generic Redis configuration");
+            }
+        }
 
         var connection = ConnectionMultiplexer.Connect(config);
 
-        // Attach event handlers for reliability
+        // Attach event handlers for monitoring
         connection.ConnectionFailed += (_, e) =>
-            logger.LogError(e.Exception, "Redis connection failed");
+            logger.LogError(e.Exception, "Redis connection failed to {Endpoint} in {Environment}", 
+                e?.EndPoint, environment.EnvironmentName);
 
-        connection.ConnectionRestored += (_, _) =>
-            logger.LogInformation("Redis connection restored");
+        connection.ConnectionRestored += (_, e) =>
+            logger.LogInformation("Redis connection restored to {Endpoint} in {Environment}", 
+                e?.EndPoint, environment.EnvironmentName);
 
+        logger.LogInformation("Redis connected successfully in {Environment} mode with SSL: {SSL}", 
+            environment.EnvironmentName, config.Ssl);
+        
         return connection;
     }
     catch (Exception ex)
     {
-        logger.LogCritical(ex, "Failed to connect to Redis");
+        logger.LogCritical(ex, "Failed to connect to Redis in {Environment} environment", environment.EnvironmentName);
         throw;
     }
 });
-
 
 
 
@@ -326,6 +454,27 @@ builder.Services.AddSignalR();
 
 
 // Add JWT authentication
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//})
+//.AddJwtBearer(options =>
+//{
+//    var jwtSettings = builder.Configuration.GetSection("Jwt");
+//    options.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuer = false,
+//        ValidateAudience = false,
+//        ValidateLifetime = true,
+//        ValidateIssuerSigningKey = true,
+//        //ValidIssuer = builder.Configuration["Jwt:Issuer"],
+//        //ValidAudience = builder.Configuration["Jwt:Audience"],
+//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+//    };
+//});
+
+// Add JWT authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -333,27 +482,47 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    var jwtSettings = builder.Configuration.GetSection("Jwt");
+    var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        ValidateLifetime = true,
+        ValidateIssuer = true,
+        ValidateAudience = true,
         ValidateIssuerSigningKey = true,
-        //ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        //ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+        ValidateLifetime = true,
+
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtSettings["Secret"])
+        )
     };
 });
 
-// Add authorization policies if needed
+
+// Add authorization policies
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("MyPolicy", policy =>
     {
         policy.RequireAuthenticatedUser();
     });
+
+    // Add role-based policies
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
+
+    options.AddPolicy("MerchantOnly", policy =>
+        policy.RequireRole("Merchant"));
+
+    options.AddPolicy("UserOnly", policy =>
+        policy.RequireRole("User"));
+
+    options.AddPolicy("AdminOrMerchant", policy =>
+        policy.RequireRole("Admin", "Merchant"));
 });
+
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -431,11 +600,50 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 
 
-
 builder.Services.AddHttpClient();
 
 
 var app = builder.Build();
+
+// Seed roles on startup
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    // Ensure roles exist
+    string[] roleNames = { "Admin", "Merchant", "User" };
+    foreach (var roleName in roleNames)
+    {
+        var roleExists = await roleManager.RoleExistsAsync(roleName);
+        if (!roleExists)
+        {
+            await roleManager.CreateAsync(new ApplicationRole 
+            { 
+                Name = roleName, 
+                Description = $"{roleName} role" 
+            });
+        }
+    }
+
+    // Create default admin user if needed
+    //var adminEmail = "admin@minimart.com";
+    //var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    //if (adminUser == null)
+    //{
+    //    adminUser = new ApplicationUser
+    //    {
+    //        UserName = adminEmail,
+    //        Email = adminEmail,
+    //        DisplayName = "System Administrator",
+    //        EmailConfirmed = true,
+    //        CreatedAt = DateTime.UtcNow
+    //    };
+
+    //    await userManager.CreateAsync(adminUser, "Admin123!");
+    //    await userManager.AddToRoleAsync(adminUser, "Admin");
+    //}
+}
 
 // Enable forwarded headers middleware BEFORE any URL generation or redirect logic
 app.UseForwardedHeaders();
@@ -499,4 +707,8 @@ app.MapControllers();
 app.UseExceptionHandler("/error");
 
 app.Run();
+
+// REMOVED: Migration service registrations - no longer needed
+// builder.Services.AddScoped<IMigrationService, MigrationService>();
+// builder.Services.AddScoped<IUserMigrationService, UserMigrationService>();
 

@@ -201,7 +201,8 @@ namespace Minimart_Api.Repositories.Mpesa
                     // Record payment
                     var newPayment = new PaymentDetails
                     {
-                        PaymentMethodID = 1,
+                        PaymentMethodID = _dbContext.PaymentMethods.Where(pm => pm.Name == "M-Pesa").
+                        Select(pm => pm.PaymentMethodID).FirstOrDefault(),
                         TrxReference = stkPushResponse.CheckoutRequestID,
                         Phonenumber = request.PhoneNumber,
                         Amount = Convert.ToDecimal(request.Amount),
@@ -307,97 +308,99 @@ namespace Minimart_Api.Repositories.Mpesa
 
 
         public async Task<bool> ProcessSuccessfulPayment(PaymentData paymentData, string checkoutRequestId, string merchantRequestId)
-{
-    var strategy = _dbContext.Database.CreateExecutionStrategy();
-
-    return await strategy.ExecuteAsync(async () =>
-    {
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync();
-
-        try
         {
-            _logger.LogInformation("🔄 Processing successful payment for CheckoutRequestID: {CheckoutRequestId}, MerchantRequestID: {MerchantRequestId}, PaymentData: {@PaymentData}",
-                checkoutRequestId, merchantRequestId, paymentData);
+            var strategy = _dbContext.Database.CreateExecutionStrategy();
 
-            // ✅ Validate required fields
-            if (string.IsNullOrWhiteSpace(paymentData.MpesaReceiptNumber) ||
-                string.IsNullOrWhiteSpace(paymentData.Amount) ||
-                string.IsNullOrWhiteSpace(paymentData.PhoneNumber))
+            return await strategy.ExecuteAsync(async () =>
             {
-                _logger.LogError("Missing required payment data: {@PaymentData}", paymentData);
-                return false;
-            }
+                await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-            // ✅ Parse amount
-            if (!decimal.TryParse(paymentData.Amount, out var amount))
-            {
-                _logger.LogError("Invalid amount: {Amount}", paymentData.Amount);
-                return false;
-            }
-
-            // ✅ Parse phone number
-            if (!long.TryParse(paymentData.PhoneNumber, out var phone))
-            {
-                _logger.LogError("Invalid phone number: {PhoneNumber}", paymentData.PhoneNumber);
-                return false;
-            }
-
-            // ✅ Find the existing payment using the checkout request ID
-            var payment = await _dbContext.PaymentDetails
-                .Include(p => p.Order)
-                .FirstOrDefaultAsync(p => p.TrxReference == checkoutRequestId);
-
-            if (payment == null)
-            {
-                _logger.LogWarning("⚠️ Payment not found for CheckoutRequestID: {CheckoutRequestId}", checkoutRequestId);
-                return false;
-            }
-
-            // ✅ Update payment details
-            payment.Status = "Success";
-            payment.PaymentReference = paymentData.MpesaReceiptNumber;
-            payment.PaymentDate = DateTime.UtcNow;
-            payment.Amount = amount;
-            payment.Phonenumber = paymentData.PhoneNumber;
-
-            _dbContext.PaymentDetails.Update(payment);
-            await _dbContext.SaveChangesAsync();
-
-            _logger.LogInformation("💰 Payment updated successfully: Receipt {Receipt}, Amount {Amount}",
-                paymentData.MpesaReceiptNumber, paymentData.Amount);
-
-            // ✅ Update related order
-            if (!string.IsNullOrWhiteSpace(payment.OrderID))
-            {
-                var order = await _dbContext.Orders.FindAsync(payment.OrderID);
-                if (order != null)
+                try
                 {
-                    order.StatusEnum = Models.Enums.OrderStatusEnum.Paid;
-                    order.StatusMessage = "Payment confirmed via M-Pesa";
-                    order.PaymentConfirmation = "Confirmed";
-                    _dbContext.Orders.Update(order);
+                    _logger.LogInformation("🔄 Processing successful payment for CheckoutRequestID: {CheckoutRequestId}, MerchantRequestID: {MerchantRequestId}, PaymentData: {@PaymentData}",
+                        checkoutRequestId, merchantRequestId, paymentData);
 
-                    _logger.LogInformation("📦 Order {OrderId} marked as PAID.", order.OrderID);
+                    // Validate required fields
+                    if (string.IsNullOrWhiteSpace(paymentData.MpesaReceiptNumber) ||
+                        string.IsNullOrWhiteSpace(paymentData.Amount) ||
+                        string.IsNullOrWhiteSpace(paymentData.PhoneNumber))
+                    {
+                        _logger.LogError("Missing required payment data: {@PaymentData}", paymentData);
+                        return false;
+                    }
+
+                    // Parse amount
+                    if (!decimal.TryParse(paymentData.Amount, out var amount))
+                    {
+                        _logger.LogError("Invalid amount: {Amount}", paymentData.Amount);
+                        return false;
+                    }
+
+                    // Parse phone number
+                    if (!long.TryParse(paymentData.PhoneNumber, out var phone))
+                    {
+                        _logger.LogError("Invalid phone number: {PhoneNumber}", paymentData.PhoneNumber);
+                        return false;
+                    }
+
+                    // Find existing payment record
+                    var payment = await _dbContext.PaymentDetails
+                        .FirstOrDefaultAsync(p => p.TrxReference == checkoutRequestId);
+
+                    if (payment == null)
+                    {
+                        _logger.LogWarning("⚠️ Payment not found for CheckoutRequestID: {CheckoutRequestId}", checkoutRequestId);
+                        return false;
+                    }
+
+                    // Update payment details
+                    payment.Status = "Success";
+                    payment.PaymentReference = paymentData.MpesaReceiptNumber;
+                    payment.PaymentDate = DateTime.UtcNow;
+                    payment.Amount = amount;
+                    payment.Phonenumber = paymentData.PhoneNumber;
+
+                    _dbContext.PaymentDetails.Update(payment);
+                    await _dbContext.SaveChangesAsync();
+
+                    _logger.LogInformation("💰 Payment updated successfully: Receipt {Receipt}, Amount {Amount}",
+                        paymentData.MpesaReceiptNumber, paymentData.Amount);
+
+                    // ======== IMPORTANT CHANGE HERE ========
+                    // Find the related order using PaymentID (FK on Order)
+                    var order = await _dbContext.Orders
+                        .FirstOrDefaultAsync(o => o.PaymentID == payment.PaymentID);
+
+                    if (order != null)
+                    {
+                        order.StatusEnum = Models.Enums.OrderStatusEnum.Paid;
+                        order.StatusMessage = "Payment confirmed via M-Pesa";
+                        order.PaymentConfirmation = "Confirmed";
+
+                        _dbContext.Orders.Update(order);
+
+                        _logger.LogInformation("📦 Order {OrderId} marked as PAID.", order.OrderID);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("⚠️ No order found linked to PaymentID: {PaymentID}", payment.PaymentID);
+                    }
+
+                    await _dbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return true;
                 }
-                else
+                catch (Exception ex)
                 {
-                    _logger.LogWarning("⚠️ Order not found for PaymentID: {PaymentID}", payment.PaymentID);
+                    await transaction.RollbackAsync();
+
+                    _logger.LogError(ex, "❌ Error while processing payment for CheckoutRequestID: {CheckoutRequestId}", checkoutRequestId);
+                    return false;
                 }
-            }
-
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return true;
+            });
         }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            _logger.LogError(ex, "💥 Error processing successful payment for CheckoutRequestID: {CheckoutRequestId}", checkoutRequestId);
-            return false;
-        }
-    });
-}
+
 
 
 

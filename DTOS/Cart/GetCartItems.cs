@@ -2,6 +2,6 @@
 {
     public class GetCartItems
     {
-        public int UserID { get; set; }
+        public string ApplicationUserId { get; set; } = string.Empty; // Identity User ID
     }
 }

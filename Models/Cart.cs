@@ -5,28 +5,25 @@ namespace Minimart_Api.Models
 {
     public class Cart
     {
-        //public Cart()
-        //{
-        //    CartItems = new HashSet<CartItem>();
-        //}
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CartId { get; set; }
-        [Required]
-        public int? UserId { get; set; }
+
+        // Modern Identity support only
+        public string? ApplicationUserId { get; set; }
 
         [MaxLength(100)]
         [Column(TypeName = "varchar(100)")]
         public string? CartName { get; set; }
 
-        public DateTime? CreatedAt { get; set; }
+        [Column(TypeName = "timestamp with time zone")]
+        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation property to user
-        [ForeignKey("UserId")]
-        public virtual Users? User { get; set; }
+        // Navigation property to ApplicationUser (modern Identity system)
+        [ForeignKey("ApplicationUserId")]
+        public virtual ApplicationUser? User { get; set; }
 
         // Navigation property for cart items
-        public virtual ICollection<CartItem> CartItems { get; set; }
+        public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
     }
 }

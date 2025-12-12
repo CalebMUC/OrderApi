@@ -2,6 +2,7 @@
 {
     public class GetOrderTrackingStatus
     {
-        public string ProductID { get; set; }
+        public Guid ProductID { get; set; }
+        public string OrderID { get; set; }
     }
 }

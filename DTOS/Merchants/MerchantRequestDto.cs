@@ -2,7 +2,7 @@
 {
     public class MerchantRequestDto
     {
-        public int MerchantId { get; set; }
+        public Guid MerchantId { get; set; }
         public string OrderId { get; set; }
     }
 }

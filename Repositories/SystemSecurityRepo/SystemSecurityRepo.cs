@@ -8,31 +8,29 @@ namespace Minimart_Api.Repositories.SystemSecurityRepo
     public class SystemSecurityRepo : ISystemSecurityRepo
     {
         private readonly MinimartDBContext _dbContext;
-        public SystemSecurityRepo(MinimartDBContext dbContext) {
+        private readonly ILogger<SystemSecurityRepo> _logger;
+
+        public SystemSecurityRepo(MinimartDBContext dbContext, ILogger<SystemSecurityRepo> logger) 
+        {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         public async Task<List<SubModuleCategoriesDto>> GetSubModuleCategories(int subModuleID)
         {
             try
             {
-                var subModuleCategories = await _dbContext.SubModuleCategories
-                                .Where(sm => sm.SubModuleID == subModuleID)
-                                .OrderBy(sc => sc.Order)
-                                .Select(sc => new SubModuleCategoriesDto
-                                {
-                                    SubCategoryID = sc.SubCategoryID,
-                                    SubCategoryName = sc.SubCategoryName,
-                                    SubCategoryUrl = sc.SubCategoryUrl,
-                                    Order = sc.Order,
-                                    ModuleName = sc.Submodule.SubModuleName
-                                }).ToListAsync();
-
-                return subModuleCategories;
+                // TODO: Implement security module system
+                // For now, return empty list as the security models are not implemented
+                _logger.LogInformation("GetSubModuleCategories called for SubModuleID: {SubModuleID}. Security system not implemented yet.", subModuleID);
+                
+                await Task.CompletedTask; // Make it async
+                return new List<SubModuleCategoriesDto>();
             }
-            catch (Exception ex) {
-                return [];
-                Console.WriteLine($"Sql Error is {ex.Message}");
+            catch (Exception ex) 
+            {
+                _logger.LogError(ex, "Error in GetSubModuleCategories for SubModuleID: {SubModuleID}", subModuleID);
+                return new List<SubModuleCategoriesDto>();
             }
         }
 
@@ -40,33 +38,17 @@ namespace Minimart_Api.Repositories.SystemSecurityRepo
         {
             try
             {
-                var modules = await _dbContext.RolePermissions
-                    .Where(rp => rp.RoleID == RoleID)
-                    .GroupBy(rp => new { rp.ModuleID, rp.ModuleName })
-                    .Select(g => new ModuleDto
-                    {
-                        ModuleID = g.Key.ModuleID,
-                        ModuleName = g.Key.ModuleName,
-                        SubModules = g.Select(
-                            rp => new SubModuleDto {
-                                SubModuleID = rp.SubModuleID,
-                                SubModuleName = rp.SubModuleName,
-                                SubModuleUrl = rp.Submodule.SubModuleUrl,
-                                Order = rp.Submodule.Order
-                            }
-                            ).ToList()
-                    })
-                   // .Distinct() // Ensure unique modules
-                    .ToListAsync();
-
+                // TODO: Implement security module system  
+                // For now, return empty list as the security models are not implemented
+                _logger.LogInformation("GetRoleModules called for RoleID: {RoleID}. Security system not implemented yet.", RoleID);
                 
-                return modules;
+                await Task.CompletedTask; // Make it async
+                return new List<ModuleDto>();
             }
             catch (Exception ex)
             {
-                // Log the exception (optional)
-                Console.WriteLine($"Error fetching modules: {ex.Message}");
-                return []; // Return an empty list in case of error
+                _logger.LogError(ex, "Error in GetRoleModules for RoleID: {RoleID}", RoleID);
+                return new List<ModuleDto>();
             }
         }
     }

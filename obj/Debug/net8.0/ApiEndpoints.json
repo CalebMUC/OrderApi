@@ -1,6 +1,22 @@
 [
   {
     "ContainingType": "Minimart_Api.Controllers.AddressController",
+    "Method": "AddAddress",
+    "RelativePath": "api/Address",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.Controllers.CreateAddressRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.AddressController",
     "Method": "GetAddressById",
     "RelativePath": "api/Address/{id}",
     "HttpMethod": "GET",
@@ -17,7 +33,60 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.AddressController",
-    "Method": "AddAddress",
+    "Method": "UpdateAddress",
+    "RelativePath": "api/Address/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.Controllers.UpdateAddressRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.AddressController",
+    "Method": "DeleteAddress",
+    "RelativePath": "api/Address/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.AddressController",
+    "Method": "SetDefaultAddress",
+    "RelativePath": "api/Address/{id}/set-default",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.AddressController",
+    "Method": "AddAddressLegacy",
     "RelativePath": "api/Address/AddAddress",
     "HttpMethod": "POST",
     "IsController": true,
@@ -33,7 +102,17 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.AddressController",
-    "Method": "EditAddress",
+    "Method": "GetDefaultAddress",
+    "RelativePath": "api/Address/default",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.AddressController",
+    "Method": "EditAddressLegacy",
     "RelativePath": "api/Address/EditAddress",
     "HttpMethod": "POST",
     "IsController": true,
@@ -41,7 +120,7 @@
     "Parameters": [
       {
         "Name": "address",
-        "Type": "Minimart_Api.DTOS.Notification.EditAddressDTO",
+        "Type": "Minimart_Api.DTOS.Address.EditAddressDTO",
         "IsRequired": true
       }
     ],
@@ -49,7 +128,7 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.AddressController",
-    "Method": "GetAddressesByUserId",
+    "Method": "GetAddressesByUserIdLegacy",
     "RelativePath": "api/Address/GetAddressesByUserId/{userId}",
     "HttpMethod": "GET",
     "IsController": true,
@@ -57,7 +136,65 @@
     "Parameters": [
       {
         "Name": "userId",
-        "Type": "System.Int32",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.AddressController",
+    "Method": "GetMyAddresses",
+    "RelativePath": "api/Address/my-addresses",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.AddressController",
+    "Method": "GetAddressesByUserId",
+    "RelativePath": "api/Address/user/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.AddressController",
+    "Method": "ValidateAddress",
+    "RelativePath": "api/Address/validate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.Controllers.CreateAddressRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.AuthenticationController",
+    "Method": "MerchantLogin",
+    "RelativePath": "api/Authentication/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Authorization.LoginRequest",
         "IsRequired": true
       }
     ],
@@ -81,6 +218,48 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.AuthenticationController",
+    "Method": "Logout",
+    "RelativePath": "api/Authentication/logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Authorization.LogoutRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.AuthenticationController",
+    "Method": "GetCurrentUser",
+    "RelativePath": "api/Authentication/me",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.AuthenticationController",
+    "Method": "RefreshToken",
+    "RelativePath": "api/Authentication/refresh",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Authorization.RefreshTokenRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.AuthenticationController",
     "Method": "Register",
     "RelativePath": "api/Authentication/Register",
     "HttpMethod": "POST",
@@ -90,6 +269,22 @@
       {
         "Name": "register",
         "Type": "Minimart_Api.DTOS.Authorization.Register",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.AuthenticationController",
+    "Method": "ResetPasswordAuth",
+    "RelativePath": "api/Authentication/reset-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Authorization.ResetPasswordRequest",
         "IsRequired": true
       }
     ],
@@ -177,47 +372,69 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
-    "Method": "GetSavedItems",
-    "RelativePath": "api/Cart/{userId}",
+    "Method": "AddCartItemsLegacy",
+    "RelativePath": "api/Cart/AddCartItems",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.Controllers.CartController\u002BLegacyAddToCartRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "GetBoughtItemsModern",
+    "RelativePath": "api/Cart/bought-items",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "userId",
-        "Type": "System.Int32",
-        "IsRequired": true
+        "Name": "applicationUserId",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[Minimart_Api.DTOS.Cart.SavedProductsDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
-    "Method": "RemoveItem",
-    "RelativePath": "api/Cart/{userId}/{productId}",
+    "Method": "GetCart",
+    "RelativePath": "api/Cart/cart",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "applicationUserId",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "RemoveFromCart",
+    "RelativePath": "api/Cart/cart/{productId}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "userId",
-        "Type": "System.Int32",
+        "Name": "productId",
+        "Type": "System.Guid",
         "IsRequired": true
       },
       {
-        "Name": "productId",
+        "Name": "applicationUserId",
         "Type": "System.String",
-        "IsRequired": true
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -225,14 +442,14 @@
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
     "Method": "AddToCart",
-    "RelativePath": "api/Cart/AddCartItems",
+    "RelativePath": "api/Cart/cart/add",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "cartitems",
-        "Type": "Minimart_Api.DTOS.Cart.AddToCart",
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Cart.AddToCartDto",
         "IsRequired": true
       }
     ],
@@ -240,20 +457,15 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
-    "Method": "GetComplementary",
-    "RelativePath": "api/Cart/complementary/{productId}",
+    "Method": "GetCartAnalytics",
+    "RelativePath": "api/Cart/cart/analytics",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "productId",
+        "Name": "applicationUserId",
         "Type": "System.String",
-        "IsRequired": true
-      },
-      {
-        "Name": "limit",
-        "Type": "System.Int32",
         "IsRequired": false
       }
     ],
@@ -261,15 +473,15 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
-    "Method": "DeleteCartItems",
-    "RelativePath": "api/Cart/DeleteCartItems",
+    "Method": "AddMultipleToCart",
+    "RelativePath": "api/Cart/cart/bulk-add",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "cartitems",
-        "Type": "Minimart_Api.DTOS.Cart.CartItemsDTO",
+        "Name": "request",
+        "Type": "Minimart_Api.Controllers.CartController\u002BBulkAddToCartRequest",
         "IsRequired": true
       }
     ],
@@ -277,20 +489,31 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
-    "Method": "GetFrequentlyBought",
-    "RelativePath": "api/Cart/frequently-bought/{productId}",
-    "HttpMethod": "GET",
+    "Method": "RemoveMultipleFromCart",
+    "RelativePath": "api/Cart/cart/bulk-remove",
+    "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "productId",
-        "Type": "System.String",
+        "Name": "request",
+        "Type": "Minimart_Api.Controllers.CartController\u002BBulkRemoveFromCartRequest",
         "IsRequired": true
-      },
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "ClearCart",
+    "RelativePath": "api/Cart/cart/clear",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
       {
-        "Name": "limit",
-        "Type": "System.Int32",
+        "Name": "applicationUserId",
+        "Type": "System.String",
         "IsRequired": false
       }
     ],
@@ -298,15 +521,116 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
-    "Method": "GetBoughtItems",
+    "Method": "GetCartItemCount",
+    "RelativePath": "api/Cart/cart/count",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "applicationUserId",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "HasItemInCart",
+    "RelativePath": "api/Cart/cart/has-item/{productId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "productId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "applicationUserId",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "MoveToSaved",
+    "RelativePath": "api/Cart/cart/move-to-saved",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Cart.MoveToSavedRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "GetCartTotal",
+    "RelativePath": "api/Cart/cart/total",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "applicationUserId",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "UpdateCartItem",
+    "RelativePath": "api/Cart/cart/update",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Cart.UpdateCartItemDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "ValidateCart",
+    "RelativePath": "api/Cart/cart/validate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "applicationUserId",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "GetBoughtItemsLegacy",
     "RelativePath": "api/Cart/GetBoughtItems",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "cartitems",
-        "Type": "Minimart_Api.DTOS.Cart.GetCartItems",
+        "Name": "request",
+        "Type": "Minimart_Api.Controllers.CartController\u002BLegacyGetCartRequest",
         "IsRequired": true
       }
     ],
@@ -314,16 +638,79 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
-    "Method": "GetCartItems",
+    "Method": "GetCartItemsLegacy",
     "RelativePath": "api/Cart/GetCartItems",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "cartitems",
-        "Type": "Minimart_Api.DTOS.Cart.GetCartItems",
+        "Name": "request",
+        "Type": "Minimart_Api.Controllers.CartController\u002BLegacyGetCartRequest",
         "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "GetComplementaryProducts",
+    "RelativePath": "api/Cart/recommendations/complementary/{productId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "productId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "GetFrequentlyBoughtTogether",
+    "RelativePath": "api/Cart/recommendations/frequently-bought/{productId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "productId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "GetPersonalizedRecommendations",
+    "RelativePath": "api/Cart/recommendations/personalized/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -331,7 +718,7 @@
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
     "Method": "GetSimilarProducts",
-    "RelativePath": "api/Cart/GetSimilarProducts",
+    "RelativePath": "api/Cart/recommendations/similar/{productId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -339,7 +726,7 @@
       {
         "Name": "productId",
         "Type": "System.String",
-        "IsRequired": false
+        "IsRequired": true
       },
       {
         "Name": "limit",
@@ -347,34 +734,19 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[Minimart_Api.DTOS.Products.SimilarProductDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
-    "Method": "GetPersonalized",
-    "RelativePath": "api/Cart/personalized/{userId}",
+    "Method": "GetSavedItems",
+    "RelativePath": "api/Cart/saved",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "userId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "limit",
-        "Type": "System.Int32",
+        "Name": "applicationUserId",
+        "Type": "System.String",
         "IsRequired": false
       }
     ],
@@ -383,20 +755,279 @@
   {
     "ContainingType": "Minimart_Api.Controllers.CartController",
     "Method": "SaveItem",
-    "RelativePath": "api/Cart/SaveItems",
+    "RelativePath": "api/Cart/saved",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "itemDto",
-        "Type": "Minimart_Api.DTOS.Cart.SaveItemDto",
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Cart.SaveItemRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "RemoveSavedItem",
+    "RelativePath": "api/Cart/saved/{productId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "productId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "applicationUserId",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CartController",
+    "Method": "MoveToCart",
+    "RelativePath": "api/Cart/saved/move-to-cart",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Cart.MoveToCartRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoriesController",
+    "Method": "GetCategories",
+    "RelativePath": "api/Categories",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "PageNumber",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "SearchTerm",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsActive",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ParentId",
+        "Type": "System.Nullable\u00601[[System.Guid, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortOrder",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.General.PagedResultDto\u00601[[Minimart_Api.DTOS.Category.CategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoriesController",
+    "Method": "GetCategoryById",
+    "RelativePath": "api/Categories/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
         "IsRequired": true
       }
     ],
     "ReturnTypes": [
       {
-        "Type": "Minimart_Api.DTOS.Cart.SavedProductsDto",
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.Category.CategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 404
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoriesController",
+    "Method": "GetCategoriesByParentId",
+    "RelativePath": "api/Categories/by-parent/{parentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "parentId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Category.CategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoriesController",
+    "Method": "GetRootCategories",
+    "RelativePath": "api/Categories/root",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Category.CategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "GetCategories",
+    "RelativePath": "api/Category",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "PageNumber",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "SearchTerm",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsActive",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ParentId",
+        "Type": "System.Nullable\u00601[[System.Guid, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SortOrder",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.General.PagedResultDto\u00601[[Minimart_Api.DTOS.Category.CategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -408,40 +1039,495 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CategoryController",
-    "Method": "AddCategoriesAsync",
-    "RelativePath": "api/Category/AddCategories",
+    "Method": "CreateCategory",
+    "RelativePath": "api/Category",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "categories",
-        "Type": "Minimart_Api.DTOS.Category.CategoriesDto",
+        "Name": "dto",
+        "Type": "Minimart_Api.DTOS.Category.CreateCategoryDto",
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.Category.CategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 201
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      }
+    ]
   },
   {
     "ContainingType": "Minimart_Api.Controllers.CategoryController",
-    "Method": "DeleteCategoriesByIdAsync",
-    "RelativePath": "api/Category/DeleteCategoriesById",
+    "Method": "GetSubCategories",
+    "RelativePath": "api/Category/{categoryId}/subcategories",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "CategoryId",
+        "Name": "categoryId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.SubCategory.SubCategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "CreateSubCategory",
+    "RelativePath": "api/Category/{categoryId}/subcategories",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "categoryId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "Minimart_Api.DTOS.SubCategory.CreateSubCategoryDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.SubCategory.SubCategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 201
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "UpdateSubCategory",
+    "RelativePath": "api/Category/{categoryId}/subcategories/{subCategoryId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "categoryId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "subCategoryId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "Minimart_Api.DTOS.SubCategory.UpdateSubCategoryDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.SubCategory.SubCategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "GetCategoryById",
+    "RelativePath": "api/Category/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.Category.CategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "UpdateCategory",
+    "RelativePath": "api/Category/{id}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "Minimart_Api.DTOS.Category.UpdateCategoryDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.Category.CategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "DeleteCategory",
+    "RelativePath": "api/Category/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "GetCategoriesByMerchantId",
+    "RelativePath": "api/Category/by-merchant/{merchantId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "merchantId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Category.CategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "GetCategoriesByParentId",
+    "RelativePath": "api/Category/by-parent/{parentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "parentId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Category.CategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "GetRootCategories",
+    "RelativePath": "api/Category/root",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Category.CategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.CategoryController",
+    "Method": "GetAllSubCategories",
+    "RelativePath": "api/Category/subcategories",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "includeProducts",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.SubCategory.SubCategoryResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "GetAdminDashboard",
+    "RelativePath": "api/Dashboard/admin",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse\u00601[[Minimart_Api.DTOS.Dashboard.AdminDashboardSummary, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 403
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "GetNewMerchants",
+    "RelativePath": "api/Dashboard/admin/merchants/new",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "daysBack",
         "Type": "System.Int32",
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Dashboard.NewMerchantDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
-    "ContainingType": "Minimart_Api.Controllers.CategoryController",
-    "Method": "GetAllCategoriesAsync",
-    "RelativePath": "api/Category/GetAllCategories",
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "GetMerchantStatusDistribution",
+    "RelativePath": "api/Dashboard/admin/merchants/status",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse\u00601[[System.Collections.Generic.Dictionary\u00602[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "GetPlatformRevenueData",
+    "RelativePath": "api/Dashboard/admin/platform/revenue",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "period",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Dashboard.SalesDataPoint, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "HealthCheck",
+    "RelativePath": "api/Dashboard/health",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -449,62 +1535,269 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Minimart_Api.Controllers.CategoryController",
-    "Method": "GetCategoriesByIdAsync",
-    "RelativePath": "api/Category/GetCategoriesById",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "CategoryId",
-        "Type": "System.Int32",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Minimart_Api.Controllers.CategoryController",
-    "Method": "GetNestedCategoriesAsync",
-    "RelativePath": "api/Category/GetNestedCategories",
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "GetMerchantDashboard",
+    "RelativePath": "api/Dashboard/merchant",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse\u00601[[Minimart_Api.DTOS.Dashboard.MerchantDashboardSummary, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 403
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
   },
   {
-    "ContainingType": "Minimart_Api.Controllers.CategoryController",
-    "Method": "GetSubCategory",
-    "RelativePath": "api/Category/GetSubCategory",
-    "HttpMethod": "POST",
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "GetMerchantMetrics",
+    "RelativePath": "api/Dashboard/merchant/metrics",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse\u00601[[System.Collections.Generic.Dictionary\u00602[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Object, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "GetMerchantRecentOrders",
+    "RelativePath": "api/Dashboard/merchant/orders/recent",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "categoryName",
-        "Type": "Minimart_Api.DTOS.Category.SubCategory",
-        "IsRequired": true
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Dashboard.RecentOrderDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
-    "ContainingType": "Minimart_Api.Controllers.CategoryController",
-    "Method": "UpdateCategoriesAsync",
-    "RelativePath": "api/Category/UpdateCategories",
-    "HttpMethod": "POST",
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "GetMerchantOrderStatusDistribution",
+    "RelativePath": "api/Dashboard/merchant/orders/status-distribution",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Dashboard.OrderStatusCount, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "GetMerchantPaymentMethodsDistribution",
+    "RelativePath": "api/Dashboard/merchant/payments/distribution",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Dashboard.PaymentMethodStats, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "GetMerchantTopProducts",
+    "RelativePath": "api/Dashboard/merchant/products/top",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "categories",
-        "Type": "Minimart_Api.DTOS.Category.CategoriesDto",
-        "IsRequired": true
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "period",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Dashboard.TopProductDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "GetMerchantSalesData",
+    "RelativePath": "api/Dashboard/merchant/sales",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "period",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Dashboard.SalesDataPoint, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "GetStaffDashboard",
+    "RelativePath": "api/Dashboard/staff",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse\u00601[[Minimart_Api.DTOS.Dashboard.MerchantDashboardSummary, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 403
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "GetStaffRecentOrders",
+    "RelativePath": "api/Dashboard/staff/orders/attention",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Dashboard.RecentOrderDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.DashboardController",
+    "Method": "GetStaffOrderStatusDistribution",
+    "RelativePath": "api/Dashboard/staff/orders/status-distribution",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.DashboardResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Dashboard.OrderStatusCount, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "Minimart_Api.Controllers.DeliveriesController",
@@ -550,12 +1843,44 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.EntitiesController",
-    "Method": "GetEntities",
-    "RelativePath": "api/Entities",
+    "Method": "CreateCategory",
+    "RelativePath": "api/Entities/CreateCategory",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.Controllers.CreateCategoryRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.EntitiesController",
+    "Method": "GetCategories",
+    "RelativePath": "api/Entities/GetCategories",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.EntitiesController",
+    "Method": "GetCategory",
+    "RelativePath": "api/Entities/GetCategory/{categoryId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "categoryId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {
@@ -585,22 +1910,6 @@
       {
         "Name": "file",
         "Type": "Microsoft.AspNetCore.Http.IFormFile",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Minimart_Api.Controllers.EntitiesController",
-    "Method": "GetAsyncUserName",
-    "RelativePath": "api/Entities/UserName",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "UserName",
-        "Type": "System.String",
         "IsRequired": false
       }
     ],
@@ -697,6 +2006,940 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "AdminOnlyEndpoint",
+    "RelativePath": "api/Identity/admin-only",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "Login",
+    "RelativePath": "api/Identity/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.UserLogin",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Authorization.LoginResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "Logout",
+    "RelativePath": "api/Identity/logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Authorization.LogoutRequest",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "GetProfile",
+    "RelativePath": "api/Identity/me",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Authorization.UserResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "MerchantOnlyEndpoint",
+    "RelativePath": "api/Identity/merchant-only",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "MerchantLogin",
+    "RelativePath": "api/Identity/merchant/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Authorization.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Authorization.AuthResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "GetProfile",
+    "RelativePath": "api/Identity/profile",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Authorization.UserResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "UpdateProfile",
+    "RelativePath": "api/Identity/profile",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.UpdateProfileDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "RefreshToken",
+    "RelativePath": "api/Identity/refresh-token",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Authorization.RefreshTokenRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Authorization.AuthResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "Register",
+    "RelativePath": "api/Identity/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.Register",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Authorization.RegisterResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "ChangePasswordFromTemp",
+    "RelativePath": "api/Identity/reset-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Authorization.ResetPasswordRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Authorization.AuthResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "SendEmailVerification",
+    "RelativePath": "api/Identity/send-email-verification",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.EmailVerificationDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.Status",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "SendPasswordReset",
+    "RelativePath": "api/Identity/send-password-reset",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.PasswordResetDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.Status",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "ChangePassword",
+    "RelativePath": "api/Identity/update-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.ChangePasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.Status",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "UpdateProfile",
+    "RelativePath": "api/Identity/update-profile",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.UpdateProfileDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "UserOnlyEndpoint",
+    "RelativePath": "api/Identity/user-only",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "GetAllUsers",
+    "RelativePath": "api/Identity/users",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "VerifyEmail",
+    "RelativePath": "api/Identity/verify-email",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.EmailVerificationCodeDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.Status",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "VerifyResetCode",
+    "RelativePath": "api/Identity/verify-reset-code",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.VerifyResetCodeDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.Status",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MerchantController",
+    "Method": "GetMerchants",
+    "RelativePath": "api/Merchant",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "sortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "sortOrder",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.Merchants.MerchantsListResponse, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MerchantController",
+    "Method": "GetMerchantById",
+    "RelativePath": "api/Merchant/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.Merchants.MerchantDetailDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MerchantController",
+    "Method": "UpdateMerchant",
+    "RelativePath": "api/Merchant/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "Minimart_Api.DTOS.Merchants.UpdateMerchantDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.Merchants.MerchantDetailDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MerchantController",
+    "Method": "DeleteMerchant",
+    "RelativePath": "api/Merchant/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MerchantController",
+    "Method": "ApproveMerchant",
+    "RelativePath": "api/Merchant/{id}/approve",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "approvalData",
+        "Type": "Minimart_Api.DTOS.Merchants.MerchantApprovalDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.Merchants.MerchantDetailDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MerchantController",
+    "Method": "ReactivateMerchant",
+    "RelativePath": "api/Merchant/{id}/reactivate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.Merchants.MerchantDetailDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MerchantController",
+    "Method": "SuspendMerchant",
+    "RelativePath": "api/Merchant/{id}/suspend",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "suspensionData",
+        "Type": "Minimart_Api.DTOS.Merchants.SuspendMerchantDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.Merchants.MerchantDetailDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MerchantController",
+    "Method": "AddMerchant",
+    "RelativePath": "api/Merchant/AddMerchant",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Minimart_Api.DTOS.Merchants.MerchantDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MerchantController",
+    "Method": "ApproveMerchant",
+    "RelativePath": "api/Merchant/ApproveMerchant",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Merchants.ApproveMerchantRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MerchantController",
+    "Method": "EditMerchant",
+    "RelativePath": "api/Merchant/EditMerchant",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Minimart_Api.DTOS.Merchants.EditMerchantDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MerchantController",
+    "Method": "GetMerchants",
+    "RelativePath": "api/Merchant/GetMerchants",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MerchantController",
+    "Method": "GetPendingMerchants",
+    "RelativePath": "api/Merchant/pending",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[Minimart_Api.DTOS.Merchants.MerchantDetailDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MerchantController",
+    "Method": "RegisterMerchant",
+    "RelativePath": "api/Merchant/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Minimart_Api.DTOS.Merchants.MerchantRegistrationDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.Merchants.MerchantDetailDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 201
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.MerchantController",
+    "Method": "GetMerchantStats",
+    "RelativePath": "api/Merchant/stats",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.Merchants.MerchantStatsDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 500
+      }
+    ]
+  },
+  {
     "ContainingType": "Minimart_Api.Controllers.MpesaController",
     "Method": "Confirmation",
     "RelativePath": "api/Mpesa/confirmation",
@@ -740,6 +2983,22 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.OrderController",
+    "Method": "GetOrderById",
+    "RelativePath": "api/Order/{orderId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.OrderController",
     "Method": "AddOrder",
     "RelativePath": "api/Order/AddOrder",
     "HttpMethod": "POST",
@@ -748,7 +3007,33 @@
     "Parameters": [
       {
         "Name": "orderDTO",
-        "Type": "OrderListDto",
+        "Type": "Minimart_Api.DTOS.Orders.OrderListDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.OrderController",
+    "Method": "GetAdminOrders",
+    "RelativePath": "api/Order/admin/all",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.OrderController",
+    "Method": "CreateOrder",
+    "RelativePath": "api/Order/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderListDto",
+        "Type": "Minimart_Api.DTOS.Orders.OrderListDto",
         "IsRequired": true
       }
     ],
@@ -840,6 +3125,79 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.OrderController",
+    "Method": "GetMerchantOrders",
+    "RelativePath": "api/Order/merchant/{merchantId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "merchantId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "orderId",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.OrderController",
+    "Method": "GetOrderStatuses",
+    "RelativePath": "api/Order/statuses",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.OrderController",
+    "Method": "GetOrderTracking",
+    "RelativePath": "api/Order/tracking/product/{productId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "trackingStatus",
+        "Type": "Minimart_Api.DTOS.Orders.GetOrderTrackingStatus",
+        "IsRequired": true
+      },
+      {
+        "Name": "productId",
+        "Type": "",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.OrderController",
+    "Method": "UpdateOrderStatus",
+    "RelativePath": "api/Order/tracking/update/{productId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderTracking",
+        "Type": "Minimart_Api.DTOS.Merchants.OrderTrackingDTO",
+        "IsRequired": true
+      },
+      {
+        "Name": "productId",
+        "Type": "",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.OrderController",
     "Method": "UpdateOrderStatusAsync",
     "RelativePath": "api/Order/UpdateOrderStatus",
     "HttpMethod": "POST",
@@ -849,6 +3207,27 @@
       {
         "Name": "orderTracking",
         "Type": "Minimart_Api.DTOS.Merchants.OrderTrackingDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.OrderController",
+    "Method": "GetOrdersByStatus",
+    "RelativePath": "api/Order/user/{userId}/status/{status}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "status",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],
@@ -865,6 +3244,112 @@
       {
         "Name": "request",
         "Type": "Minimart_Api.DTOS.Mpesa.ConfimationRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "AddMerchantPaymentMethod",
+    "RelativePath": "api/Payment/merchant/payment-methods",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.PaymentMethods.CreateMerchantPaymentMethodDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "UpdateMerchantPaymentMethod",
+    "RelativePath": "api/Payment/merchant/payment-methods/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.PaymentMethods.CreateMerchantPaymentMethodDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "RemoveMerchantPaymentMethod",
+    "RelativePath": "api/Payment/merchant/payment-methods/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "ToggleMerchantPaymentMethod",
+    "RelativePath": "api/Payment/merchant/payment-methods/{id}/toggle",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "isEnabled",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "GetMerchantPaymentMethods",
+    "RelativePath": "api/Payment/merchant/payment-methods/{merchantId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "merchantId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "TrxQueryStatus",
+    "RelativePath": "api/Payment/query-status",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "query",
+        "Type": "Minimart_Api.DTOS.Payments.MpesaTrxQuery",
         "IsRequired": true
       }
     ],
@@ -908,6 +3393,85 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "GetSystemPaymentMethods",
+    "RelativePath": "api/Payment/system/payment-methods",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "CreateSystemPaymentMethod",
+    "RelativePath": "api/Payment/system/payment-methods",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.PaymentMethods.CreateSystemPaymentMethodDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "GetSystemPaymentMethodById",
+    "RelativePath": "api/Payment/system/payment-methods/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "UpdateSystemPaymentMethod",
+    "RelativePath": "api/Payment/system/payment-methods/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.PaymentMethods.CreateSystemPaymentMethodDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
+    "Method": "DeleteSystemPaymentMethod",
+    "RelativePath": "api/Payment/system/payment-methods/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.PaymentController",
     "Method": "Validation",
     "RelativePath": "api/Payment/validation",
     "HttpMethod": "POST",
@@ -924,15 +3488,72 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.ProductController",
-    "Method": "AddProducts",
-    "RelativePath": "api/Product/AddProducts",
+    "Method": "GetById",
+    "RelativePath": "api/Product/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Products.ProductResponseDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.ProductController",
+    "Method": "Update",
+    "RelativePath": "api/Product/{id}",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "products",
-        "Type": "Minimart_Api.DTOS.Products.AddProducts",
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "updateProductDto",
+        "Type": "Minimart_Api.DTOS.Products.UpdateProductDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Products.ProductResponseDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.ProductController",
+    "Method": "Delete",
+    "RelativePath": "api/Product/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
         "IsRequired": true
       }
     ],
@@ -940,19 +3561,76 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.ProductController",
-    "Method": "EditProducts",
-    "RelativePath": "api/Product/EditProducts",
+    "Method": "Approve",
+    "RelativePath": "api/Product/approve/{productId}",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "products",
-        "Type": "Minimart_Api.DTOS.Products.AddProducts",
+        "Name": "productId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Products.ApproveProductRequest",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.ProductController",
+    "Method": "GetByCategory",
+    "RelativePath": "api/Product/category/{categoryId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "categoryId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.PagedResultDto\u00601[[Minimart_Api.DTOS.Products.ProductListDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.ProductController",
+    "Method": "Create",
+    "RelativePath": "api/Product/Create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "createProductDto",
+        "Type": "Minimart_Api.DTOS.Products.CreateProductDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Products.ProductResponseDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "Minimart_Api.Controllers.ProductController",
@@ -966,15 +3644,41 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.ProductController",
-    "Method": "GetProductsByCategory",
-    "RelativePath": "api/Product/GetProductsByCategory",
-    "HttpMethod": "POST",
+    "Method": "GetFeaturedProducts",
+    "RelativePath": "api/Product/GetFeaturedProducts",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "categoryName",
-        "Type": "Minimart_Api.DTOS.Category.SubCategory",
+        "Name": "merchantId",
+        "Type": "System.Nullable\u00601[[System.Guid, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "count",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "categoryId",
+        "Type": "System.Nullable\u00601[[System.Guid, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.ProductController",
+    "Method": "GetProduct",
+    "RelativePath": "api/Product/GetProduct/{productId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "productId",
+        "Type": "System.Guid",
         "IsRequired": true
       }
     ],
@@ -982,18 +3686,64 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.ProductController",
-    "Method": "LoadProductImages",
-    "RelativePath": "api/Product/LoadProductImages",
+    "Method": "GetAll",
+    "RelativePath": "api/Product/search",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "productDetails",
-        "Type": "Minimart_Api.DTOS.Products.ProductDetails",
+        "Name": "filter",
+        "Type": "Minimart_Api.DTOS.Products.ProductFilterDto",
         "IsRequired": true
       }
     ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.PagedResultDto\u00601[[Minimart_Api.DTOS.Products.ProductListDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.ProductController",
+    "Method": "GetBySubCategory",
+    "RelativePath": "api/Product/subcategory/{subCategoryId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "subCategoryId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.PagedResultDto\u00601[[Minimart_Api.DTOS.Products.ProductListDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.ProductController",
+    "Method": "TestFeaturedProducts",
+    "RelativePath": "api/Product/test/featured",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -1124,80 +3874,6 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Minimart_Api.Controllers.SystemMerchantController",
-    "Method": "AddMerchantsAsync",
-    "RelativePath": "api/SystemMerchant/AddMerchantsAsync",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "systemMerchantsDto",
-        "Type": "Minimart_Api.DTOS.Merchants.SystemMerchantsDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Minimart_Api.Controllers.SystemMerchantController",
-    "Method": "DeleteMerchantAsync",
-    "RelativePath": "api/SystemMerchant/DeleteMerchantAsync",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "merchantId",
-        "Type": "System.Int32",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Minimart_Api.Controllers.SystemMerchantController",
-    "Method": "GetAllMerchantsAsync",
-    "RelativePath": "api/SystemMerchant/GetAllMerchants",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Minimart_Api.Controllers.SystemMerchantController",
-    "Method": "GetMerchantByIdAsync",
-    "RelativePath": "api/SystemMerchant/GetMerchantById",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "merchantID",
-        "Type": "System.Int32",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Minimart_Api.Controllers.SystemMerchantController",
-    "Method": "UpdateMerchantsAsync",
-    "RelativePath": "api/SystemMerchant/UpdateMerchantsAsync",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "systemMerchantsDto",
-        "Type": "Minimart_Api.DTOS.Merchants.SystemMerchantsDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
     "ContainingType": "Minimart_Api.Controllers.SystemSecurityController",
     "Method": "GetModules",
     "RelativePath": "api/SystemSecurity/role-modules",
@@ -1228,6 +3904,421 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.UploadController",
+    "Method": "UploadImages",
+    "RelativePath": "api/Upload/Documents",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "file",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "AdminOnlyEndpoint",
+    "RelativePath": "api/v2/Identity/admin-only",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "Login",
+    "RelativePath": "api/v2/Identity/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.UserLogin",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Authorization.LoginResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "Logout",
+    "RelativePath": "api/v2/Identity/logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Authorization.LogoutRequest",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "GetProfile",
+    "RelativePath": "api/v2/Identity/me",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Authorization.UserResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "MerchantOnlyEndpoint",
+    "RelativePath": "api/v2/Identity/merchant-only",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "MerchantLogin",
+    "RelativePath": "api/v2/Identity/merchant/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Authorization.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Authorization.AuthResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "GetProfile",
+    "RelativePath": "api/v2/Identity/profile",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Authorization.UserResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "UpdateProfile",
+    "RelativePath": "api/v2/Identity/profile",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.UpdateProfileDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "RefreshToken",
+    "RelativePath": "api/v2/Identity/refresh-token",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Authorization.RefreshTokenRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Authorization.AuthResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "Register",
+    "RelativePath": "api/v2/Identity/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.Register",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Authorization.RegisterResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "ChangePasswordFromTemp",
+    "RelativePath": "api/v2/Identity/reset-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.DTOS.Authorization.ResetPasswordRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.Authorization.AuthResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "SendEmailVerification",
+    "RelativePath": "api/v2/Identity/send-email-verification",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.EmailVerificationDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.Status",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "SendPasswordReset",
+    "RelativePath": "api/v2/Identity/send-password-reset",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.PasswordResetDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.Status",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "ChangePassword",
+    "RelativePath": "api/v2/Identity/update-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.ChangePasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.Status",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "UpdateProfile",
+    "RelativePath": "api/v2/Identity/update-profile",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.UpdateProfileDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "UserOnlyEndpoint",
+    "RelativePath": "api/v2/Identity/user-only",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "GetAllUsers",
+    "RelativePath": "api/v2/Identity/users",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "VerifyEmail",
+    "RelativePath": "api/v2/Identity/verify-email",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.EmailVerificationCodeDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.Status",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.IdentityController",
+    "Method": "VerifyResetCode",
+    "RelativePath": "api/v2/Identity/verify-reset-code",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Minimart_Api.DTOS.Authorization.VerifyResetCodeDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.Status",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "Minimart_Api.Controllers.ErrorController",

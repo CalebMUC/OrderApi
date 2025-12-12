@@ -10,36 +10,38 @@ namespace Minimart_Api.Models
         public int ReviewId { get; set; }
 
         [Required]
-        [MaxLength(50)]
-        [Column(TypeName = "varchar(50)")]  // Changed from nvarchar
-        public string ProductId { get; set; }
+        public Guid ProductId { get; set; }
 
-        public int? UserId { get; set; }
+        // Modern Identity support only
+        public string? ApplicationUserId { get; set; }
 
         [Required]
         [Range(1, 5)]
         public int Rating { get; set; }
 
         [MaxLength(100)]
-        [Column(TypeName = "varchar(100)")]  // Changed from nvarchar
+        [Column(TypeName = "varchar(100)")]
         public string? Title { get; set; }
 
-        [Column(TypeName = "text")]  // Changed from nvarchar(max)
+        [Column(TypeName = "text")]
         public string? Comment { get; set; }
 
-        [Column(TypeName = "timestamp")]  // Changed from datetime
-        public DateTime ReviewDate { get; set; } = DateTime.Now;
+        [Column(TypeName = "timestamp with time zone")]
+        public DateTime ReviewDate { get; set; } = DateTime.UtcNow;
 
-        public bool IsVerifiedBuyer { get; set; } = false;  // Removed bit annotation
+        public bool IsVerifiedBuyer { get; set; } = false;
 
-        public bool IsVisible { get; set; } = true;  // Removed bit annotation
+        public bool IsVisible { get; set; } = true;
 
         [MaxLength(1000)]
-        [Column(TypeName = "varchar(1000)")]  // Changed from nvarchar
+        [Column(TypeName = "varchar(1000)")]
         public string? AdminResponse { get; set; }
 
-        // Navigation Properties remain unchanged
-        public virtual Products? Product { get; set; }
-        public virtual Users? User { get; set; }
+        // Navigation Properties - ApplicationUser only
+        [ForeignKey("ProductId")]
+        public virtual Product Product { get; set; } = null!;
+
+        [ForeignKey("ApplicationUserId")]
+        public virtual ApplicationUser? User { get; set; }
     }
 }

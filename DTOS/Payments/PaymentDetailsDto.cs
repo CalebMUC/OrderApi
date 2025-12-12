@@ -3,7 +3,8 @@
     public class PaymentDetailsDto
     {
 
-        public int PaymentID { get; set; }
+        public Guid PaymentID { get; set; }
+        public int PaymentMethodID { get; set; }
         public long PaymentReference { get; set; }
 
         public string TrxReference { get; set; }

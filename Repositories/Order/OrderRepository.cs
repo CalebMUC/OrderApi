@@ -18,8 +18,8 @@ using Minimart_Api.Repositories.Mpesa;
 using Minimart_Api.Repositories.Order;
 using Minimart_Api.Services.RabbitMQ;
 using Minimart_Api.Services.SignalR;
-using Minimart_Api.Services.SystemMerchantService;
 using Newtonsoft.Json;
+using Npgsql;
 using StackExchange.Redis;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,1187 +28,1754 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-public class OrderRepository : IorderRepository
+namespace Minimart_Api.Repositories.Order
 {
-    private readonly MinimartDBContext _dbContext;
-
-    private readonly IOrderEventPublisher _orderEventPublisher;
-
-    private readonly IConfiguration _configuration;
-
-    private readonly MpesaSandBox _mpesaSandBox;
-
-    private readonly MpesaGoLive _mpesaGoLive;
-
-    private readonly IHubContext<ActivityHub> _hubContext;
-
-    private readonly ISystemMerchants _systemMerchants;
-
-    private readonly IMpesaRepo _mpesaRepo;
-
-    private readonly IHttpClientFactory _clientFactory;
-    private const string ConsumerKey = "vM5KjasAGTVzdddzpP8tENa1Z9us6G6CDjeZzEAHQKzVbQu4";
-    private const string ConsumerSecret = "BZQ2uAq84LIzonV6uaXBo7ofYGTHvhhvFD5vVd8EuTwnsd0n0b9ewQ8ExNMKuOnn";
-    private const string BusinessShortCode = "174379";
-    private const string PassKey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
-    public OrderRepository(MinimartDBContext dbContext,
-        IOrderEventPublisher orderEventPublisher,
-        IOptions<MpesaSandBox> mpesaSandBox,
-        IOptions<MpesaGoLive> mpesaGoLive,
-        IHttpClientFactory clientFactory,
-        IHubContext<ActivityHub> hubContext,
-        ISystemMerchants systemMerchants,
-        IMpesaRepo mpesaRepo
-        /*IConfiguration configuration*/)
+    public class OrderRepository : IorderRepository
     {
-        _dbContext = dbContext;
-        _orderEventPublisher = orderEventPublisher;
-        //_configuration = configuration;
-        _mpesaSandBox = mpesaSandBox.Value;
-        _clientFactory = clientFactory;
-        _systemMerchants = systemMerchants;
-        _mpesaRepo = mpesaRepo;
-        _mpesaGoLive = mpesaGoLive.Value;
+        private readonly MinimartDBContext _dbContext;
+        private readonly IOrderEventPublisher _orderEventPublisher;
+        private readonly IConfiguration _configuration;
+        private readonly MpesaSandBox _mpesaSandBox;
+        private readonly MpesaGoLive _mpesaGoLive;
+        private readonly IHubContext<ActivityHub> _hubContext;
+        private readonly IMpesaRepo _mpesaRepo;
+        private readonly IHttpClientFactory _clientFactory;
+        private readonly ILogger<OrderRepository> _logger;
+        
+        private const string ConsumerKey = "vM5KjasAGTVzdddzpP8tENa1Z9us6G6CDjeZzEAHQKzVbQu4";
+        private const string ConsumerSecret = "BZQ2uAq84LIzonV6uaXBo7ofYGTHvhhvFD5vVd8EuTwnsd0n0b9ewQ8ExNMKuOnn";
+        private const string BusinessShortCode = "174379";
+        private const string PassKey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
 
-    }
-
-    public async Task<List<GetOrdersDTO>> GetOrdersByStatusAsync(int status, int userID)
-    {
-        try
+        public OrderRepository(MinimartDBContext dbContext,
+            IOrderEventPublisher orderEventPublisher,
+            IConfiguration configuration,
+            IOptions<MpesaSandBox> mpesaSandBox,
+            IOptions<MpesaGoLive> mpesaGoLive,
+            IHttpClientFactory clientFactory,
+            IHubContext<ActivityHub> hubContext,
+            IMpesaRepo mpesaRepo,
+            ILogger<OrderRepository> logger)
         {
-            // Step 1: Fetch orders with status messages
-            var ordersWithStatus = await _dbContext.Orders
-                .Where(o => o.Status == status && o.UserID == userID && o.StatusEnum == Minimart_Api.Models.Enums.OrderStatusEnum.Paid)
-                .Join(_dbContext.OrderStatuses,
-                    o => o.Status, // Join condition for order status
-                    os => os.StatusId,
-                    (o, os) => new { Order = o, StatusMessage = os.Status })
-                .ToListAsync();
-
-            // Step 2: Map the result to GetOrdersDTO and fetch product images
-            var orders = new List<GetOrdersDTO>();
-
-            foreach (var orderWithStatus in ordersWithStatus)
-            {
-                var order = orderWithStatus.Order;
-                var products = JsonConvert.DeserializeObject<List<OrderProductsDTO>>(order.ProductsJson);
-
-                // Fetch ImageUrl for each product
-                var productsWithImages = products.Select(p => new OrderProductsDTO
-                {
-                    ProductID = p.ProductID,
-                    ProductName = p.ProductName,
-                    Quantity = p.Quantity,
-                    Price = p.Price,
-                    ImageUrl = _dbContext.Products
-                        .FirstOrDefault(tp => tp.ProductId == p.ProductID)?.ImageUrl // Fetch ImageUrl for each product
-                }).ToList();
-
-                // Map to GetOrdersDTO
-                var getOrderDTO = new GetOrdersDTO
-                {
-                    OrderID = order.OrderID,
-                    OrderDate = order.OrderDate,
-                    TotalOrderAmount = order.TotalOrderAmount,
-                    Status = orderWithStatus.StatusMessage,
-
-                    PaymentConfirmation = order.PaymentConfirmation,
-                    TotalPaymentAmount = order.TotalPaymentAmount,
-                    TotalDeliveryFees = order.TotalDeliveryFees,
-                    TotalTax = order.TotalTax,
-                    ShippingAddress = JsonConvert.DeserializeObject<ShippingAddress>(order.ShippingAddress),
-                    Products = productsWithImages, // Include products with ImageUrl
-
-                    PickUpLocation = JsonConvert.DeserializeObject<PickUpLocation>(order.PickupLocation),
-                    PaymentDetails = JsonConvert.DeserializeObject<List<PaymentDetailsDto>>(order.PaymentDetailsJson)
-                };
-
-                orders.Add(getOrderDTO);
-            }
-
-            return orders;
+            _dbContext = dbContext;
+            _orderEventPublisher = orderEventPublisher;
+            _configuration = configuration;
+            _mpesaSandBox = mpesaSandBox.Value;
+            _clientFactory = clientFactory;
+            _mpesaRepo = mpesaRepo;
+            _mpesaGoLive = mpesaGoLive.Value;
+            _hubContext = hubContext;
+            _logger = logger;
         }
-        catch (Exception ex)
+
+        #region Enhanced CRUD Operations
+
+        public async Task<ServiceResult<bool>> CreateOrderAsync(Models.Order order)
         {
-            // Log the exception (ex) here if needed
-            return [];
-        }
-    }
-
-    public async Task<List<OrderStatus>> GetOrderStatusAsync()
-    {
-        try
-        {
-            // Execute the query asynchronously and materialize the results into a list
-            var orderStatusList = await _dbContext.OrderStatuses
-                .Select(o => new OrderStatus
-                {
-                    StatusId = o.StatusId,
-                    Status = o.Status,
-                    OrderID = o.OrderID,
-                    Description = o.Description,
-                    CreatedBy = o.CreatedBy,
-                    CreatedOn = o.CreatedOn,
-                    UpdatedBy = o.UpdatedBy,
-                    UpdatedOn = o.UpdatedOn,
-                })
-                .ToListAsync(); // Use ToListAsync to execute the query asynchronously
-
-            return orderStatusList;
-        }
-        catch (Exception ex)
-        {
-            // Log the exception (optional)
-            // _logger.LogError(ex, "An error occurred while fetching order statuses.");
-
-            // Return an empty list in case of an error
-            return new List<OrderStatus>();
-        }
-    }
-
-
-    public async Task<List<OrderTracking>> GetOrderTrackingAsync(GetOrderTrackingStatus trackingStatus)
-    {
-        try
-        {
-            var tracking = await _dbContext.OrderTrackings
-                .Where(ot => ot.ProductID == trackingStatus.ProductID)
-                .Select(ot => new OrderTracking
-                {
-                    TrackingID = ot.TrackingID,
-                    OrderID = ot.OrderID,
-                    ProductID = ot.ProductID,
-                    CurrentStatus = ot.CurrentStatus,
-                    PreviousStatus = ot.PreviousStatus,
-                    TrackingDate = ot.TrackingDate,
-                    ExpectedDeliveryDate = ot.ExpectedDeliveryDate, // Update this if needed
-                    Carrier = ot.Carrier,
-                    CreatedOn = ot.CreatedOn,
-                    CreatedBy = ot.CreatedBy,
-                    UpdatedBy = ot.UpdatedBy,
-                    UpdatedOn = ot.UpdatedOn,
-                }).ToListAsync();
-
-            return tracking;
-        }
-        catch (Exception ex)
-        {
-            return new List<OrderTracking>();
-        }
-    }
-
-
-
-    public async Task<List<GetOrdersDTO>> GetOrdersByIdAsync(string OrderId)
-    {
-        try
-        {
-            // Use a join query to get the orders and their status messages
-            var orders = await _dbContext.Orders
-                .Where(o => o.OrderID == OrderId
-)
-                .Join(_dbContext.OrderStatuses,
-                      o => o.Status,
-                      os => os.StatusId,
-                      (o, os) => new GetOrdersDTO
-                      {
-                          OrderID = o.OrderID,
-                          OrderDate = o.OrderDate,
-                          TotalOrderAmount = o.TotalOrderAmount,
-                          Status = os.Status,
-
-                          PaymentConfirmation = o.PaymentConfirmation,
-                          TotalPaymentAmount = o.TotalPaymentAmount,
-                          TotalDeliveryFees = o.TotalDeliveryFees,
-                          TotalTax = o.TotalTax,
-                          ShippingAddress = JsonConvert.DeserializeObject<ShippingAddress>(o.ShippingAddress),
-                          Products = JsonConvert.DeserializeObject<List<OrderProductsDTO>>(o.ProductsJson),
-
-                          PickUpLocation = JsonConvert.DeserializeObject<PickUpLocation>(o.PickupLocation),
-                          PaymentDetails = JsonConvert.DeserializeObject<List<PaymentDetailsDto>>(o.PaymentDetailsJson) // Deserialize as List
-                      })
-                .ToListAsync();
-
-            return orders;
-        }
-        catch (Exception ex)
-        {
-            // Log the exception (ex) here if needed
-            return [];
-        }
-    }
-
-    public async Task<List<MerchantOrderDto>> GetAdminOrdersAsync()
-    {
-        try
-        {
-            var merchantOrders = _dbContext.Orders
-                .Join(
-                    _dbContext.OrderStatuses,
-                    o => o.Status,
-                    os => os.StatusId,
-                    (o, os) => new { Order = o, StatusName = os.Status }
-                )
-                .AsEnumerable() // Forces execution of the query in memory
-                .SelectMany(joined =>
-                    JsonConvert.DeserializeObject<List<OrderProductsDTO>>(joined.Order.ProductsJson)
-                    .Select(p => new MerchantOrderDto
-                    {
-                        OrderId = joined.Order.OrderID,
-                        ProductName = p.ProductName,
-                        Quantity = p.Quantity,
-                        Price = p.Price,
-                        Status = joined.StatusName
-                    })
-                )
-                .ToList(); // Use synchronous ToList()
-
-            return merchantOrders;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred: {ex.Message}");
-            return new List<MerchantOrderDto>(); // Return an empty list instead of throwing
-        }
-    }
-
-
-    public async Task<List<MerchantOrderDto>> GetMerchantOrdersAsync(MerchantRequestDto requestDto)
-    {
-
-        try
-        {
-            // Apply filtering at the database level
-            var query = _dbContext.Orders
-                .Join(
-                    _dbContext.OrderStatuses,
-                    o => o.Status,
-                    os => os.StatusId,
-                    (o, os) => new { Order = o, StatusName = os.Status }
-                )
-                .Where(joined => joined.Order.ProductsJson != null); // Ensure ProductsJson is not null before processing
-
-            if (!string.IsNullOrEmpty(requestDto.OrderId))
-            {
-                query = query.Where(joined => joined.Order.OrderID == requestDto.OrderId);
-            }
-
-            var rawOrders = await query.ToListAsync(); // Fetch filtered orders from DB
-
-            var merchantOrders = rawOrders
-                .SelectMany(joined =>
-                    JsonConvert.DeserializeObject<List<OrderProductsDTO>>(joined.Order.ProductsJson ?? "[]") // Handle null JSON
-                    .Where(p => p.merchantId == requestDto.MerchantId) // Filter by merchantId
-                    .Select(p => new MerchantOrderDto
-                    {
-                        OrderId = joined.Order.OrderID,
-                        Quantity = p.Quantity,
-                        ProductName = p.ProductName,
-                        Price = p.Price,
-                        Status = joined.StatusName,
-                        ProductID = p.ProductID
-                    })
-                )
-                .ToList(); // Convert to list in memory
-
-            return merchantOrders;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred: {ex.Message}");
-            return new List<MerchantOrderDto>(); // Return an empty list instead of throwing
-        }
-    }
-
-    public async Task<Status> UpdateOrderStatusAsync(OrderTrackingDTO orderTracking)
-    {
-        try
-        {
-            // Get Existing Tracking Record
-            var existingProductTracker = await _dbContext.OrderTrackings
-                .Where(ot => ot.OrderID == orderTracking.OrderId && ot.ProductID == orderTracking.ProductId)
-                .FirstOrDefaultAsync();
-
-            // Check if the record exists
-            if (existingProductTracker == null)
-            {
-                return new Status
-                {
-                    ResponseCode = 404,
-                    ResponseMessage = "Order tracking record not found."
-                };
-            }
-
-            // Update Existing Tracking Record
-            existingProductTracker.PreviousStatus = existingProductTracker.CurrentStatus;
-            existingProductTracker.CurrentStatus = orderTracking.StatusId; // Assuming DTO has NewStatusId
-            existingProductTracker.UpdatedBy = orderTracking.UpdatedBy; // Assuming DTO has UpdatedBy
-            existingProductTracker.UpdatedOn = DateTime.Now;
-
-            // Save Changes
-            _dbContext.OrderTrackings.Update(existingProductTracker);
-            await _dbContext.SaveChangesAsync();
-
-            return new Status
-            {
-                ResponseCode = 200,
-                ResponseMessage = "Order Tracking Updated Successfully"
-            };
-        }
-        catch (Exception ex)
-        {
-            return new Status
-            {
-                ResponseCode = 500,
-                ResponseMessage = ex.Message
-            };
-        }
-    }
-
-
-    //public async Task<Status> TrackOrderAsync(Orders order)
-    //{
-    //    try
-    //    {
-    //        var statusId = await _dbContext.OrderStatuses
-    //            .Where(os => os.Status == "Processing")
-    //            .Select(os => os.StatusId)
-    //            .FirstOrDefaultAsync();
-
-    //        var createdBy = await _dbContext.Users
-    //            .Where(u => u.UserId == order.UserID)
-    //            .Select(u => u.UserName)
-    //            .FirstOrDefaultAsync();
-
-    //        // Loop through each product in the order
-    //        foreach (var product in order.OrderProducts)
-    //        {
-    //            var trackingId = $"TRK-{Guid.NewGuid().ToString().Substring(0, 4)}";
-
-    //            var newOrderTrack = new OrderTracking
-    //            {
-    //                TrackingID = trackingId,
-    //                OrderID = order.OrderID,
-    //                ProductID = product.ProductID,
-    //                CurrentStatus = statusId,
-    //                PreviousStatus = statusId,
-    //                TrackingDate = DateTime.Now,
-    //                ExpectedDeliveryDate = DateTime.Now, // Update this if needed
-    //                Carrier = "ABC Delivery Company",
-    //                CreatedOn = DateTime.UtcNow,
-    //                CreatedBy = createdBy,
-    //                UpdatedBy = "",
-    //                UpdatedOn = DateTime.Now
-    //            };
-
-    //            // Add each tracking record to the DbContext
-    //            _dbContext.OrderTrackings.Add(newOrderTrack);
-    //        }
-
-    //        // Save all tracking records after the loop
-    //        await _dbContext.SaveChangesAsync();
-
-    //        return new Status
-    //        {
-    //            ResponseCode = 200,
-    //            ResponseMessage = "Order Tracking Created Successfully for All Products"
-    //        };
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new Status
-    //        {
-    //            ResponseCode = 500,
-    //            ResponseMessage = ex.Message
-    //        };
-    //    }
-    //}
-
-    public async Task<Status> TrackOrderAsync(Orders order)
-    {
-        try
-        {
-            var statusId = await _dbContext.OrderStatuses
-                .Where(os => os.Status == "Processing")
-                .Select(os => os.StatusId)
-                .FirstOrDefaultAsync();
-
-            var createdBy = await _dbContext.Users
-                .Where(u => u.UserId == order.UserID)
-                .Select(u => u.UserName)
-                .FirstOrDefaultAsync();
-
-            foreach (var product in order.OrderProducts)
-            {
-                var trackingId = $"TRK-{Guid.NewGuid().ToString().Substring(0, 4)}";
-
-                var newOrderTrack = new OrderTracking
-                {
-                    TrackingID = trackingId,
-                    OrderID = order.OrderID,
-                    ProductID = product.ProductID,
-                    CurrentStatus = statusId,
-                    PreviousStatus = statusId,
-                    TrackingDate = DateTime.Now,
-                    ExpectedDeliveryDate = DateTime.Now.AddDays(3), // Example delivery window
-                    Carrier = "ABC Delivery Company",
-                    CreatedOn = DateTime.Now,
-                    CreatedBy = createdBy,
-                    UpdatedBy = "",
-                    UpdatedOn = DateTime.Now
-                };
-
-                _dbContext.OrderTrackings.Add(newOrderTrack);
-            }
-
-            await _dbContext.SaveChangesAsync();
-
-            return new Status
-            {
-                ResponseCode = 200,
-                ResponseMessage = "Order Tracking Created Successfully for All Products"
-            };
-        }
-        catch (Exception ex)
-        {
-            return new Status
-            {
-                ResponseCode = 500,
-                ResponseMessage = ex.Message
-            };
-        }
-    }
-
-
-
-
-
-
-    //Create Order
-    //public async Task<Status> AddOrder(OrderListDto transaction)
-    //{
-    //    using var transactionScope = await _dbContext.Database.BeginTransactionAsync();
-
-    //    try
-    //    {
-    //        foreach (var orderDto in transaction.Orders)
-    //        {
-    //            int paymentMethodID = await HandlePaymentDetails(orderDto.PaymentDetails);
-
-    //            var newOrder = await CreateOrder(orderDto, paymentMethodID);
-
-    //            await UpdateProductStock(orderDto.Products);
-
-    //            // Save the order and commit the transaction
-    //            _dbContext.Orders.Add(newOrder);
-    //            await _dbContext.SaveChangesAsync();
-
-    //            //update CartItems To BoughtItems
-    //            await UpdateCartItems(orderDto.Products,newOrder.UserID);
-
-    //            await TrackOrderAsync(newOrder);
-
-    //            await PublishOrderEvent(newOrder);
-
-    //            //_hubContext.Clients.All.SendAsync("ReceiveNewOrder", $"New OrderId {newOrder.OrderID} has been created");
-    //        }
-
-    //        await transactionScope.CommitAsync();
-
-
-
-    //        return new Status
-    //        {
-    //            ResponseCode = 200,
-    //            ResponseMessage = "Transaction completed successfully"
-    //        };
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        await transactionScope.RollbackAsync();
-
-    //        return new Status
-    //        {
-    //            ResponseCode = 500,
-    //            ResponseMessage = $"Internal Server Error: {ex.Message}"
-    //        };
-    //    }
-    //}
-
-    public async Task<Status> AddOrder(OrderListDto transaction)
-    {
-        var strategy = _dbContext.Database.CreateExecutionStrategy();
-        Status result = null;
-
-        await strategy.ExecuteAsync(async () =>
-        {
-            await using var transactionScope = await _dbContext.Database.BeginTransactionAsync();
-
             try
             {
-                foreach (var orderDto in transaction.Orders)
+                _dbContext.Orders.Add(order);
+                await _dbContext.SaveChangesAsync();
+                
+                return ServiceResult<bool>.Success(true, "Order created successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating order {OrderId}", order.OrderID);
+                return ServiceResult<bool>.Failure("Failed to create order", new List<string> { ex.Message });
+            }
+        }
+
+        public async Task<Models.Order?> GetOrderByIdAsync(string orderId)
+        {
+            try
+            {
+                return await _dbContext.Orders
+                    .Include(o => o.OrderProducts)
+                    .Include(o => o.OrderTrackings)
+                    .FirstOrDefaultAsync(o => o.OrderID == orderId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting order {OrderId}", orderId);
+                return null;
+            }
+        }
+
+        // Updated to use string userId (Identity system)
+        public async Task<List<Models.Order>> GetUserOrdersAsync(string userId, int? statusId = null)
+        {
+            try
+            {
+                var query = _dbContext.Orders
+                    .Where(o => o.ApplicationUserId == userId); // Updated to use ApplicationUserId
+
+                if (statusId.HasValue)
                 {
-                    //int paymentMethodID = await HandlePaymentDetails(orderDto.PaymentDetails,orderDto.OrderID);
-
-                    var trxRef = orderDto.PaymentDetails.FirstOrDefault().TrxReference;
-
-                    var existingPayment = await _dbContext.PaymentDetails
-                        .FirstOrDefaultAsync(p => p.TrxReference == trxRef);
-
-                    if (existingPayment == null && existingPayment.Status != "Confirmed" ) 
-                        throw new Exception($"Payment with not confirmed.");
-
-                    var newOrder = await CreateOrder(orderDto,existingPayment);
-
-                    //update payment Details with OrderID
-                    if (existingPayment != null)
+                    // Convert int status to string for comparison
+                    var statusString = statusId.Value switch
                     {
-                        existingPayment.OrderID = newOrder.OrderID;
-                        //existingPayment.Status = "Completed";
-                        _dbContext.PaymentDetails.Update(existingPayment);
-                        await _dbContext.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        throw new Exception($"Payment with reference {trxRef} not found.");
-                    }
-
-                    await UpdateProductStock(orderDto.Products);
-
-                    _dbContext.Orders.Add(newOrder);
-                    await _dbContext.SaveChangesAsync(); // Save order
-
-                    await UpdateCartItems(orderDto.Products, newOrder.UserID);
-
-                    await TrackOrderAsync(newOrder);
-
-                    //await PublishOrderEvent(newOrder);
+                        1 => "Pending",
+                        2 => "Processing", 
+                        3 => "Paid",
+                        4 => "Shipped",
+                        5 => "Delivered",
+                        6 => "Cancelled",
+                        _ => "Pending"
+                    };
+                    
+                    query = query.Where(o => o.Status == statusString);
                 }
 
-                await transactionScope.CommitAsync();
+                return await query
+                    .Include(o => o.OrderProducts)
+                    .OrderByDescending(o => o.OrderDate)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting user orders for user {UserId}", userId);
+                return new List<Models.Order>();
+            }
+        }
 
-                result = new Status
+        public async Task<PagedOrderResponse> GetOrdersAsync(OrderFilterRequest filter)
+        {
+            try
+            {
+                var query = _dbContext.Orders.AsQueryable();
+
+                // Apply filters - Updated to handle string userId
+                if (!string.IsNullOrEmpty(filter.ApplicationUserId))
                 {
-                    ResponseCode = 200,
-                    ResponseMessage = "Transaction completed successfully"
+                    query = query.Where(o => o.ApplicationUserId == filter.ApplicationUserId);
+                }
+
+                if (filter.StatusIds != null && filter.StatusIds.Any())
+                {
+                    // Convert int status IDs to string status values
+                    var statusStrings = filter.StatusIds.Select(id => id switch
+                    {
+                        1 => "Pending",
+                        2 => "Processing",
+                        3 => "Paid", 
+                        4 => "Shipped",
+                        5 => "Delivered",
+                        6 => "Cancelled",
+                        _ => "Pending"
+                    }).ToList();
+
+                    query = query.Where(o => statusStrings.Contains(o.Status));
+                }
+
+                if (filter.FromDate.HasValue)
+                    query = query.Where(o => o.OrderDate >= filter.FromDate.Value);
+
+                if (filter.ToDate.HasValue)
+                    query = query.Where(o => o.OrderDate <= filter.ToDate.Value);
+
+                // Get total count
+                var totalCount = await query.CountAsync();
+
+                // Apply sorting
+                if (!string.IsNullOrEmpty(filter.SortBy))
+                {
+                    switch (filter.SortBy.ToLower())
+                    {
+                        case "orderdate":
+                            query = filter.SortDescending ? query.OrderByDescending(o => o.OrderDate) : query.OrderBy(o => o.OrderDate);
+                            break;
+                        case "amount":
+                            query = filter.SortDescending ? query.OrderByDescending(o => o.TotalPaymentAmount) : query.OrderBy(o => o.TotalPaymentAmount);
+                            break;
+                        default:
+                            query = query.OrderByDescending(o => o.OrderDate);
+                            break;
+                    }
+                }
+
+                // Apply pagination
+                var orders = await query
+                    .Skip((filter.Page - 1) * filter.PageSize)
+                    .Take(filter.PageSize)
+                    .Include(o => o.OrderProducts)
+                    .ToListAsync();
+
+                // Map to OrderResponse
+                var orderResponses = new List<OrderResponse>();
+                foreach (var order in orders)
+                {
+                    orderResponses.Add(await MapToOrderResponse(order));
+                }
+
+                return new PagedOrderResponse
+                {
+                    Orders = orderResponses,
+                    TotalCount = totalCount,
+                    Page = filter.Page,
+                    PageSize = filter.PageSize,
+                    TotalPages = (int)Math.Ceiling((double)totalCount / filter.PageSize),
+                    HasNextPage = filter.Page < Math.Ceiling((double)totalCount / filter.PageSize),
+                    HasPreviousPage = filter.Page > 1
                 };
             }
             catch (Exception ex)
             {
-                await transactionScope.RollbackAsync();
-                result = new Status
+                _logger.LogError(ex, "Error getting orders with filters");
+                return new PagedOrderResponse { Orders = new List<OrderResponse>() };
+            }
+        }
+
+        public async Task<bool> UpdateOrderAsync(Models.Order order)
+        {
+            try
+            {
+                _dbContext.Orders.Update(order);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating order {OrderId}", order.OrderID);
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteOrderAsync(string orderId)
+        {
+            try
+            {
+                var order = await _dbContext.Orders.FindAsync(orderId);
+                if (order != null)
                 {
-                    ResponseCode = 500,
-                    ResponseMessage = $"Internal Server Error: {ex.Message}"
+                    _dbContext.Orders.Remove(order);
+                    await _dbContext.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting order {OrderId}", orderId);
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Order Products Operations
+
+        public async Task<bool> CreateOrderProductAsync(OrderProduct orderProduct)
+        {
+            try
+            {
+                _dbContext.OrderProducts.Add(orderProduct);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating order product");
+                return false;
+            }
+        }
+
+        public async Task<List<OrderProduct>> GetOrderProductsAsync(string orderId)
+        {
+            try
+            {
+                return await _dbContext.OrderProducts
+                    .Where(op => op.OrderID == orderId)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting order products for order {OrderId}", orderId);
+                return new List<OrderProduct>();
+            }
+        }
+
+        #endregion
+
+        #region Status Operations
+
+        public async Task<bool> UpdateOrderStatusAsync(string orderId, int newStatusId, string updatedBy)
+        {
+            try
+            {
+                var order = await _dbContext.Orders.FindAsync(orderId);
+                if (order != null)
+                {
+                    // Convert int status to string
+                    var statusString = newStatusId switch
+                    {
+                        1 => "Pending",
+                        2 => "Processing",
+                        3 => "Paid",
+                        4 => "Shipped", 
+                        5 => "Delivered",
+                        6 => "Cancelled",
+                        _ => "Pending"
+                    };
+
+                    order.Status = statusString;
+                    order.StatusMessage = $"Updated by {updatedBy}";
+                    
+                    _dbContext.Orders.Update(order);
+                    await _dbContext.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating order status for {OrderId}", orderId);
+                return false;
+            }
+        }
+
+        public async Task<bool> CancelOrderAsync(string orderId, string reason, string cancelledBy)
+        {
+            try
+            {
+                var order = await _dbContext.Orders.FindAsync(orderId);
+                if (order != null)
+                {
+                    order.Status = "Cancelled";
+                    order.StatusEnum = Models.Enums.OrderStatusEnum.Cancelled;
+                    order.StatusMessage = $"Cancelled: {reason}";
+                    
+                    _dbContext.Orders.Update(order);
+                    await _dbContext.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error cancelling order {OrderId}", orderId);
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Tracking Operations
+
+        public async Task<List<OrderTracking>> GetOrderTrackingByOrderIdAsync(string orderId)
+        {
+            try
+            {
+                return await _dbContext.OrderTracking
+                    .Where(ot => ot.OrderID == orderId)
+                    .OrderByDescending(ot => ot.TrackingDate)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting order tracking for {OrderId}", orderId);
+                return new List<OrderTracking>();
+            }
+        }
+
+        public async Task<bool> AddTrackingUpdateAsync(OrderTracking tracking)
+        {
+            try
+            {
+                _dbContext.OrderTracking.Add(tracking);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding tracking update");
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Summary and Analytics
+
+        // Updated to accept string userId
+        public async Task<OrderSummaryResponse> GetOrderSummaryAsync(string userId = null, Guid? merchantId = null)
+        {
+            try
+            {
+                var query = _dbContext.Orders.AsQueryable();
+
+                //if (!string.IsNullOrEmpty(userId))
+                //{
+                //    var userGuid = await ResolveUserIdAsync(userId);
+                //    if (userGuid.HasValue)
+                //    {
+                //        query = query.Where(o => o.UserID == userGuid.Value);
+                //    }
+                //}
+
+                var summary = new OrderSummaryResponse
+                {
+                    TotalOrders = await query.CountAsync(),
+                    PendingOrders = await query.CountAsync(o => o.StatusEnum == Models.Enums.OrderStatusEnum.Pending),
+                    ProcessingOrders = await query.CountAsync(o => o.StatusEnum == Models.Enums.OrderStatusEnum.PaymentProcessing),
+                    ShippedOrders = await query.CountAsync(o => o.StatusEnum == Models.Enums.OrderStatusEnum.Shipped),
+                    DeliveredOrders = await query.CountAsync(o => o.StatusEnum == Models.Enums.OrderStatusEnum.Delivered),
+                    CancelledOrders = await query.CountAsync(o => o.StatusEnum == Models.Enums.OrderStatusEnum.Cancelled),
+                    TotalRevenue = await query.SumAsync(o => o.TotalPaymentAmount),
+                    TodayRevenue = await query
+                        .Where(o => o.OrderDate.Date == DateTime.UtcNow.Date)
+                        .SumAsync(o => o.TotalPaymentAmount),
+                    RecentOrders = await GetRecentOrdersAsync(5, userId)
+                };
+
+                return summary;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting order summary");
+                return new OrderSummaryResponse();
+            }
+        }
+
+        // Updated to accept string userId
+        public async Task<List<OrderResponse>> GetRecentOrdersAsync(int count = 10, string userId = null)
+        {
+            try
+            {
+                var query = _dbContext.Orders.AsQueryable();
+
+                //if (!string.IsNullOrEmpty(userId))
+                //{
+                //    var userGuid = await ResolveUserIdAsync(userId);
+                //    if (userGuid.HasValue)
+                //    {
+                //        query = query.Where(o => o.UserID == userGuid.Value);
+                //    }
+                //}
+
+                var orders = await query
+                    .OrderByDescending(o => o.OrderDate)
+                    .Take(count)
+                    .Include(o => o.OrderProducts)
+                    .ToListAsync();
+
+                var orderResponses = new List<OrderResponse>();
+                foreach (var order in orders)
+                {
+                    orderResponses.Add(await MapToOrderResponse(order));
+                }
+
+                return orderResponses;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting recent orders");
+                return new List<OrderResponse>();
+            }
+        }
+
+        #endregion
+
+        #region Product and Merchant Lookups
+
+        public async Task<Product?> GetProductByIdAsync(Guid productId)
+        {
+            try
+            {
+                return await _dbContext.Products
+                    .FirstOrDefaultAsync(p => p.ProductId == productId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting product {ProductId}", productId);
+                return null;
+            }
+        }
+
+        public async Task<Merchants?> GetMerchantByIdAsync(Guid merchantId)
+        {
+            try
+            {
+                return await _dbContext.Merchants
+                    .FirstOrDefaultAsync(m => m.MerchantID == merchantId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting merchant {MerchantId}", merchantId);
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        // Helper method to resolve user ID from Identity to Legacy
+        //private async Task<Guid?> ResolveUserIdAsync(string identityUserId)
+        //{
+        //    try
+        //    {
+        //        // First try to parse as Guid directly (for backward compatibility)
+        //        if (Guid.TryParse(identityUserId, out var directGuid))
+        //        {
+        //            return directGuid;
+        //        }
+
+        //        // Try to find the Identity user and get their legacy user ID
+        //        var identityUser = await _dbContext.Users
+        //            .FirstOrDefaultAsync(u => u.Id == identityUserId);
+
+        //        if (identityUser?.LegacyUserId.HasValue == true)
+        //        {
+        //            // Convert int legacy ID to Guid format
+        //            var legacyId = identityUser.LegacyUserId.Value;
+        //            var guidBytes = new byte[16];
+        //            BitConverter.GetBytes(legacyId).CopyTo(guidBytes, 0);
+        //            return new Guid(guidBytes);
+        //        }
+
+        //        return null;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error resolving user ID {IdentityUserId}", identityUserId);
+        //        return null;
+        //    }
+        //}
+
+        // Helper method to resolve Identity user ID from legacy Guid
+        //private async Task<string> ResolveIdentityUserIdAsync(Guid legacyUserGuid)
+        //{
+        //    try
+        //    {
+        //        // Extract int from Guid
+        //        var guidBytes = legacyUserGuid.ToByteArray();
+        //        var legacyUserId = BitConverter.ToInt32(guidBytes, 0);
+
+        //        // Find Identity user by legacy ID
+        //        var identityUser = await _dbContext.Users
+        //            .FirstOrDefaultAsync(u => u.LegacyUserId == legacyUserId);
+
+        //        return identityUser?.Id ?? legacyUserGuid.ToString();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error resolving Identity user ID from legacy GUID {LegacyUserGuid}", legacyUserGuid);
+        //        return legacyUserGuid.ToString();
+        //    }
+        //}
+
+        private async Task<OrderResponse> MapToOrderResponse(Models.Order order)
+        {
+            try
+            {
+                var shippingAddress = !string.IsNullOrEmpty(order.ShippingAddress) 
+                    ? JsonConvert.DeserializeObject<ShippingAddressResponse>(order.ShippingAddress)
+                    : null;
+
+                var merchantGroups = !string.IsNullOrEmpty(order.ProductsJson)
+                    ? JsonConvert.DeserializeObject<List<MerchantOrderGroup>>(order.ProductsJson)
+                    : new List<MerchantOrderGroup>();
+
+                var paymentDetails = !string.IsNullOrEmpty(order.PaymentDetailsJson)
+                    ? JsonConvert.DeserializeObject<PaymentResponse>(order.PaymentDetailsJson)
+                    : null;
+
+                var tracking = await GetOrderTrackingByOrderIdAsync(order.OrderID);
+
+                // Convert Guid UserID to Identity user ID string
+                //var userIdString = await ResolveIdentityUserIdAsync(order.UserID);
+
+                return new OrderResponse
+                {
+                    OrderId = order.OrderID,
+                    ApplicationUserId = order.ApplicationUserId ?? string.Empty, // Updated fallback
+                    Status = order.StatusMessage ?? "Unknown",
+                    StatusEnum = order.StatusEnum,
+                    OrderDate = order.OrderDate,
+                    DeliveryScheduleDate = order.DeliveryScheduleDate,
+                    OrderedBy = order.OrderedBy ?? "",
+                    PaymentConfirmation = order.PaymentConfirmation ?? "",
+                    SubTotal = order.TotalOrderAmount,
+                    TotalDeliveryFees = order.TotalDeliveryFees,
+                    TotalTax = order.TotalTax,
+                    TotalAmount = order.TotalPaymentAmount,
+                    ShippingAddress = shippingAddress,
+                    MerchantGroups = merchantGroups,
+                    PaymentDetails = paymentDetails,
+                    TrackingHistory = tracking.Select(MapToOrderTrackingResponse).ToList()
                 };
             }
-        });
-
-        return result;
-    }
-
-
-    //private async Task<int> HandlePaymentDetails(List<PaymentDetailsDto> paymentDetails)
-    //{
-    //    int paymentMethodID = 0;
-
-    //    foreach (var paymentDetailDto in paymentDetails)
-    //    {
-    //        var paymentExists = _dbContext.PaymentMethods
-    //            .Any(p => p.PaymentMethodID == paymentDetailDto.PaymentID);
-
-    //        if (!paymentExists)
-    //        {
-    //            throw new Exception($"PaymentID {paymentDetailDto.PaymentID} does not exist in the Payments table.");
-    //        }
-
-    //        if (paymentDetailDto.PaymentMethod == "Mpesa")
-    //        {
-    //            var stkPushResponse = await InitiateMpesaSTKPush(paymentDetailDto);
-
-    //            if (stkPushResponse.ResponseCode == "1")
-    //            {
-    //                throw new Exception("M-Pesa STK Push failed: " + stkPushResponse.CustomerMessage);
-    //            }
-
-    //            var newPayment = new PaymentDetails
-    //            {
-    //                PaymentMethodID = paymentDetailDto.PaymentID,
-    //                TrxReference = stkPushResponse.CheckoutRequestID,
-    //                Amount = paymentDetailDto.Amount,
-    //                PaymentDate = DateTime.UtcNow,
-    //                PaymentReference = Convert.ToString(paymentDetailDto.Phonenumber)
-    //            };
-
-    //            _dbContext.PaymentDetails.Add(newPayment);
-    //            await _dbContext.SaveChangesAsync();
-
-    //            paymentMethodID = newPayment.PaymentMethodID;
-    //        }
-    //    }
-
-    //    return paymentMethodID;
-    //}
-
-    private async Task<int> HandlePaymentDetails(List<PaymentDetailsDto> paymentDetails,string orderID)
-    {
-        if (paymentDetails == null || !paymentDetails.Any())
-            throw new ArgumentException("Payment details are required");
-
-        int paymentMethodID = 0;
-
-        foreach (var paymentDetailDto in paymentDetails)
-        {
-            // Validate payment method exists
-            var paymentMethod = await _dbContext.PaymentMethods
-                .FirstOrDefaultAsync(p => p.PaymentMethodID == paymentDetailDto.PaymentID);
-
-            if (paymentMethod == null)
-                throw new Exception($"Payment method {paymentDetailDto.PaymentID} not found");
-
-            // Handle M-Pesa specifically
-            if (paymentMethod.Name.Equals("MPESA", StringComparison.OrdinalIgnoreCase))
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error mapping order {OrderId} to response", order.OrderID);
+                // Return a basic response in case of mapping errors
+                return new OrderResponse
+                {
+                    OrderId = order.OrderID,
+                    ApplicationUserId = order.ApplicationUserId ?? string.Empty, // Updated fallback
+                    Status = order.StatusMessage ?? "Unknown",
+                    StatusEnum = order.StatusEnum,
+                    OrderDate = order.OrderDate,
+                    SubTotal = order.TotalOrderAmount,
+                    TotalAmount = order.TotalPaymentAmount,
+                    MerchantGroups = new List<MerchantOrderGroup>(),
+                    TrackingHistory = new List<OrderTrackingResponse>()
+                };
+            }
+        }
+
+        private OrderTrackingResponse MapToOrderTrackingResponse(OrderTracking tracking)
+        {
+            return new OrderTrackingResponse
+            {
+                TrackingId = tracking.TrackingID,
+                ProductId = tracking.ProductId,
+                ProductName = "Product", // You might want to fetch this from the database
+                PreviousStatus = tracking.PreviousStatus.ToString() ?? "Unknown",
+                CurrentStatus = tracking.CurrentStatus.ToString(),
+                TrackingDate = tracking.TrackingDate,
+                ExpectedDeliveryDate = tracking.ExpectedDeliveryDate,
+                Carrier = tracking.Carrier,
+                UpdatedBy = tracking.UpdatedBy ?? ""
+            };
+        }
+
+        #endregion
+
+        #region Legacy Methods (Existing Implementation) - Updated for Identity
+
+        // Updated to use string userID
+        public async Task<List<GetOrdersDTO>> GetOrdersByStatusAsync(int status, string userID)
+        {
+            try
+            {
+                // Convert int status to string for comparison
+                var statusString = status switch
+                {
+                    1 => "Pending",
+                    2 => "Processing", 
+                    3 => "Paid",
+                    4 => "Shipped",
+                    5 => "Delivered",
+                    6 => "Cancelled",
+                    _ => "Pending"
+                };
+
+                // Step 1: Fetch orders directly without joins to OrderStatuses
+                var ordersWithStatus = await _dbContext.Orders
+                    .Where(o => o.Status == statusString && o.ApplicationUserId == userID && o.StatusEnum == Models.Enums.OrderStatusEnum.Paid)
+                    .Select(o => new { Order = o, StatusMessage = o.Status })
+                    .ToListAsync();
+
+                // Step 2: Map the result to GetOrdersDTO and fetch product images
+                var orders = new List<GetOrdersDTO>();
+
+                foreach (var orderWithStatus in ordersWithStatus)
+                {
+                    var order = orderWithStatus.Order;
+                    var products = JsonConvert.DeserializeObject<List<OrderProductsDTO>>(order.ProductsJson);
+
+                    // Fetch ImageUrl for each product
+                    var productsWithImages = products?.Select(p => new OrderProductsDTO
+                    {
+                        ProductID = p.ProductID,
+                        ProductName = p.ProductName,
+                        Quantity = p.Quantity,
+                        Price = p.Price,
+                        ImageUrl = _dbContext.Products
+                            .Where(tp => tp.ProductId.ToString() == p.ProductID.ToString())
+                            .Select(tp => tp.ImageUrls.FirstOrDefault() ?? "")
+                            .FirstOrDefault() ?? ""
+                    }).ToList();
+
+                    // Map to GetOrdersDTO
+                    var getOrderDTO = new GetOrdersDTO
+                    {
+                        OrderID = order.OrderID,
+                        OrderDate = order.OrderDate,
+                        TotalOrderAmount = (double)order.TotalOrderAmount,
+                        Status = orderWithStatus.StatusMessage,
+                        PaymentConfirmation = order.PaymentConfirmation,
+                        TotalPaymentAmount = (double)order.TotalPaymentAmount,
+                        TotalDeliveryFees = (double)order.TotalDeliveryFees,
+                        TotalTax = (double)order.TotalTax,
+                        ShippingAddress = JsonConvert.DeserializeObject<ShippingAddress>(order.ShippingAddress),
+                        Products = productsWithImages,
+                        PickUpLocation = JsonConvert.DeserializeObject<PickUpLocation>(order.PickupLocation),
+                        PaymentDetails = JsonConvert.DeserializeObject<List<PaymentDetailsDto>>(order.PaymentDetailsJson)
+                    };
+
+                    orders.Add(getOrderDTO);
+                }
+
+                return orders;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting orders by status for user {UserID}", userID);
+                return new List<GetOrdersDTO>();
+            }
+        }
+
+        public async Task<Status> UpdateOrderStatusAsync(OrderTrackingDTO orderTracking)
+        {
+            var strategy = _dbContext.Database.CreateExecutionStrategy();
+            
+            return await strategy.ExecuteAsync(async () =>
+            {
+                await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+                
                 try
                 {
-                    // Validate M-Pesa requirements
-                    if (paymentDetailDto.Amount <= 0)
-                        throw new Exception("Amount must be greater than 0");
+                    // 1. Get Existing Tracking Record
+                    var existingProductTracker = await _dbContext.OrderTracking
+                        .Where(ot => ot.TrackingID == orderTracking.TrackingID && ot.ProductId == orderTracking.ProductId)
+                        .FirstOrDefaultAsync();
 
-                    //if (string.IsNullOrEmpty(paymentDetailDto.Phonenumber))
-                    //    throw new Exception("Phone number is required for M-Pesa");
-
-                    var stkPushRequest = new StkPushRequest
+                    if (existingProductTracker == null)
                     {
-                        BusinessShortCode = BusinessShortCode,
-                        Amount = paymentDetailDto.Amount.ToString(),
-                        PartyA = paymentDetailDto.Phonenumber.ToString(),
-                        PartyB = BusinessShortCode,
-                        PhoneNumber = paymentDetailDto.Phonenumber.ToString(),
-                        CallBackURL = _mpesaGoLive.CallbackUrl,
-                        AccountReference = "QuickCrate Express Payment",
-                        TransactionDesc = "Payment for Order"
-                    };
+                        return new Status
+                        {
+                            ResponseCode = 404,
+                            ResponseMessage = "Order tracking record not found."
+                        };
+                    }
 
-                    // Initiate STK Push
-                    //var stkPushResponse = await InitiateMpesaSTKPush(paymentDetailDto);
-                    var stkPushResponse = await _mpesaRepo.StkPush(stkPushRequest);
+                    // 2. Get the new status from OrderStatuses table
+                    var newOrderStatus = await _dbContext.OrderStatuses
+                        .Where(os => os.StatusID == orderTracking.StatusId)
+                        .FirstOrDefaultAsync();
 
-                    if (stkPushResponse == null)
-                        throw new Exception("M-Pesa service unavailable");
-
-                    if (stkPushResponse.ResponseCode != 0)
-                        throw new Exception($"STK Push failed: {stkPushResponse.CustomerMessage}");
-
-
-
-                    // Record payment
-                    var newPayment = new PaymentDetails
+                    if (newOrderStatus == null)
                     {
-                        PaymentMethodID = paymentDetailDto.PaymentID,
-                        TrxReference = stkPushResponse.CheckoutRequestID,
-                        Phonenumber = paymentDetailDto.Phonenumber,
-                        Amount = paymentDetailDto.Amount,
-                        PaymentDate = DateTime.UtcNow,
-                        PaymentReference = paymentDetailDto.Phonenumber.ToString(),
-                        Status = "Pending",
-                        OrderID = orderID
-                    };
+                        return new Status
+                        {
+                            ResponseCode = 404,
+                            ResponseMessage = "Order status not found."
+                        };
+                    }
 
-                    _dbContext.PaymentDetails.Add(newPayment);
+                    var updateTime = DateTime.UtcNow;
+
+                    // 3. Update Tracking Record
+                    existingProductTracker.PreviousStatus = existingProductTracker.CurrentStatus;
+                    existingProductTracker.CurrentStatus = newOrderStatus.Status;
+                    existingProductTracker.UpdatedBy = orderTracking.UpdatedBy;
+                    existingProductTracker.UpdatedOn = updateTime;
+                    existingProductTracker.TrackingNotes = $"Status updated to {newOrderStatus.Status} by {orderTracking.UpdatedBy}";
+
+                    _dbContext.OrderTracking.Update(existingProductTracker);
+
+                    // 4. Update OrderProduct status to match tracking status
+                    var orderProduct = await _dbContext.OrderProducts
+                        .Where(op => op.OrderID == orderTracking.OrderId && op.ProductId == orderTracking.ProductId)
+                        .FirstOrDefaultAsync();
+
+                    if (orderProduct != null)
+                    {
+                        var previousProductStatus = orderProduct.Status;
+                        orderProduct.Status = MapStringToOrderStatusEnum(newOrderStatus.Status);
+                        orderProduct.UpdatedOn = updateTime;
+                        
+                        _dbContext.OrderProducts.Update(orderProduct);
+                        
+                        _logger.LogInformation("Updated OrderProduct {ProductId} in Order {OrderId} from {PreviousStatus} to {NewStatus}", 
+                            orderProduct.ProductId, orderProduct.OrderID, previousProductStatus, orderProduct.Status);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("OrderProduct not found for Order {OrderId}, Product {ProductId}", 
+                            orderTracking.OrderId, orderTracking.ProductId);
+                    }
+
+                    // 5. Calculate and update overall order status based on all product statuses
+                    await UpdateOverallOrderStatusAsync(orderTracking.OrderId, orderTracking.UpdatedBy, updateTime);
+
+                    // 6. Save all changes
                     await _dbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
 
-                    paymentMethodID = newPayment.PaymentID;
+                    _logger.LogInformation("Successfully updated tracking for Order {OrderId}, Product {ProductId} to status {Status}", 
+                        orderTracking.OrderId, orderTracking.ProductId, newOrderStatus.Status);
+
+                    return new Status
+                    {
+                        ResponseCode = 200,
+                        ResponseMessage = "Order Tracking and Status Updated Successfully"
+                    };
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"M-Pesa payment processing failed: {ex.Message}", ex);
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Error updating order tracking for Order {OrderId}, Product {ProductId}", 
+                        orderTracking.OrderId, orderTracking.ProductId);
+                    
+                    return new Status
+                    {
+                        ResponseCode = 500,
+                        ResponseMessage = $"Error updating order tracking: {ex.Message}"
+                    };
+                }
+            });
+        }
+
+        public async Task<List<GetOrderTracking>> GetOrderTrackingAsync(GetOrderTrackingStatus trackingStatus)
+        {
+            try
+            {
+                var tracking = await _dbContext.OrderTracking
+                    .Where(ot => ot.ProductId == trackingStatus.ProductID && ot.OrderID == trackingStatus.OrderID)
+                    .Select(ot => new GetOrderTracking
+                    {
+                        TrackingID = ot.TrackingID,
+                        //OrderID = ot.OrderID,
+                        //ProductId = ot.ProductId,
+                        MerchantID = ot.MerchantID,
+                        CurrentStatus = ot.CurrentStatus,
+                        PreviousStatus = ot.PreviousStatus,
+                        TrackingDate = ot.TrackingDate,
+                        ExpectedDeliveryDate = ot.ExpectedDeliveryDate,
+                        Carrier = ot.Carrier,
+                        CreatedOn = ot.CreatedOn,
+                        CreatedBy = ot.CreatedBy,
+                        UpdatedBy = ot.UpdatedBy,
+                        UpdatedOn = ot.UpdatedOn,
+                    }).ToListAsync();
+
+                return tracking;
+            }
+            catch (Exception ex)
+            {
+                return new List<GetOrderTracking>();
+            }
+        }
+
+        public async Task<List<GetOrdersDTO>> GetOrdersByIdAsync(string OrderId)
+        {
+            try
+            {
+                // Use a join query to get the orders and their status messages from OrderStatuses
+                var orders = await _dbContext.Orders
+                    .Where(o => o.OrderID == OrderId)
+                    .Join(_dbContext.OrderStatuses,  // Join with general statuses
+                          o => o.StatusID,
+                          os => os.StatusID,
+                          (o, os) => new GetOrdersDTO
+                          {
+                              OrderID = o.OrderID,
+                              OrderDate = o.OrderDate,
+                              TotalOrderAmount = (double)o.TotalOrderAmount,
+                              Status = os.Status,
+                              PaymentConfirmation = o.PaymentConfirmation,
+                              TotalPaymentAmount = (double)o.TotalPaymentAmount,
+                              TotalDeliveryFees = (double)o.TotalDeliveryFees,
+                              TotalTax = (double)o.TotalTax,
+                              ShippingAddress = JsonConvert.DeserializeObject<ShippingAddress>(o.ShippingAddress),
+                              Products = JsonConvert.DeserializeObject<List<OrderProductsDTO>>(o.ProductsJson),
+                              PickUpLocation = JsonConvert.DeserializeObject<PickUpLocation>(o.PickupLocation),
+                              PaymentDetails = JsonConvert.DeserializeObject<List<PaymentDetailsDto>>(o.PaymentDetailsJson)
+                          })
+                    .ToListAsync();
+
+                return orders;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting orders by ID {OrderId}", OrderId);
+                return new List<GetOrdersDTO>();
+            }
+        }
+
+        public async Task<List<MerchantOrderDto>> GetAdminOrdersAsync()
+        {
+            try
+            {
+                var merchantOrders = await _dbContext.Orders
+                    .Join(
+                        _dbContext.OrderStatuses, // join with static lookup table
+                        o => o.StatusID,
+                        os => os.StatusID,
+                        (o, os) => new { Order = o, StatusName = os.Status }
+                    )
+                    .AsNoTracking() // optional for read-only queries
+                    .ToListAsync(); // execute query in database
+
+                // Deserialize products and flatten into MerchantOrderDto
+                var result = merchantOrders
+                    .SelectMany(joined =>
+                        JsonConvert.DeserializeObject<List<OrderProductsDTO>>(joined.Order.ProductsJson)
+                            .Select(p => new MerchantOrderDto
+                            {
+                                OrderId = joined.Order.OrderID,
+                                //ProductName = p.ProductName,
+                                //Quantity = p.Quantity,
+                                //Price = p.Price,
+                                Status = joined.StatusName
+                            })
+                    )
+                    .ToList();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while getting admin orders: {Message}", ex.Message);
+                return new List<MerchantOrderDto>();
+            }
+        }
+
+
+        //public async Task<List<MerchantOrderDto>> GetMerchantOrdersAsync(MerchantRequestDto requestDto)
+        //{
+        //    try
+        //    {
+        //        // Apply filtering at the database level - join with OrderStatuses
+        //        var query = _dbContext.Orders
+        //            .Join(
+        //                _dbContext.OrderStatuses, // Join with general statuses
+        //                o => o.StatusID,
+        //                os => os.StatusID,
+        //                (o, os) => new { Order = o, StatusName = os.Status }
+        //            )
+        //            .Where(joined => joined.Order.ProductsJson != null);
+
+        //        if (!string.IsNullOrEmpty(requestDto.OrderId))
+        //        {
+        //            query = query.Where(joined => joined.Order.OrderID == requestDto.OrderId);
+        //        }
+
+        //        var rawOrders = await query.ToListAsync();
+
+        //        var merchantOrders = rawOrders
+        //            .SelectMany(joined =>
+        //                JsonConvert.DeserializeObject<List<OrderProductsDTO>>(joined.Order.ProductsJson ?? "[]")
+        //                .Where(p => p.merchantId == requestDto.MerchantId)
+        //                .Select(p => new MerchantOrderDto
+        //                {
+        //                    OrderId = joined.Order.OrderID,
+        //                    Quantity = p.Quantity,
+        //                    ProductName = p.ProductName,
+        //                    Price = p.Price,
+        //                    Status = joined.StatusName,
+        //                    ProductID = p.ProductID
+        //                })
+        //            )
+        //            .ToList();
+
+        //        return merchantOrders;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "An error occurred while getting merchant orders: {Message}", ex.Message);
+        //        return new List<MerchantOrderDto>();
+        //    }
+        //}
+
+
+        public async Task<List<MerchantOrderDto>> GetMerchantOrdersAsync(MerchantRequestDto requestDto)
+        {
+            try
+            {
+                // Query Orders with Status
+                var query = _dbContext.Orders
+                    .Join(
+                        _dbContext.OrderStatuses,
+                        o => o.StatusID,
+                        os => os.StatusID,
+                        (o, os) => new { Order = o, StatusName = os.Status }
+                    )
+                    .Where(x => x.Order.ProductsJson != null);
+
+                // Filter by specific OrderID if provided
+                if (!string.IsNullOrEmpty(requestDto.OrderId))
+                {
+                    query = query.Where(x => x.Order.OrderID == requestDto.OrderId);
+                }
+
+                var rawOrders = await query.ToListAsync();
+
+                // Transform to grouped Merchant Orders
+                var merchantOrders = rawOrders
+                    .Select(joined =>
+                    {
+                        // Deserialize products
+                        var allProducts = JsonConvert.DeserializeObject<List<OrderProductsDTO>>(joined.Order.ProductsJson ?? "[]");
+
+                        // Filter products for this merchant
+                        var merchantProducts = allProducts
+                            .Where(p => p.merchantId == requestDto.MerchantId)
+                            .ToList();
+
+                        if (!merchantProducts.Any())
+                            return null;
+
+                        return new
+                        {
+                            joined.Order,
+                            joined.StatusName,
+                            Products = merchantProducts
+                        };
+                    })
+                    .Where(x => x != null)
+                    .GroupBy(x => x.Order.OrderID) // Group by Order ID
+                    .Select(group => new MerchantOrderDto
+                    {
+                        //MerchantOrderId = $"MO-{group.Key}",
+                        OrderId = group.Key,
+                        Status = group.First().StatusName,
+                        OrderDate = group.First().Order.OrderDate,
+
+                        SubTotal = group
+                            .SelectMany(g => g.Products)
+                            .Sum(p => p.Price * p.Quantity),
+
+                        Products = group
+                            .SelectMany(g => g.Products)
+                            .Select(p => new MerchantOrderProductDto
+                            {
+                                ProductID = p.ProductID,
+                                ProductName = p.ProductName,
+                                Quantity = p.Quantity,
+                                Price = p.Price
+                            })
+                            .ToList()
+                    })
+                    .ToList();
+
+                return merchantOrders;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving merchant orders: {Message}", ex.Message);
+                return new List<MerchantOrderDto>();
+            }
+        }
+
+
+
+        //public async Task<Status> AddOrder(OrderListDto transaction)
+        //{
+        //    var strategy = _dbContext.Database.CreateExecutionStrategy();
+        //    Status result = null;
+
+        //    await strategy.ExecuteAsync(async () =>
+        //    {
+        //        await using var transactionScope = await _dbContext.Database.BeginTransactionAsync();
+
+        //        try
+        //        {
+        //            foreach (var orderDto in transaction.Orders)
+        //            {
+        //                var trxRef = orderDto.PaymentDetails.FirstOrDefault()?.TrxReference;
+
+        //                var existingPayment = await _dbContext.PaymentDetails
+        //                    .FirstOrDefaultAsync(p => p.TrxReference == trxRef);
+
+        //                if (existingPayment == null || existingPayment.Status != "Success") 
+        //                    throw new Exception($"Payment not confirmed.");
+
+        //                var newOrder = await CreateOrderEntity(orderDto, existingPayment);
+
+        //                // Update payment Details with OrderID
+        //                existingPayment.OrderID = newOrder.OrderID;
+        //                _dbContext.PaymentDetails.Update(existingPayment);
+        //                await _dbContext.SaveChangesAsync();
+
+        //                await UpdateProductStock(orderDto.Products);
+
+        //                _dbContext.Orders.Add(newOrder);
+        //                await _dbContext.SaveChangesAsync();
+
+        //                // Updated to use string userId
+        //                await UpdateCartItems(orderDto.Products, orderDto.UserID.ToString());
+
+        //                await TrackOrderAsync(newOrder);
+        //            }
+
+        //            await transactionScope.CommitAsync();
+
+        //            result = new Status
+        //            {
+        //                ResponseCode = 200,
+        //                ResponseMessage = "Transaction completed successfully"
+        //            };
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            await transactionScope.RollbackAsync();
+        //            result = new Status
+        //            {
+        //                ResponseCode = 500,
+        //                ResponseMessage = $"Internal Server Error: {ex.Message}"
+        //            };
+        //        }
+        //    });
+
+        //    return result;
+        //}
+
+        public async Task<Status> AddOrder(OrderListDto transaction)
+        {
+            // Option 1: Use execution strategy without manual transaction (recommended for this case)
+            var strategy = _dbContext.Database.CreateExecutionStrategy();
+            Status result = null;
+
+            await strategy.ExecuteAsync(async () =>
+            {
+                try
+                {
+                    foreach (var orderDto in transaction.Orders)
+                    {
+                        var trxRef = orderDto.PaymentDetails.FirstOrDefault()?.TrxReference;
+                        var paymentMethod = orderDto.PaymentDetails.FirstOrDefault()?.PaymentMethod?.ToLower();
+
+                        PaymentDetails existingPayment = null;
+
+                        // Handle different payment methods
+                        if (paymentMethod == "cash on delivery" || paymentMethod == "cod")
+                        {
+                            // For Cash On Delivery, create a pending payment record if it doesn't exist
+                            existingPayment = await _dbContext.PaymentDetails
+                                .FirstOrDefaultAsync(p => p.TrxReference == trxRef);
+
+                            if (existingPayment == null)
+                            {
+                                // Create a new payment record for COD
+                                var paymentDetail = orderDto.PaymentDetails.FirstOrDefault();
+                                var paymentDate = DateTime.UtcNow; // Use UTC for timestamp with time zone
+
+                                existingPayment = new PaymentDetails
+                                {
+                                    PaymentID = paymentDetail?.PaymentID ?? Guid.NewGuid(),
+                                    PaymentMethodID = paymentDetail?.PaymentMethodID ?? 1005, // COD method ID
+                                    TrxReference = trxRef ?? $"COD_{DateTime.UtcNow:yyyyMMddHHmmss}",
+                                    PaymentReference = trxRef ?? $"COD_{DateTime.UtcNow:yyyyMMddHHmmss}",
+                                    Phonenumber = paymentDetail?.Phonenumber ?? "",
+                                    Amount = paymentDetail?.Amount ?? orderDto.TotalPaymentAmount,
+                                    PaymentDate = paymentDate, // Use UTC DateTime
+                                    Status = "Pending" // COD orders start as pending
+                                };
+
+                                _dbContext.PaymentDetails.Add(existingPayment);
+                                await _dbContext.SaveChangesAsync();
+                            }
+
+                            // For COD, we allow "Pending" status
+                            if (existingPayment.Status != "Success" && existingPayment.Status != "Pending")
+                            {
+                                throw new Exception($"Payment status is invalid for COD order. Status: {existingPayment.Status}");
+                            }
+                        }
+                        else if (paymentMethod == "mpesa")
+                        {
+                            // For M-Pesa, require successful payment
+                            existingPayment = await _dbContext.PaymentDetails
+                                .FirstOrDefaultAsync(p => p.TrxReference == trxRef);
+
+                            if (existingPayment == null || existingPayment.Status != "Success")
+                                throw new Exception($"Payment not confirmed for M-Pesa payment. Please complete payment first.");
+                        }
+                        else
+                        {
+                            // For other payment methods, require successful payment
+                            existingPayment = await _dbContext.PaymentDetails
+                                .FirstOrDefaultAsync(p => p.TrxReference == trxRef);
+
+                            if (existingPayment == null || existingPayment.Status != "Success")
+                                throw new Exception($"Payment not confirmed for {paymentMethod} payment method.");
+                        }
+
+                        var newOrder = await CreateOrderEntity(orderDto, existingPayment);
+
+                        // Update payment Details with OrderID
+                        //existingPayment.OrderID = newOrder.OrderID; //PaymentID is the foreign key in Orders table
+                        _dbContext.PaymentDetails.Update(existingPayment);
+
+                        await UpdateProductStock(orderDto.Products);
+
+                        _dbContext.Orders.Add(newOrder);
+
+                        await TrackOrderAsync(newOrder);
+                    }
+
+                    // Save all changes at once
+                    await _dbContext.SaveChangesAsync();
+
+                    result = new Status
+                    {
+                        ResponseCode = 200,
+                        ResponseMessage = "Transaction completed successfully"
+                    };
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error processing order transaction");
+                    result = new Status
+                    {
+                        ResponseCode = 500,
+                        ResponseMessage = $"Internal Server Error: {ex.Message}"
+                    };
+                    throw; // Re-throw to trigger execution strategy retry if needed
+                }
+            });
+
+            return result;
+        }
+
+        #endregion
+
+        #region Order Progress and Status Queries
+
+        /// <summary>
+        /// Gets detailed order progress showing status of each product
+        /// </summary>
+        public async Task<OrderProgressResponse> GetOrderProgressAsync(string orderId)
+        {
+            try
+            {
+                var order = await _dbContext.Orders
+                    .Include(o => o.OrderProducts)
+                        .ThenInclude(op => op.Product)
+                    .FirstOrDefaultAsync(o => o.OrderID == orderId);
+
+                if (order == null)
+                {
+                    return null;
+                }
+
+                var productProgress = new List<ProductProgressDto>();
+                
+                foreach (var orderProduct in order.OrderProducts)
+                {
+                    // Get latest tracking for this product
+                    var latestTracking = await _dbContext.OrderTracking
+                        .Where(ot => ot.OrderID == orderId && ot.ProductId == orderProduct.ProductId)
+                        .OrderByDescending(ot => ot.UpdatedOn)
+                        .FirstOrDefaultAsync();
+
+                    productProgress.Add(new ProductProgressDto
+                    {
+                        ProductId = orderProduct.ProductId,
+                        ProductName = orderProduct.Product?.ProductName ?? "Unknown Product",
+                        Quantity = orderProduct.Quantity,
+                        Status = MapOrderStatusEnumToString(orderProduct.Status),
+                        StatusEnum = orderProduct.Status,
+                        LastUpdated = orderProduct.UpdatedOn ?? orderProduct.CreatedOn,
+                        TrackingId = latestTracking?.TrackingID,
+                        ExpectedDeliveryDate = latestTracking?.ExpectedDeliveryDate,
+                        Carrier = latestTracking?.Carrier,
+                        CurrentLocation = latestTracking?.Location
+                    });
+                }
+
+                // Calculate progress percentages
+                var totalProducts = order.OrderProducts.Count;
+                var deliveredProducts = order.OrderProducts.Count(op => op.Status == Models.Enums.OrderStatusEnum.Delivered);
+                var shippedProducts = order.OrderProducts.Count(op => op.Status == Models.Enums.OrderStatusEnum.Shipped);
+                var processingProducts = order.OrderProducts.Count(op => 
+                    op.Status == Models.Enums.OrderStatusEnum.PaymentProcessing || 
+                    op.Status == Models.Enums.OrderStatusEnum.Paid);
+
+                return new OrderProgressResponse
+                {
+                    OrderId = orderId,
+                    OverallStatus = order.Status,
+                    OverallStatusEnum = order.StatusEnum,
+                    StatusMessage = order.StatusMessage,
+                    TotalProducts = totalProducts,
+                    DeliveredProducts = deliveredProducts,
+                    ShippedProducts = shippedProducts,
+                    ProcessingProducts = processingProducts,
+                    ProgressPercentage = totalProducts > 0 ? (deliveredProducts * 100.0 / totalProducts) : 0,
+                    ProductProgress = productProgress,
+                    LastUpdated = order.OrderProducts.Max(op => op.UpdatedOn ?? op.CreatedOn),
+                    EstimatedDeliveryDate = productProgress
+                        .Where(p => p.ExpectedDeliveryDate.HasValue)
+                        .Max(p => p.ExpectedDeliveryDate)
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting order progress for {OrderId}", orderId);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Checks if an order can be marked as completed
+        /// </summary>
+        public async Task<bool> CanCompleteOrderAsync(string orderId)
+        {
+            try
+            {
+                var allProductsDelivered = await _dbContext.OrderProducts
+                    .Where(op => op.OrderID == orderId)
+                    .AllAsync(op => op.Status == Models.Enums.OrderStatusEnum.Delivered);
+
+                return allProductsDelivered;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking if order {OrderId} can be completed", orderId);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets summary of orders by status for reporting
+        /// </summary>
+        public async Task<Dictionary<string, int>> GetOrderStatusSummaryAsync(Guid? merchantId = null)
+        {
+            try
+            {
+                var query = _dbContext.Orders.AsQueryable();
+                
+                if (merchantId.HasValue)
+                {
+                    // Filter by merchant through OrderProducts
+                    var merchantOrderIds = await _dbContext.OrderProducts
+                        .Where(op => op.MerchantID == merchantId.Value)
+                        .Select(op => op.OrderID)
+                        .Distinct()
+                        .ToListAsync();
+                    
+                    query = query.Where(o => merchantOrderIds.Contains(o.OrderID));
+                }
+
+                var statusSummary = await query
+                    .GroupBy(o => o.Status)
+                    .Select(g => new { Status = g.Key, Count = g.Count() })
+                    .ToDictionaryAsync(x => x.Status ?? "Unknown", x => x.Count);
+
+                return statusSummary;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting order status summary");
+                return new Dictionary<string, int>();
+            }
+        }
+
+        #endregion
+
+        #region Private Helper Methods
+
+        private async Task<Models.Order> CreateOrderEntity(OrderDTO orderDto, PaymentDetails payment)
+        {
+            // Use the ApplicationUserId directly as a string since we're now using Identity system
+            var applicationUserId = orderDto.ApplicationUserId ?? throw new Exception("Application User ID is required");
+
+            // For timestamp with time zone columns, we MUST use UTC DateTime values
+            var orderDate = orderDto.OrderDate.Kind == DateTimeKind.Utc 
+                ? orderDto.OrderDate 
+                : DateTime.SpecifyKind(orderDto.OrderDate, DateTimeKind.Utc);
+
+            var deliveryDate = orderDto.DeliveryScheduleDate.Kind == DateTimeKind.Utc 
+                ? orderDto.DeliveryScheduleDate 
+                : DateTime.SpecifyKind(orderDto.DeliveryScheduleDate, DateTimeKind.Utc);
+
+            var utcNow = DateTime.UtcNow; // Always use UTC for timestamp with time zone
+
+            // Set appropriate status based on payment method using actual DB status names
+            var paymentMethod = orderDto.PaymentDetails?.FirstOrDefault()?.PaymentMethod?.ToLower();
+            var orderStatus = "Pending Confirmation"; // Default to actual DB status
+            var statusEnum = Models.Enums.OrderStatusEnum.Pending;
+            var statusMessage = "Order created";
+
+            if (paymentMethod == "cash on delivery" || paymentMethod == "cod")
+            {
+                orderStatus = "Pending Confirmation"; // COD orders start with confirmation pending
+                statusEnum = Models.Enums.OrderStatusEnum.Pending;
+                statusMessage = "Cash on Delivery order created - awaiting confirmation";
+            }
+            else if (payment.Status == "Success")
+            {
+                orderStatus = "Processing"; // Paid orders start processing
+                statusEnum = Models.Enums.OrderStatusEnum.PaymentProcessing;
+                statusMessage = "Payment confirmed - order processing";
+            }
+
+            return new Models.Order
+            {
+                OrderID = orderDto.OrderID ?? throw new Exception("Order ID is required"),
+                ApplicationUserId = applicationUserId, // Store ApplicationUserId for Identity system
+                OrderDate = orderDate,    // Use UTC DateTime
+                DeliveryScheduleDate = deliveryDate, // Use UTC DateTime
+                OrderedBy = orderDto.OrderedBy ?? "Unknown",
+                Status = orderStatus, // Use actual DB status names
+                PaymentID = payment.PaymentID,
+                TotalOrderAmount = orderDto.TotalOrderAmount,
+                TotalPaymentAmount = orderDto.TotalPaymentAmount,
+                TotalDeliveryFees = orderDto.TotalDeliveryFees,
+                TotalTax = orderDto.TotalTax,
+                PaymentDetailsJson = JsonConvert.SerializeObject(orderDto.PaymentDetails),
+                ProductsJson = JsonConvert.SerializeObject(orderDto.Products),
+                OrderProducts = orderDto.Products.Select(p => new OrderProduct
+                {
+                    ProductId = p.ProductID,
+                    Quantity = p.Quantity,
+                    OrderID = orderDto.OrderID,
+                    MerchantID = p.merchantId,
+                    TotalPrice = (decimal)(p.Price * p.Quantity),
+                    Status = statusEnum, // Use corresponding enum
+                    CreatedOn = utcNow,  // Use UTC DateTime
+                    UpdatedOn = utcNow   // Use UTC DateTime
+                }).ToList(),
+                ShippingAddress = JsonConvert.SerializeObject(orderDto.ShippingAddress),
+                PickupLocation = JsonConvert.SerializeObject(orderDto.PickUpLocation),
+                StatusEnum = statusEnum,
+                StatusMessage = statusMessage,
+                PaymentConfirmation = payment.Status == "Success" ? "Confirmed" : "Pending",
+            };
+        }
+
+        private async Task UpdateProductStock(List<OrderProductsDTO> products)
+        {
+            foreach (var product in products)
+            {
+                // Use a more direct approach that doesn't involve navigation properties
+                var stockUpdateQuery = @"
+                    UPDATE ""Products"" 
+                    SET ""StockQuantity"" = ""StockQuantity"" - @Quantity 
+                    WHERE ""ProductId"" = @ProductId AND ""StockQuantity"" >= @Quantity";
+
+                var parameters = new[]
+                {
+                    new NpgsqlParameter("@ProductId", product.ProductID),
+                    new NpgsqlParameter("@Quantity", product.Quantity)
+                };
+
+                var rowsAffected = await _dbContext.Database.ExecuteSqlRawAsync(stockUpdateQuery, parameters);
+
+                if (rowsAffected == 0)
+                {
+                    // Check if product exists and get current stock for better error message
+                    var productInfo = await _dbContext.Products
+                        .Where(p => p.ProductId == product.ProductID)
+                        .Select(p => new { p.ProductName, p.StockQuantity })
+                        .FirstOrDefaultAsync();
+
+                    if (productInfo == null)
+                    {
+                        throw new Exception($"Product ID {product.ProductID} not found.");
+                    }
+                    else
+                    {
+                        throw new Exception($"Insufficient stock for {productInfo.ProductName}. Available: {productInfo.StockQuantity}, Requested: {product.Quantity}");
+                    }
                 }
             }
-            else
+        }
+
+        private async Task<Status> TrackOrderAsync(Models.Order order)
+        {
+            try
             {
-                // Handle non-M-Pesa payments
-                paymentMethodID = paymentDetailDto.PaymentID;
+                var utcNow = DateTime.UtcNow;
+
+                // Determine initial status based on payment confirmation
+                var isPaymentConfirmed = order.PaymentConfirmation == "Confirmed";
+                var initialStatusName = isPaymentConfirmed ? "Processing" : "Pending Confirmation";
+                var trackingDescription = isPaymentConfirmed
+                    ? $"Order {order.OrderID} is being processed"
+                    : $"Order {order.OrderID} is pending confirmation";
+
+                // Get the static status from OrderStatuses lookup table
+                var orderStatusRecord = await _dbContext.OrderStatuses
+                    .Where(os => os.Status == initialStatusName)
+                    .FirstOrDefaultAsync();
+
+                if (orderStatusRecord == null)
+                {
+                    // If specific status not found, default to "Pending Confirmation"
+                    orderStatusRecord = await _dbContext.OrderStatuses
+                        .Where(os => os.Status == "Pending Confirmation")
+                        .FirstOrDefaultAsync();
+                        
+                    if (orderStatusRecord == null)
+                    {
+                        _logger.LogError("No OrderStatus found for 'Pending Confirmation'. Please check your OrderStatuses table.");
+                        throw new InvalidOperationException("OrderStatus lookup failed - missing required statuses.");
+                    }
+                }
+
+                // Update the order's StatusID
+                order.StatusID = orderStatusRecord.StatusID;
+                order.Status = initialStatusName;
+                order.StatusMessage = trackingDescription;
+
+                // Determine createdBy from Identity User
+                string createdBy = "System";
+                var identityUser = await _dbContext.Users
+                    .Where(u => u.Id == order.ApplicationUserId)
+                    .Select(u => u.DisplayName ?? u.UserName ?? u.Email)
+                    .FirstOrDefaultAsync();
+
+                if (!string.IsNullOrEmpty(identityUser))
+                    createdBy = identityUser;
+
+                // Create tracking records for each product
+                foreach (var product in order.OrderProducts)
+                {
+                    var trackingId = $"TRK-{Guid.NewGuid():N}".Substring(0, 12);
+                    var expectedDelivery = utcNow.AddDays(isPaymentConfirmed ? 3 : 5);
+
+                    var newOrderTrack = new OrderTracking
+                    {
+                        TrackingID = trackingId,
+                        OrderID = order.OrderID,
+                        ProductId = product.ProductId,
+                        MerchantID = product.MerchantID,
+                        CurrentStatus = initialStatusName,
+                        PreviousStatus = initialStatusName,
+                        TrackingDate = utcNow,
+                        ExpectedDeliveryDate = expectedDelivery,
+                        Carrier = "Standard Delivery",
+                        Location = "Warehouse",
+                        TrackingNotes = trackingDescription,
+                        CreatedOn = utcNow,
+                        CreatedBy = createdBy,
+                        UpdatedBy = createdBy,
+                        UpdatedOn = utcNow
+                    };
+
+                    _dbContext.OrderTracking.Add(newOrderTrack);
+                }
+
+                // Save order and tracking records
+                await _dbContext.SaveChangesAsync();
+
+                return new Status
+                {
+                    ResponseCode = 200,
+                    ResponseMessage = "Order Tracking Created Successfully for All Products"
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating order tracking for order {OrderID}", order.OrderID);
+                return new Status
+                {
+                    ResponseCode = 500,
+                    ResponseMessage = $"Error creating tracking: {ex.Message}"
+                };
             }
         }
 
-        return paymentMethodID;
-    }
-
-
-
-    //private async Task<Orders> CreateOrder(OrderDTO orderDto, int paymentMethodID)
-    //{
-    //    return new Orders
-    //    {
-    //        OrderID = orderDto.OrderID,
-    //        //MerchantId = orderDto.MerchantId,
-    //        UserID = orderDto.UserID,
-    //        OrderDate = DateTime.Now,
-    //        DeliveryScheduleDate = orderDto.DeliveryScheduleDate,
-    //        OrderedBy = orderDto.OrderedBy,
-    //        Status = orderDto.Status,
-    //        PaymentID = paymentMethodID,
-    //        PaymentConfirmation = orderDto.PaymentConfirmation,
-    //        TotalOrderAmount = orderDto.TotalOrderAmount,
-    //        TotalPaymentAmount = orderDto.TotalPaymentAmount,
-    //        TotalDeliveryFees = orderDto.TotalDeliveryFees,
-    //        TotalTax = 0,
-    //        PaymentDetailsJson = JsonConvert.SerializeObject(orderDto.PaymentDetails),
-    //        ProductsJson = JsonConvert.SerializeObject(orderDto.Products),
-    //        OrderProducts = orderDto.Products.Select(p => new OrderProducts
-    //        {
-    //            ProductID = p.ProductID,
-    //            Quantity = p.Quantity
-    //        }).ToList(),
-    //        ShippingAddress = JsonConvert.SerializeObject(orderDto.ShippingAddress),
-    //        PickupLocation = JsonConvert.SerializeObject(orderDto.PickUpLocation),
-
-    //    };
-    //}
-
-    private async Task<Orders> CreateOrder(OrderDTO orderDto,PaymentDetails payment)
-    {
-        return new Orders
+        /// <summary>
+        /// Maps status string to OrderStatusEnum based on actual DB values
+        /// </summary>
+        private Models.Enums.OrderStatusEnum MapStringToOrderStatusEnum(string statusString)
         {
-            OrderID = orderDto.OrderID,
-            UserID = orderDto.UserID,
-            OrderDate = DateTime.UtcNow,
-            DeliveryScheduleDate = orderDto.DeliveryScheduleDate,
-            OrderedBy = orderDto.OrderedBy,
-            Status = orderDto.Status,
-            PaymentID = payment.PaymentID,
-            //PaymentConfirmation = orderDto.PaymentConfirmation,
-            TotalOrderAmount = orderDto.TotalOrderAmount,
-            TotalPaymentAmount = orderDto.TotalPaymentAmount,
-            TotalDeliveryFees = orderDto.TotalDeliveryFees,
-            TotalTax = 0,
-            PaymentDetailsJson = JsonConvert.SerializeObject(orderDto.PaymentDetails),
-            ProductsJson = JsonConvert.SerializeObject(orderDto.Products),
-            OrderProducts = orderDto.Products.Select(p => new OrderProducts
+            return statusString?.Trim() switch
             {
-                ProductID = p.ProductID,
-                Quantity = p.Quantity
-            }).ToList(),
-            ShippingAddress = JsonConvert.SerializeObject(orderDto.ShippingAddress),
-            PickupLocation = JsonConvert.SerializeObject(orderDto.PickUpLocation),
-            StatusEnum = Minimart_Api.Models.Enums.OrderStatusEnum.Paid,
-            StatusMessage = "Payment confirmed via M-Pesa",
-            PaymentConfirmation = "Confirmed",
-        };
-    }
-
-    //private async Task UpdateProductStock(List<OrderProductsDTO> products)
-    //{
-    //    foreach (var product in products)
-    //    {
-    //        var existingProduct = await _dbContext.Products.FirstOrDefaultAsync(p => p.ProductId == product.ProductID);
-    //        if (existingProduct != null)
-    //        {
-    //            existingProduct.StockQuantity -= product.Quantity;
-
-    //            if (existingProduct.StockQuantity < 0)
-    //            {
-    //                throw new Exception($"Insufficient stock for product: {existingProduct.ProductName}");
-    //            }
-
-    //            //detach entity for EF tracking to prevent updating RowID
-    //            _dbContext.Entry(existingProduct).State = EntityState.Detached;
-
-    //            //attach and explicitly set properties to update
-
-    //            _dbContext.Products.Attach(existingProduct);
-
-    //            _dbContext.Entry(existingProduct).Property(x => x.InStock).IsModified = true;
-    //        }
-    //    }
-    //}
-
-    private async Task UpdateProductStock(List<OrderProductsDTO> products)
-    {
-        foreach (var product in products)
-        {
-            var existingProduct = await _dbContext.Products.FirstOrDefaultAsync(p => p.ProductId == product.ProductID);
-
-            if (existingProduct == null)
-                throw new Exception($"Product ID {product.ProductID} not found.");
-
-            if (existingProduct.StockQuantity < product.Quantity)
-                throw new Exception($"Insufficient stock for {existingProduct.ProductName}");
-
-            existingProduct.StockQuantity -= product.Quantity;
-        }
-
-        await _dbContext.SaveChangesAsync(); // Save all stock updates
-    }
-
-
-
-    //private async Task UpdateCartItems(List<OrderProductsDTO> products,int UserId)
-    //{
-    //    // Get all product IDs from the order
-    //    var productIds = products.Select(p => p.ProductID).ToList();
-
-    //    // Fetch all relevant cart items in a single query
-    //    var cartItemsToUpdate = await _dbContext.CartItems
-    //                        .Where(c => productIds.Contains(c.ProductId) &&
-    //                                    c.Cart.UserId == UserId) // Assuming you have this relationship
-    //                        .Select( C => new CartItem { 
-    //                            CartItemId = C.CartItemId,
-    //                            CartId = C.CartId,
-    //                            ProductId =C.ProductId,
-    //                            Quantity = C.Quantity,
-    //                            CreatedOn = C.CreatedOn,
-    //                            UpdatedOn = C.UpdatedOn,
-    //                            IsBought = C.IsBought,
-    //                            IsActive = C.IsActive
-    //                        })
-    //                        .ToListAsync();
-
-    //    foreach (var cartItem in cartItemsToUpdate)
-    //    {
-    //        // Use a more efficient way to update without detaching/attaching
-    //        cartItem.IsActive = false;
-    //        cartItem.IsBought = true;
-    //        cartItem.UpdatedOn = DateTime.UtcNow;
-
-    //        // Mark as modified (only needed if you're not tracking these entities)
-    //        _dbContext.Entry(cartItem).State = EntityState.Modified;
-    //    }
-
-    //    // Single SaveChanges call for all updates
-    //    await _dbContext.SaveChangesAsync();
-    //}
-
-
-    private async Task UpdateCartItems(List<OrderProductsDTO> products, int userId)
-    {
-        var productIds = products.Select(p => p.ProductID).ToList();
-
-        var cartItems = await _dbContext.CartItems
-            .Where(c => productIds.Contains(c.ProductId) && c.Cart.UserId == userId)
-            .ToListAsync();
-
-        foreach (var item in cartItems)
-        {
-            item.IsActive = false;
-            item.IsBought = true;
-            item.UpdatedOn = DateTime.Now;
-        }
-
-        await _dbContext.SaveChangesAsync(); // Save all cart updates
-    }
-
-
-    //private async Task<STKPushResponse> InitiateMpesaSTKPush(PaymentDetailsDto paymentDetails)
-    //{
-    //    string token = string.Empty;
-
-    //    try
-    //    {
-    //        var generatedPassword = GeneratePassword();
-    //        var timeStamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-    //        var payLoad = new 
-    //        {
-    //            BusinessShortCode = "174379",
-    //            Password = "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjUwMjA1MDU1ODMx",
-    //            Timestamp = timeStamp,
-    //            TransactionType = "CustomerPayBillOnline",
-    //            Amount = 1,
-    //            PartyA = "254794129559",
-    //            PartyB = "174379",
-    //            PhoneNumber = "254794129559",
-    //            CallBackURL = "https://mydomain.com/path",
-    //            AccountReference = "Test123",
-    //            TransactionDesc = "Test Payment"
-
-    //        };
-
-
-
-    //        var json = JsonConvert.SerializeObject(payLoad);
-
-    //        var ConsumerKey = _mpesaSandBox.ConsumerKey;
-    //        var ConsumerSecret = _mpesaSandBox.ConsumerSecret;
-    //        var client = new HttpClient();
-    //        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
-    //            "Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ConsumerKey}:{ConsumerSecret}"))
-    //        );
-
-    //        var Authresponse = await client.GetAsync(_mpesaSandBox.MpesaSandboxUrl);
-
-    //        if (Authresponse.IsSuccessStatusCode)
-    //        {
-    //            var content = await Authresponse.Content.ReadAsStringAsync();
-
-    //            var data = JsonConvert.DeserializeObject<dynamic>(content);
-
-    //            token = data?["access_token"]?.ToString() ?? throw new InvalidOperationException();
-    //        }
-    //        else
-    //        {
-    //            throw new HttpRequestException($"Failed to get access token. Status Code: {Authresponse.StatusCode}");
-    //        }
-
-    //        // Send STK PUSH REQUEST
-    //        client.DefaultRequestHeaders.Accept.Clear();
-    //        client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-    //        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-    //        var payloadContent = new StringContent(json, Encoding.UTF8, "application/json");
-
-    //        var response = await client.PostAsJsonAsync(_mpesaSandBox.STKPushUrl, payloadContent);
-    //        var responseData = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
-
-    //        if (response.IsSuccessStatusCode)
-    //        {
-    //            return new STKPushResponse
-    //            {
-    //                MerchantRequestID = responseData.MerchantRequestID,
-    //                CheckoutRequestID = responseData.CheckoutRequestID,
-    //                ResponseCode = responseData.ResponseCode,
-    //                ResponseDescription = responseData.ResponseDescription,
-    //                CustomerMessage = responseData.CustomerMessage,
-    //            };
-    //        }
-    //        else
-    //        {
-    //            // Return a failure response if the API call fails
-    //            return new STKPushResponse
-    //            {
-    //                MerchantRequestID = "",
-    //                CheckoutRequestID = "",
-    //                ResponseCode = responseData?.ResponseCode ?? "1",
-    //                ResponseDescription = responseData?.ResponseDescription ?? "Failed to initiate STK push.",
-    //                CustomerMessage = responseData?.CustomerMessage ?? "Failed to initiate STK push.",
-    //            };
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        // Handle the exception by returning a generic error response
-    //        return new STKPushResponse
-    //        {
-    //            MerchantRequestID = "",
-    //            CheckoutRequestID = "",
-    //            ResponseCode = "1",
-    //            ResponseDescription = "An error occurred while initiating the STK push.",
-    //            CustomerMessage = "An error occurred while initiating the STK push.",
-    //        };
-    //    }
-    //}
-
-    private async Task<string> GetAccessTokenAsync()
-    {
-        var client = _clientFactory.CreateClient();
-        client.BaseAddress = new Uri("https://sandbox.safaricom.co.ke/");
-
-        string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ConsumerKey}:{ConsumerSecret}"));
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
-
-        HttpResponseMessage response = await client.GetAsync("oauth/v1/generate?grant_type=client_credentials");
-
-        if (response.IsSuccessStatusCode)
-        {
-            string jsonResponse = await response.Content.ReadAsStringAsync();
-            dynamic tokenResponse = JsonConvert.DeserializeObject(jsonResponse);
-            return tokenResponse.access_token;
-        }
-        else
-        {
-            throw new Exception($"Failed to get access token. Status: {response.StatusCode}");
-        }
-    }
-
-    private string GeneratePassword(string timestamp)
-    {
-        string concatenatedString = $"{BusinessShortCode}{PassKey}{timestamp}";
-        byte[] bytes = Encoding.UTF8.GetBytes(concatenatedString);
-        return Convert.ToBase64String(bytes);
-    }
-
-    public async Task<STKPushResponse> InitiateMpesaSTKPush(PaymentDetailsDto paymentDetails)
-    {
-        var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-        var generatedPassword = GeneratePassword(timestamp);
-
-        var payload = new
-        {
-            BusinessShortCode = BusinessShortCode,
-            Password = generatedPassword,
-            Timestamp = timestamp,
-            TransactionType = "CustomerPayBillOnline",
-            Amount = 1,
-            PartyA = paymentDetails.PaymentReference,
-            PartyB = BusinessShortCode,
-            PhoneNumber = paymentDetails.PaymentReference,
-            CallBackURL = "https://mydomain.com/path", // Replace with your actual callback URL
-            AccountReference = "Test",
-            TransactionDesc = "Test"
-        };
-
-        string jsonPayload = JsonConvert.SerializeObject(payload);
-
-        try
-        {
-            string accessToken = await GetAccessTokenAsync();
-
-            using var client = _clientFactory.CreateClient();
-            client.BaseAddress = new Uri("https://sandbox.safaricom.co.ke/");
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-
-            HttpResponseMessage response = await client.PostAsync("mpesa/stkpush/v1/processrequest", content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                string responseData = await response.Content.ReadAsStringAsync();
-                var stkPushResponse = JsonConvert.DeserializeObject<STKPushResponse>(responseData);
-                return stkPushResponse;
-            }
-            else
-            {
-                string errorResponse = await response.Content.ReadAsStringAsync();
-                throw new Exception($"STK Push failed. Status: {response.StatusCode}, Response: {errorResponse}");
-            }
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"An error occurred while initiating STK Push: {ex.Message}");
-        }
-    }
-
-
-    private string GeneratePassword()
-    {
-        var shortcode = "174379"; // Replace with your shortcode
-        //var passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2f54f2a74b1cfcfc9e68d8f7cbe72956"; // Replace with your passkey
-        var passkey = _mpesaSandBox.Passkey;
-        var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-
-        //concatenate string
-        var concatenatedString = $"{shortcode}{passkey}{timestamp}";
-        byte[] bytes = Encoding.UTF8.GetBytes(concatenatedString);
-
-        return Convert.ToBase64String(bytes);
-    }
-
-    //PUBLISH TO ORDEREVENT
-    //public async Task PublishOrderEvent(Order order)
-    //{
-    //    // Deserialize the ProductsJson into a List<Product>
-    //    var products = System.Text.Json.JsonSerializer.Deserialize<List<ProductDto>>(order.ProductsJson);
-
-    //    // Create an OrderEvent object
-    //    var orderEvent = new OrderEvent
-    //    {
-    //        OrderID = order.OrderID,
-    //        OrderDate = order.OrderDate,
-    //        MerchantName = "MinimartKe",
-    //        UserID = order.UserID,
-    //        products = products, // Assign the deserialized products
-    //        UserEmail = "user@gmail.com",
-    //        MerchantEmail = "merchant@gmail.com",
-    //        //UserPhoneNumber = order.PaymentDetails.Phonenumber.ToString(),
-    //        UserPhoneNumber = "254794129559",
-    //        //MerchantPhoneNumber = order.PaymentDetails.Phonenumber.ToString(),
-    //        MerchantPhoneNumber = "254794129559",
-    //        addresses = order.ShippingAddress,
-    //        Amount = order.TotalPaymentAmount
-    //    };
-
-    //    // Publish the order event
-    //    await _orderEventPublisher.PublishOrderEvent(orderEvent);
-    //}
-
-    //public async Task PublishOrderEvent(Orders order)
-    //{
-    //    // Deserialize the ProductsJson into a List<ProductDto>
-    //    var products = System.Text.Json.JsonSerializer.Deserialize<List<ProductDto>>(order.ProductsJson);
-
-    //    // Group products by MerchantId
-    //    var productsByMerchant = products.GroupBy(p => p.merchantId);
-
-    //    // Loop through each merchant's products
-    //    foreach (var merchantGroup in productsByMerchant)
-    //    {
-    //        var merchantId = Convert.ToInt16(merchantGroup.Key);
-
-    //        // Fetch merchant details dynamically (e.g., from a database or service)
-    //        var merchant = await _systemMerchants.GetMerchantByIdAsync(merchantId); // Assuming you have a service to fetch merchant details
-
-    //        if (merchant == null)
-    //        {
-    //            // Handle case where merchant is not found
-    //            continue;
-    //        }
-
-    //        // Create an OrderEvent object for this merchant
-    //        var orderEvent = new OrderEvent
-    //        {
-    //            OrderID = order.OrderID,
-    //            OrderDate = order.OrderDate,
-    //            MerchantName = merchant.MerchantName, // Dynamically loaded merchant name
-    //            UserID = order.UserID,
-    //            products = merchantGroup.ToList(), // Assign products for this merchant
-    //            UserEmail = "user@gmail.com", // Replace with dynamic user email if available
-    //            MerchantEmail = merchant.Email, // Dynamically loaded merchant email
-    //            UserPhoneNumber = "254794129559", // Replace with dynamic user phone number if available
-    //            MerchantPhoneNumber = merchant.Phone, // Dynamically loaded merchant phone number
-    //            addresses = order.ShippingAddress,
-    //            Amount = merchantGroup.Sum(p => p.Price * p.Quantity) // Calculate total amount for this merchant's products
-    //        };
-
-    //        // Publish the order event for this merchant
-    //        await _orderEventPublisher.PublishOrderEvent(orderEvent);
-    //    }
-    //}
-
-
-    public async Task PublishOrderEvent(Orders order)
-    {
-        var products = System.Text.Json.JsonSerializer.Deserialize<List<ProductDto>>(order.ProductsJson);
-
-        var productsByMerchant = products.GroupBy(p => p.merchantId);
-
-        foreach (var merchantGroup in productsByMerchant)
-        {
-            //if (!int.TryParse(Convert.ToInt16(merchantGroup.Key), out int merchantId))
-            //{
-            //    continue; // Skip invalid merchantId
-            //}
-
-            int merchantId = (int)merchantGroup.Key;
-
-
-            var merchant = await _systemMerchants.GetMerchantByIdAsync(merchantId);
-            if (merchant == null)
-            {
-                continue; // Merchant not found
-            }
-
-            var orderEvent = new OrderEvent
-            {
-                OrderID = order.OrderID,
-                OrderDate = order.OrderDate,
-                MerchantName = merchant.MerchantName,
-                UserID = order.UserID,
-                products = merchantGroup.ToList(),
-                UserEmail = "user@gmail.com", // Replace with actual lookup if available
-                MerchantEmail = merchant.Email,
-                UserPhoneNumber = "254794129559", // Replace with actual lookup if available
-                MerchantPhoneNumber = merchant.Phone,
-                addresses = order.ShippingAddress,
-                Amount = merchantGroup.Sum(p => p.Price * p.Quantity)
+                "Processing" => Models.Enums.OrderStatusEnum.PaymentProcessing,
+                "Pending Confirmation" => Models.Enums.OrderStatusEnum.Pending,
+                "Confirmed" => Models.Enums.OrderStatusEnum.Paid,
+                "Shipped" => Models.Enums.OrderStatusEnum.Shipped,
+                "Pickup" => Models.Enums.OrderStatusEnum.Shipped, // Map Pickup to Shipped for enum compatibility
+                "Delivered" => Models.Enums.OrderStatusEnum.Delivered,
+                "Cancelled" => Models.Enums.OrderStatusEnum.Cancelled,
+                "Returned" => Models.Enums.OrderStatusEnum.Refunded, // Map Returned to Refunded for enum compatibility
+                "Refunded" => Models.Enums.OrderStatusEnum.Refunded,
+                _ => Models.Enums.OrderStatusEnum.Pending
             };
-
-            await _orderEventPublisher.PublishOrderEvent(orderEvent);
         }
+
+        /// <summary>
+        /// Maps OrderStatusEnum to actual database status strings
+        /// </summary>
+        private string MapOrderStatusEnumToString(Models.Enums.OrderStatusEnum statusEnum)
+        {
+            return statusEnum switch
+            {
+                Models.Enums.OrderStatusEnum.Pending => "Pending Confirmation",
+                Models.Enums.OrderStatusEnum.PaymentProcessing => "Processing",
+                Models.Enums.OrderStatusEnum.Paid => "Confirmed",
+                Models.Enums.OrderStatusEnum.Shipped => "Shipped",
+                Models.Enums.OrderStatusEnum.Delivered => "Delivered",
+                Models.Enums.OrderStatusEnum.Cancelled => "Cancelled",
+                Models.Enums.OrderStatusEnum.Refunded => "Refunded",
+                Models.Enums.OrderStatusEnum.Failed => "Cancelled", // Map Failed to Cancelled as closest match
+                _ => "Pending Confirmation"
+            };
+        }
+
+        /// <summary>
+        /// Updates the overall order status based on all product statuses
+        /// </summary>
+        private async Task UpdateOverallOrderStatusAsync(string orderId, string updatedBy, DateTime updateTime)
+        {
+            // Get all products in this order with their current statuses
+            var orderProducts = await _dbContext.OrderProducts
+                .Where(op => op.OrderID == orderId)
+                .ToListAsync();
+
+            if (!orderProducts.Any())
+            {
+                _logger.LogWarning("No products found for order {OrderId}", orderId);
+                return;
+            }
+
+            // Calculate overall status based on product statuses
+            var overallStatus = CalculateOverallOrderStatus(orderProducts);
+            var overallStatusString = MapOrderStatusEnumToString(overallStatus);
+
+            // Get the main order
+            var order = await _dbContext.Orders
+                .FirstOrDefaultAsync(o => o.OrderID == orderId);
+
+            if (order == null)
+            {
+                _logger.LogWarning("Order {OrderId} not found", orderId);
+                return;
+            }
+
+            // Only update if status has changed
+            if (order.StatusEnum != overallStatus)
+            {
+                var previousStatus = order.Status;
+                
+                order.StatusEnum = overallStatus;
+                order.Status = overallStatusString;
+                order.StatusMessage = GenerateStatusMessage(overallStatus, orderProducts, previousStatus);
+
+                // Find corresponding StatusID from OrderStatuses table
+                var orderStatusRecord = await _dbContext.OrderStatuses
+                    .Where(os => os.Status == overallStatusString)
+                    .FirstOrDefaultAsync();
+
+                if (orderStatusRecord != null)
+                {
+                    order.StatusID = orderStatusRecord.StatusID;
+                }
+
+                _dbContext.Orders.Update(order);
+                
+                // Log the status change
+                _logger.LogInformation("Order {OrderId} status updated from {PreviousStatus} to {NewStatus} by {UpdatedBy}", 
+                    orderId, previousStatus, overallStatusString, updatedBy);
+            }
+        }
+
+        /// <summary>
+        /// Calculates the overall order status based on all product statuses using actual DB status flow
+        /// </summary>
+        private Models.Enums.OrderStatusEnum CalculateOverallOrderStatus(List<OrderProduct> orderProducts)
+        {
+            var statuses = orderProducts.Select(op => op.Status).ToList();
+
+            // If any product is cancelled, and no products are delivered, order is cancelled
+            if (statuses.All(s => s == Models.Enums.OrderStatusEnum.Cancelled))
+            {
+                return Models.Enums.OrderStatusEnum.Cancelled;
+            }
+
+            // If any product failed and others aren't delivered
+            if (statuses.Any(s => s == Models.Enums.OrderStatusEnum.Failed) && 
+                !statuses.Any(s => s == Models.Enums.OrderStatusEnum.Delivered))
+            {
+                return Models.Enums.OrderStatusEnum.Failed;
+            }
+
+            // If ALL products are delivered, order is delivered (COMPLETE) ✅
+            if (statuses.All(s => s == Models.Enums.OrderStatusEnum.Delivered))
+            {
+                return Models.Enums.OrderStatusEnum.Delivered;
+            }
+
+            // If any product is shipped/pickup (but not all delivered), order is shipped
+            if (statuses.Any(s => s == Models.Enums.OrderStatusEnum.Shipped))
+            {
+                return Models.Enums.OrderStatusEnum.Shipped;
+            }
+
+            // If any product is confirmed/paid (but none shipped/delivered), order is confirmed
+            if (statuses.Any(s => s == Models.Enums.OrderStatusEnum.Paid))
+            {
+                return Models.Enums.OrderStatusEnum.Paid;
+            }
+
+            // If any product is processing, order is processing
+            if (statuses.Any(s => s == Models.Enums.OrderStatusEnum.PaymentProcessing))
+            {
+                return Models.Enums.OrderStatusEnum.PaymentProcessing;
+            }
+
+            // Default to pending confirmation
+            return Models.Enums.OrderStatusEnum.Pending;
+        }
+
+        /// <summary>
+        /// Generates status message based on actual DB status flow
+        /// </summary>
+        private string GenerateStatusMessage(Models.Enums.OrderStatusEnum overallStatus, 
+            List<OrderProduct> orderProducts, string previousStatus)
+        {
+            var totalProducts = orderProducts.Count;
+            var statusCounts = orderProducts.GroupBy(op => op.Status)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            return overallStatus switch
+            {
+                Models.Enums.OrderStatusEnum.Delivered => 
+                    $"Order completed - All {totalProducts} products delivered",
+                
+                Models.Enums.OrderStatusEnum.Shipped => 
+                    $"Order in transit - {statusCounts.GetValueOrDefault(Models.Enums.OrderStatusEnum.Shipped, 0)} of {totalProducts} products shipped/ready for pickup",
+                
+                Models.Enums.OrderStatusEnum.Paid => 
+                    $"Order confirmed - {statusCounts.GetValueOrDefault(Models.Enums.OrderStatusEnum.Paid, 0)} of {totalProducts} products confirmed and ready for shipping",
+                
+                Models.Enums.OrderStatusEnum.PaymentProcessing => 
+                    $"Order processing - {statusCounts.GetValueOrDefault(Models.Enums.OrderStatusEnum.PaymentProcessing, 0)} of {totalProducts} products being processed",
+                
+                Models.Enums.OrderStatusEnum.Pending => 
+                    $"Order pending confirmation - {statusCounts.GetValueOrDefault(Models.Enums.OrderStatusEnum.Pending, 0)} of {totalProducts} products awaiting confirmation",
+                
+                Models.Enums.OrderStatusEnum.Cancelled => 
+                    "Order cancelled - All products cancelled",
+                
+                Models.Enums.OrderStatusEnum.Refunded => 
+                    "Order refunded - Products returned/refunded",
+                
+                _ => $"Order status updated from {previousStatus}"
+            };
+        }
+
+        #endregion
+
+        #region Status Methods
+
+        // Return list of available order statuses
+        public async Task<List<OrderStatus>> GetOrderStatusAsync()
+        {
+            try
+            {
+                // Execute the query asynchronously and materialize the results into a list
+                var orderStatusList = await _dbContext.OrderStatuses
+                    .Select(o => new OrderStatus
+                    {
+                        StatusID = o.StatusID,
+                        Status = o.Status,
+                        Description = o.Description,
+                        CreatedBy = o.CreatedBy,
+                        CreatedOn = o.CreatedOn,
+                        UpdatedBy = o.UpdatedBy,
+                        UpdatedOn = o.UpdatedOn,
+                    })
+                    .ToListAsync();
+
+                return orderStatusList;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching order statuses.");
+                return new List<OrderStatus>();
+            }
+        }
+
+        #endregion
     }
-
-
-
 }

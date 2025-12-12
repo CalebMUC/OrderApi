@@ -1,5 +1,6 @@
 ﻿using Minimart_Api.DTOS.Products;
 using Minimart_Api.Repositories.ProductRepository;
+using Minimart_Api.Models;
 
 namespace Minimart_Api.Services.SimilarProducts
 {
@@ -40,19 +41,19 @@ namespace Minimart_Api.Services.SimilarProducts
         }
 
         private IEnumerable<SimilarProductDto> FilterBySimilarityScore(
-        IEnumerable<Products> products,
-        Products targetProduct,
+        IEnumerable<Product> products,
+        Product targetProduct,
         int minScore)
         {
             return products
                 .Select(p => new SimilarProductDto
                 {
-                    ProductId = p.ProductId,
+                    ProductId = p.ProductId.ToString(),
                     ProductName = p.ProductName,
-                    ImageUrl = p.ImageUrl,
-                    Price = p.Price ?? 0,
-                    Discount = p.Discount,
-                    InStock = p.InStock,
+                    ImageUrl = p.ImageUrls?.FirstOrDefault() ?? "",
+                    Price = p.Price,
+                    Discount = (double)p.Discount,
+                    InStock = p.IsActive,
                     CategoryName = p.CategoryName,
                     ProductDescription = p.ProductDescription,
                     SimilarityScore = CalculateSimilarityScore(targetProduct, p)
@@ -61,37 +62,33 @@ namespace Minimart_Api.Services.SimilarProducts
                 .OrderByDescending(p => p.SimilarityScore);
         }
 
-        private async Task<IEnumerable<Products>> FindSimilarProducts(Products targetProduct, int limit)
+        private async Task<IEnumerable<Product>> FindSimilarProducts(Product targetProduct, int limit)
         {
-            var results = new List<Products>();
+            var results = new List<Product>();
 
-            // 1. Same category products
-            if (targetProduct.CategoryId.HasValue)
-            {
-                var sameCategoryProducts = await _productRepository
-                    .GetProductsByCategoryAsync(targetProduct.CategoryId.Value, limit, targetProduct.ProductId);
-                results.AddRange(sameCategoryProducts);
-            }
+            // 1. Same category products - Use hash codes for legacy compatibility
+            var sameCategoryProducts = await _productRepository
+                .GetProductsByCategoryAsync(targetProduct.CategoryId.GetHashCode(), limit, targetProduct.ProductId.ToString());
+            results.AddRange(sameCategoryProducts);
 
             // 2. Same sub-category products if we need more
             if (results.Count < limit && targetProduct.SubCategoryId.HasValue)
             {
                 var sameSubCategoryProducts = await _productRepository
-                    .GetProductsBySubCategoryAsync(targetProduct.SubCategoryId.Value,
+                    .GetProductsBySubCategoryAsync(targetProduct.SubCategoryId.Value.GetHashCode(),
                                                  limit - results.Count,
-                                                 targetProduct.ProductId);
+                                                 targetProduct.ProductId.ToString());
                 results.AddRange(sameSubCategoryProducts);
             }
 
             // 3. Keyword matching if we still need more
             if (results.Count < limit)
             {
-                var keywords = targetProduct.SearchKeyWord?.Split(' ', ',', ';') ??
-                             targetProduct.ProductName?.Split(' ') ?? Array.Empty<string>();
+                var keywords = targetProduct.ProductName?.Split(' ') ?? Array.Empty<string>();
                 if (keywords.Any())
                 {
                     var keywordProducts = await _productRepository
-                        .GetProductsByKeywordsAsync(keywords, limit - results.Count, targetProduct.ProductId);
+                        .GetProductsByKeywordsAsync(keywords, limit - results.Count, targetProduct.ProductId.ToString());
                     results.AddRange(keywordProducts);
                 }
             }
@@ -100,30 +97,30 @@ namespace Minimart_Api.Services.SimilarProducts
             if (results.Count < limit)
             {
                 var popularProducts = await _productRepository
-                    .GetPopularProductsAsync(limit - results.Count, targetProduct.ProductId);
+                    .GetPopularProductsAsync(limit - results.Count, targetProduct.ProductId.ToString());
                 results.AddRange(popularProducts);
             }
 
             return results.Distinct().Take(limit);
         }
 
-        private IEnumerable<SimilarProductDto> MapToDto(IEnumerable<Products> products, Products targetProduct)
+        private IEnumerable<SimilarProductDto> MapToDto(IEnumerable<Product> products, Product targetProduct)
         {
             return products.Select(p => new SimilarProductDto
             {
-                ProductId = p.ProductId,
+                ProductId = p.ProductId.ToString(),
                 ProductName = p.ProductName,
-                ImageUrl = p.ImageUrl,
-                Price = p.Price ?? 0,
-                Discount = p.Discount,
-                InStock = p.InStock,
+                ImageUrl = p.ImageUrls?.FirstOrDefault() ?? "",
+                Price = p.Price,
+                Discount = (double)p.Discount,
+                InStock = p.IsActive,
                 CategoryName = p.CategoryName,
                 ProductDescription = p.ProductDescription,
                 SimilarityScore = CalculateSimilarityScore(targetProduct, p)
             });
         }
 
-        private double CalculateSimilarityScore(Products product1, Products product2)
+        private double CalculateSimilarityScore(Product product1, Product product2)
         {
             double score = 0;
 
@@ -133,12 +130,9 @@ namespace Minimart_Api.Services.SimilarProducts
             else if (product1.SubCategoryId == product2.SubCategoryId) score += 0.3;
 
             // Price similarity (20% weight)
-            if (product1.Price.HasValue && product2.Price.HasValue)
-            {
-                var priceDiff = Math.Abs((double)(product1.Price.Value - product2.Price.Value));
-                var maxPrice = Math.Max((double)product1.Price.Value, (double)product2.Price.Value);
-                score += 0.2 * (1 - Math.Min(priceDiff / maxPrice, 1));
-            }
+            var priceDiff = Math.Abs((double)(product1.Price - product2.Price));
+            var maxPrice = Math.Max((double)product1.Price, (double)product2.Price);
+            score += 0.2 * (1 - Math.Min(priceDiff / maxPrice, 1));
 
             return Math.Round(score * 100, 2);
         }

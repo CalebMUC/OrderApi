@@ -2,8 +2,8 @@
 {
     public class OrderProductsDTO
     {
-        public string ProductID { get; set; }
-        public int merchantId { get; set; }
+        public Guid ProductID { get; set; }
+        public Guid merchantId { get; set; }
 
         public string ProductName { get; set; }
 

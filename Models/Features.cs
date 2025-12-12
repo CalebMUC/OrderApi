@@ -18,17 +18,17 @@ namespace Minimart_Api.Models
         public string FeatureOptions { get; set; }
 
         [ForeignKey("Category")]
-        public int? CategoryID { get; set; }
+        public Guid? CategoryID { get; set; }
 
         [ForeignKey("SubCategory")]
-        public int? SubCategoryID { get; set; }
+        public Guid? SubCategoryID { get; set; }
 
         [ForeignKey("SubSubCategory")]
-        public int? SubSubCategoryID { get; set; }
+        public Guid? SubSubCategoryID { get; set; }
 
-        // Navigation properties
-        public virtual Categories Category { get; set; }
-        public virtual Categories SubCategory { get; set; }
-        public virtual Categories SubSubCategory { get; set; }
+        // Navigation properties - Updated to use new Category system
+        public virtual Category Category { get; set; }
+        public virtual SubCategory SubCategory { get; set; }
+        public virtual SubSubCategory SubSubCategory { get; set; }
     }
 }

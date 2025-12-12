@@ -19,93 +19,94 @@ namespace Minimart_Api.Mappings
 
         }
         // Mapping Order to OrderDTO
-        public OrderDTO MapToDto(Orders order)
+        public OrderDTO MapToDto(Order order)
         {
             return new OrderDTO
             {
                 OrderID = order.OrderID,
-                UserID = order.UserID,
-                OrderDate = DateTime.Now,
+                ApplicationUserId = order.ApplicationUserId ?? string.Empty, // Updated to use ApplicationUserId
+                OrderDate = order.OrderDate, // Use actual order date
+                DeliveryScheduleDate = order.DeliveryScheduleDate,
                 OrderedBy = order.OrderedBy,
                 Status = order.Status,
-
-
                 PaymentConfirmation = order.PaymentConfirmation,
                 TotalOrderAmount = order.TotalOrderAmount,
                 TotalPaymentAmount = order.TotalPaymentAmount,
                 TotalDeliveryFees = order.TotalDeliveryFees,
                 TotalTax = order.TotalTax,
-                ShippingAddress = JsonConvert.DeserializeObject<ShippingAddress>(order.ShippingAddress),
-                Products = JsonConvert.DeserializeObject<List<OrderProductsDTO>>(order.ProductsJson),
-
-                PickUpLocation = JsonConvert.DeserializeObject<PickUpLocation>(order.PickupLocation),
+                ShippingAddress = JsonConvert.DeserializeObject<ShippingAddress>(order.ShippingAddress ?? "{}"),
+                Products = JsonConvert.DeserializeObject<List<OrderProductsDTO>>(order.ProductsJson ?? "[]"),
+                PickUpLocation = JsonConvert.DeserializeObject<PickUpLocation>(order.PickupLocation ?? "{}"),
                 //PaymentDetails = JsonConvert.DeserializeObject<PaymentDetailsDto>(order.PaymentDetailsJson)
             };
         }
 
         // Mapping OrderDTO back to Order
-        public Orders MapToEntity(OrderDTO orderDto)
+        public Order MapToEntity(OrderDTO orderDto)
         {
-            return new Orders
+            return new Order
             {
-                OrderID = orderDto.OrderID,
-                UserID = orderDto.UserID,
+                OrderID = orderDto.OrderID ?? string.Empty,
+                ApplicationUserId = orderDto.ApplicationUserId, // Updated to use ApplicationUserId
                 OrderDate = orderDto.OrderDate,
+                DeliveryScheduleDate = orderDto.DeliveryScheduleDate,
                 OrderedBy = orderDto.OrderedBy,
                 Status = orderDto.Status,
 
                 // Map PaymentDetails JSON
-                PaymentDetailsJson = JsonConvert.SerializeObject(new PaymentDetails
-                {
-                    PaymentID = orderDto.PaymentDetails.First().PaymentID, // Access the first item's PaymentID
-                   // TrxReference = orderDto.PaymentDetails.First().PaymentReference,
-                    Amount = orderDto.PaymentDetails.First().Amount,
-                    PaymentDate = DateTime.UtcNow // Use the current date
-                }),
+                PaymentDetailsJson = orderDto.PaymentDetails != null ? 
+                    JsonConvert.SerializeObject(orderDto.PaymentDetails.Select(pd => new
+                    {
+                        PaymentID = pd.PaymentID,
+                        Amount = pd.Amount,
+                        PaymentDate = DateTime.UtcNow
+                    })) : "[]",
 
-
-            // Map Products JSON
-            ProductsJson = JsonConvert.SerializeObject(orderDto.Products.Select(p => new
-                {
-                    ProductName = p.ProductName,
-                    ProductID = p.ProductID,
-                    Quantity = p.Quantity,
-                    Price = p.Price,
-                    Discount = p.Discount,
-                }).ToList()),
+                // Map Products JSON
+                ProductsJson = orderDto.Products != null ? 
+                    JsonConvert.SerializeObject(orderDto.Products.Select(p => new
+                    {
+                        ProductName = p.ProductName ?? string.Empty,
+                        ProductID = p.ProductID,
+                        Quantity = p.Quantity,
+                        Price = p.Price,
+                        Discount = p.Discount,
+                    }).ToList()) : "[]",
 
                 // Map the collection of OrderProducts
-                OrderProducts = orderDto.Products.Select(productDto => new OrderProducts
+                OrderProducts = orderDto.Products?.Select(productDto => new OrderProduct
                 {
-                    ProductID = productDto.ProductID,
+                    ProductId = productDto.ProductID,
                     Quantity = productDto.Quantity,
-                }).ToList(),
+                    OrderID = orderDto.OrderID ?? string.Empty,
+                    MerchantID = productDto.merchantId
+                }).ToList() ?? new List<OrderProduct>(),
 
                 // Map Payment Confirmation
-                PaymentConfirmation = orderDto.PaymentConfirmation,
+                PaymentConfirmation = orderDto.PaymentConfirmation ?? string.Empty,
                 TotalOrderAmount = orderDto.TotalOrderAmount,
                 TotalPaymentAmount = orderDto.TotalPaymentAmount,
                 TotalDeliveryFees = orderDto.TotalDeliveryFees,
                 TotalTax = orderDto.TotalTax,
 
                 // Map ShippingAddress JSON
-                ShippingAddress = JsonConvert.SerializeObject(new ShippingAddress
+                ShippingAddress = orderDto.ShippingAddress != null ? JsonConvert.SerializeObject(new ShippingAddress
                 {
-                    Address = orderDto.ShippingAddress.Address,
-                    County = orderDto.ShippingAddress.County,
-                    Town = orderDto.ShippingAddress.Town,
-                    PostalCode = orderDto.ShippingAddress.PostalCode,
-                    Name = orderDto.ShippingAddress.Name,
-                    Phonenumber = orderDto.ShippingAddress.Phonenumber
-                }),
+                    Address = orderDto.ShippingAddress.Address ?? string.Empty,
+                    County = orderDto.ShippingAddress.County ?? string.Empty,
+                    Town = orderDto.ShippingAddress.Town ?? string.Empty,
+                    PostalCode = orderDto.ShippingAddress.PostalCode ?? string.Empty,
+                    Name = orderDto.ShippingAddress.Name ?? string.Empty,
+                    Phonenumber = orderDto.ShippingAddress.Phonenumber ?? string.Empty
+                }) : "{}",
 
                 // Map PickupLocation JSON
-                PickupLocation = JsonConvert.SerializeObject(new PickUpLocation
+                PickupLocation = orderDto.PickUpLocation != null ? JsonConvert.SerializeObject(new PickUpLocation
                 {
                     countyId = orderDto.PickUpLocation.countyId,
                     townId = orderDto.PickUpLocation.townId,
                     deliveryStationId = orderDto.PickUpLocation.deliveryStationId
-                })
+                }) : "{}"
             };
         }
     }

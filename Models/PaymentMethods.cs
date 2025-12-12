@@ -21,10 +21,17 @@ namespace Minimart_Api.Models
         [Required]
         public bool IsActive { get; set; } = true; // To track if the payment method is active
 
-        [Column(TypeName = "timestamp")]
+        public string ImageUrl { get; set; } // URL to an image/icon representing the payment method
+         
+        [Column(TypeName = "timestamp with time zone")]
         public DateTime CreatedDate { get; set; } = DateTime.Now; // Creation date
+
+        [Column(TypeName = "timestamp with time zone")]
+        public DateTime UpdatedOn { get; set; } // Creation date
 
         // Navigation property for related payment details
         public ICollection<PaymentDetails> PaymentDetails { get; set; }
+
+        public virtual ICollection<MerchantPaymentMethod> MerchantPaymentMethods { get; set; } = new List<MerchantPaymentMethod>();
     }
 }

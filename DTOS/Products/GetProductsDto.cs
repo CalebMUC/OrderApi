@@ -5,34 +5,25 @@ namespace Minimart_Api.DTOS.Products
 {
     public class GetProductsDto
     {
-        public int MerchantID { get; set; }
+        public int MerchantID { get; set; } // Changed to int for SearchRepo compatibility
 
         public string? ProductName { get; set; }
 
         public string? Description { get; set; }
 
-        public decimal? Price { get; set; }
+        public double Price { get; set; } // Changed to double for SearchRepo compatibility
 
         public int StockQuantity { get; set; }
 
-        public int? CategoryId { get; set; }
+        public int CategoryId { get; set; } // Changed to int for SearchRepo compatibility
 
+        public string ProductId { get; set; } = null!; // Changed to string and removed extra semicolon
 
-
-        public string ProductId { get; set; } = null!;
-
- 
         public string ProductDescription { get; set; } = null!;
-        public string CategoryName { get; set; } = null;
+        
+        public string CategoryName { get; set; } = null!; // Changed from null to null!
 
-        public string ImageUrl { get; set; } = "[]";
-
-        //[NotMapped]
-        //public string[] ImageUrlJson
-        //{
-        //    get => JsonSerializer.Deserialize<string[]>(ImageUrl) ?? Array.Empty<string>();
-        //    set => ImageUrl = JsonSerializer.Serialize(value);
-        //}
+        public string ImageUrl { get; set; } = "";
 
         public bool InStock { get; set; }
 
@@ -46,10 +37,9 @@ namespace Minimart_Api.DTOS.Products
 
         public string Box { get; set; } = null!;
 
-        public int? SubCategoryId { get; set; }
+        public int SubCategoryId { get; set; } // Changed to int for compatibility
 
         public string? SubCategoryName { get; set; }
-
 
         public string? SubSubCategoryName { get; set; }
 

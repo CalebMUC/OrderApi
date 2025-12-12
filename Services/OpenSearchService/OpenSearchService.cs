@@ -1,4 +1,5 @@
 ﻿using Minimart_Api.Services.OpenSearchService;
+using Minimart_Api.Models;
 using OpenSearch.Client;
 
 //using OpenSearch.Net;
@@ -18,14 +19,13 @@ public class OpenSearchService : IOpenSearchService
     public async Task CreateIndexAsync(string indexName)
     {
         var createIndexResponse = await _client.Indices.CreateAsync(indexName, c => c
-            .Map<Products>(m => m
+            .Map<Product>(m => m
                 .AutoMap()
                 .Properties(p => p
                     .Text(t => t.Name(n => n.ProductName))
                     .Text(t => t.Name(n => n.Description))
                     .Number(n => n.Name(n => n.Price).Type(NumberType.Double))
-                    .Keyword(k => k.Name(n => n.CategoryName))
-                    .Completion(c => c.Name(n => n.Suggest))
+                    .Text(t => t.Name(n => n.CategoryName))
                 )
             )
         );
@@ -37,9 +37,8 @@ public class OpenSearchService : IOpenSearchService
     }
 
     // Index a single product
-    public async Task IndexProductAsync(Products product)
+    public async Task IndexProductAsync(Product product)
     {
-        product.Suggest = new CompletionField { Input = new[] { product.SearchKeyWord } };
         var indexResponse = await _client.IndexAsync(product, i => i.Index("searchproducts").Id(product.ProductId));
 
         if (!indexResponse.IsValid)
@@ -49,16 +48,15 @@ public class OpenSearchService : IOpenSearchService
     }
 
     // Search for products
-    public async Task<IEnumerable<Products>> SearchProductsAsync(string query)
+    public async Task<IEnumerable<Product>> SearchProductsAsync(string query)
     {
-        var response = await _client.SearchAsync<Products>(s => s
+        var response = await _client.SearchAsync<Product>(s => s
             .Index("searchproducts")
             .Query(q => q
                 .MultiMatch(m => m
                     .Fields(f => f
                         .Field(p => p.ProductName)
                         .Field(p => p.Description)
-                        .Field(p => p.SearchKeyWord)
                     )
                     .Query(query)
                 )
@@ -71,11 +69,11 @@ public class OpenSearchService : IOpenSearchService
     // Autocomplete suggestions
     public async Task<IEnumerable<string>> AutocompleteAsync(string query)
     {
-        var response = await _client.SearchAsync<Products>(s => s
+        var response = await _client.SearchAsync<Product>(s => s
             .Index("searchproducts")
             .Suggest(su => su
                 .Completion("product-suggestions", c => c
-                    .Field(f => f.Suggest)
+                    .Field("suggest")
                     .Prefix(query)
                     .Fuzzy(f => f.Fuzziness(Fuzziness.Auto))
                     .Size(5)

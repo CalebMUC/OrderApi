@@ -17,7 +17,7 @@ namespace Minimart_Api.Services.OrderService
             _orderRepository = orderRepository;
         }
 
-        public async Task<List<GetOrdersDTO>> GetOrdersByStatusAsync(int status, int userID)
+        public async Task<List<GetOrdersDTO>> GetOrdersByStatusAsync(int status, string userID)
         {
             return await _orderRepository.GetOrdersByStatusAsync(status, userID);
         }
@@ -31,7 +31,7 @@ namespace Minimart_Api.Services.OrderService
         {
             return await _orderRepository.UpdateOrderStatusAsync(orderTracking);
         }
-        public async Task<List<OrderTracking>> GetOrderTrackingAsync(GetOrderTrackingStatus trackingStatus)
+        public async Task<List<GetOrderTracking>> GetOrderTrackingAsync(GetOrderTrackingStatus trackingStatus)
         {
 
             return await _orderRepository.GetOrderTrackingAsync(trackingStatus);
