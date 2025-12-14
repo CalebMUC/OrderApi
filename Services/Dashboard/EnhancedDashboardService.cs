@@ -219,17 +219,19 @@ namespace Minimart_Api.Services.Dashboard
         public async Task<List<TopProductDto>> GetAdminTopProductsAsync(int limit = 5, string period = "month")
         {
             var (startDate, _) = GetPeriodParams(period);
-            
-            return await _context.OrderProducts
+
+            // First, get the aggregated data
+            var topProductsData = await _context.OrderProducts
                 .Include(op => op.Product)
                 .Include(op => op.Order)
                 .Where(op => op.Order.OrderDate >= startDate)
-                .GroupBy(op => new { op.ProductId, op.Product.ProductName, op.Product.Price })
-                .Select(g => new TopProductDto
+                .GroupBy(op => op.ProductId)
+                .Select(g => new
                 {
-                    ProductId = g.Key.ProductId,
-                    ProductName = g.Key.ProductName ?? "Unknown",
-                    Price = g.Key.Price,
+                    ProductId = g.Key,
+                    ProductName = g.First().Product.ProductName,
+                    Price = g.First().Product.Price,
+                    ImageUrls = g.First().Product.ImageUrls,
                     QuantitySold = g.Sum(op => op.Quantity),
                     Revenue = g.Sum(op => op.TotalPrice),
                     OrderCount = g.Count()
@@ -237,6 +239,18 @@ namespace Minimart_Api.Services.Dashboard
                 .OrderByDescending(p => p.Revenue)
                 .Take(limit)
                 .ToListAsync();
+
+            // Then, map to TopProductDto with safe image URL extraction
+            return topProductsData.Select(p => new TopProductDto
+            {
+                ProductId = p.ProductId,
+                ProductName = p.ProductName ?? "Unknown",
+                Price = p.Price,
+                QuantitySold = p.QuantitySold,
+                Revenue = p.Revenue,
+                OrderCount = p.OrderCount,
+                ImageUrl = p.ImageUrls != null && p.ImageUrls.Any() ? p.ImageUrls[0] : ""
+            }).ToList();
         }
 
         public async Task<List<PaymentMethodStats>> GetAdminPaymentMethodsDistributionAsync()
@@ -585,17 +599,19 @@ namespace Minimart_Api.Services.Dashboard
         public async Task<List<TopProductDto>> GetMerchantTopProductsAsync(Guid merchantId, int limit = 5, string period = "month")
         {
             var (startDate, _) = GetPeriodParams(period);
-            
-            return await _context.OrderProducts
+
+            // First, get the aggregated data without trying to access array elements in GroupBy
+            var topProductsData = await _context.OrderProducts
                 .Include(op => op.Product)
                 .Include(op => op.Order)
                 .Where(op => op.MerchantID == merchantId && op.Order.OrderDate >= startDate)
-                .GroupBy(op => new { op.ProductId, op.Product.ProductName, op.Product.Price })
-                .Select(g => new TopProductDto
+                .GroupBy(op => op.ProductId)
+                .Select(g => new
                 {
-                    ProductId = g.Key.ProductId,
-                    ProductName = g.Key.ProductName ?? "Unknown",
-                    Price = g.Key.Price,
+                    ProductId = g.Key,
+                    ProductName = g.First().Product.ProductName,
+                    Price = g.First().Product.Price,
+                    ImageUrls = g.First().Product.ImageUrls,
                     QuantitySold = g.Sum(op => op.Quantity),
                     Revenue = g.Sum(op => op.TotalPrice),
                     OrderCount = g.Count()
@@ -603,6 +619,18 @@ namespace Minimart_Api.Services.Dashboard
                 .OrderByDescending(p => p.Revenue)
                 .Take(limit)
                 .ToListAsync();
+
+            // Then, map to TopProductDto with safe image URL extraction
+            return topProductsData.Select(p => new TopProductDto
+            {
+                ProductId = p.ProductId,
+                ProductName = p.ProductName ?? "Unknown",
+                Price = p.Price,
+                QuantitySold = p.QuantitySold,
+                Revenue = p.Revenue,
+                OrderCount = p.OrderCount,
+                ImageUrl = p.ImageUrls != null && p.ImageUrls.Any() ? p.ImageUrls[0] : ""
+            }).ToList();
         }
 
         public async Task<List<PaymentMethodStats>> GetMerchantPaymentMethodsDistributionAsync(Guid merchantId)

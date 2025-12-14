@@ -349,9 +349,7 @@ namespace Minimart_Api.Controllers
                 {
                     _logger.LogInformation("Order created successfully");
                     
-                    return CreatedAtAction(
-                        nameof(GetOrderById), 
-                        new { orderId = response.ResponseMessage }, // Assuming ResponseMessage contains OrderID
+                    return Created("",
                         new { 
                             success = true, 
                             message = response.ResponseMessage, 
