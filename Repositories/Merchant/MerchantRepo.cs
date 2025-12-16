@@ -233,7 +233,7 @@ namespace Minimart_Api.Repositories.Merchant
                     await _dbContext.SaveChangesAsync();
 
                     // 7. Send welcome email
-                    var dashboardUrl = _configuration["Application:MerchantDashboardUrl"] ?? "https://merchant.quickcrate.co.ke";
+                    var dashboardUrl = _configuration["Application:MerchantDashboardUrl"] ?? "https://dashboard.quickcrate.co.ke";
                     var emailSent = await _emailService.SendMerchantWelcomeEmailAsync(
                         merchant.Email,
                         merchant.BusinessName,

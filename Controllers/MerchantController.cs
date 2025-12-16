@@ -216,44 +216,44 @@ namespace Minimart_Api.Controllers
         /// <summary>
         /// Approve or reject a merchant (enhanced version)
         /// </summary>
-        [HttpPost("{id:guid}/approve")]
-        [Authorize(Roles = "Admin")]
-        [ProducesResponseType(typeof(ApiResponse<MerchantDetailDto>), 200)]
-        [ProducesResponseType(typeof(ApiResponse), 400)]
-        [ProducesResponseType(typeof(ApiResponse), 404)]
-        [ProducesResponseType(typeof(ApiResponse), 500)]
-        public async Task<IActionResult> ApproveMerchant(Guid id, [FromBody] MerchantApprovalDto approvalData)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ApiResponse.CreateError("Invalid approval data",
-                        ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList()));
-                }
+        //[HttpPost("{id:guid}/approve")]
+        //[Authorize(Roles = "Admin")]
+        //[ProducesResponseType(typeof(ApiResponse<MerchantDetailDto>), 200)]
+        //[ProducesResponseType(typeof(ApiResponse), 400)]
+        //[ProducesResponseType(typeof(ApiResponse), 404)]
+        //[ProducesResponseType(typeof(ApiResponse), 500)]
+        //public async Task<IActionResult> ApproveMerchant(Guid id, [FromBody] MerchantApprovalDto approvalData)
+        //{
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //        {
+        //            return BadRequest(ApiResponse.CreateError("Invalid approval data",
+        //                ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList()));
+        //        }
 
-                _logger.LogInformation("Processing merchant approval: {MerchantId}, Status: {Status}", id, approvalData.Status);
+        //        _logger.LogInformation("Processing merchant approval: {MerchantId}, Status: {Status}", id, approvalData.Status);
 
-                approvalData.MerchantId = id; // Ensure ID consistency
-                var result = await _merchantService.ApproveMerchantAsync(approvalData);
+        //        approvalData.MerchantId = id; // Ensure ID consistency
+        //        var result = await _merchantService.ApproveMerchantAsync(approvalData);
 
-                if (result == null)
-                {
-                    return NotFound(ApiResponse.CreateError("Merchant not found"));
-                }
+        //        if (result == null)
+        //        {
+        //            return NotFound(ApiResponse.CreateError("Merchant not found"));
+        //        }
 
-                var message = approvalData.Status.ToLower() == "approved" 
-                    ? "Merchant approved successfully" 
-                    : "Merchant rejected successfully";
+        //        var message = approvalData.Status.ToLower() == "approved" 
+        //            ? "Merchant approved successfully" 
+        //            : "Merchant rejected successfully";
 
-                return Ok(ApiResponse<MerchantDetailDto>.CreateSuccess(result, message));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error processing merchant approval for {MerchantId}", id);
-                return StatusCode(500, ApiResponse.CreateError($"Internal server error: {ex.Message}"));
-            }
-        }
+        //        return Ok(ApiResponse<MerchantDetailDto>.CreateSuccess(result, message));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error processing merchant approval for {MerchantId}", id);
+        //        return StatusCode(500, ApiResponse.CreateError($"Internal server error: {ex.Message}"));
+        //    }
+        //}
 
         /// <summary>
         /// Suspend a merchant

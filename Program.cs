@@ -79,6 +79,7 @@ using Minimart_Api.Services.PasswordGenerator;
 using Minimart_Api.Services.Dashboard;
 using Minimart_Api.Repositories.Dashboard;
 using Minimart_Api.Services.PaymentMethods;
+using Minimart_Api.Services.Payouts;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -135,6 +136,9 @@ builder.Services.AddScoped<IAddressRepo, AddressRepositoryNew>(); // Legacy inte
 
 // Payment Method Services
 builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+
+// Payout Services
+builder.Services.AddScoped<IPayoutService, PayoutService>();
 
 builder.Services.AddScoped<ISimilarProductsService, SimilarProductsService>();
 

@@ -49,7 +49,8 @@ namespace Minimart_Api.DTOS.PaymentMethods
         public int PaymentMethodId { get; set; }
         public string PaymentMethodName { get; set; } = string.Empty;
         public string PaymentMethodDescription { get; set; } = string.Empty;
-        public string PaymentMethodImageUrl { get; set; } = string.Empty;
+        //public string PaymentMethodImageUrl { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
         public string Configuration { get; set; } = string.Empty;
         public bool IsEnabled { get; set; }
         public DateTime CreatedAt { get; set; }

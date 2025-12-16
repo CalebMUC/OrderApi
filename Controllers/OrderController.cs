@@ -349,13 +349,12 @@ namespace Minimart_Api.Controllers
                 {
                     _logger.LogInformation("Order created successfully");
                     
-                    return Created("",
-                        new { 
-                            success = true, 
-                            message = response.ResponseMessage, 
-                            data = response,
-                            orderCreated = true
-                        });
+                    return Created("", new { 
+                        success = true, 
+                        message = response.ResponseMessage, 
+                        data = response,
+                        orderCreated = true
+                    });
                 }
                 
                 return BadRequest(new { 

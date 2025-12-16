@@ -133,6 +133,7 @@ namespace Minimart_Api.Models
         public virtual ICollection<OrderTracking> OrderTrackings { get; set; } = new List<OrderTracking>();
         public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        public virtual ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
         public virtual ICollection<Reviews> Reviews { get; set; } = new List<Reviews>();
 
         // Legacy category navigation removed on purpose to avoid EF creating implicit FK 'CategoriesCategoryId'

@@ -43,6 +43,10 @@ namespace Minimart_Api.Data
 
         public DbSet<MpesaTransaction> MpesaTransactions { get; set; }
 
+        // Payout system models
+        public virtual DbSet<Payout> Payouts { get; set; }
+        public virtual DbSet<PayoutTransaction> PayoutTransactions { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Call base method first for Identity tables
@@ -368,6 +372,9 @@ namespace Minimart_Api.Data
                 // Add indexes
                 entity.HasIndex(oi => oi.ProductId);
             });
+
+            // Configure Payout entities
+            ConfigurePayoutEntities(modelBuilder);
         }
 
         private void ConfigureOrderEntities(ModelBuilder modelBuilder)
@@ -426,13 +433,18 @@ namespace Minimart_Api.Data
                 entity.HasKey(op => op.OrderProductID);
 
                 entity.HasOne(op => op.Product)
-                    .WithMany()
+                    .WithMany(p => p.OrderProducts)
                     .HasForeignKey(op => op.ProductId)
                     .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(op => op.Merchant)
                     .WithMany()
                     .HasForeignKey(op => op.MerchantID)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(op => op.Order)
+                    .WithMany(o => o.OrderProducts)
+                    .HasForeignKey(op => op.OrderID)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
@@ -577,6 +589,105 @@ namespace Minimart_Api.Data
                 // Add index for performance
                 entity.HasIndex(s => s.ApplicationUserId);
                 entity.HasIndex(s => s.ProductId);
+            });
+        }
+
+        private decimal CalculateMedian(List<decimal> values)
+        {
+            if (!values.Any()) return 0;
+            
+            var sorted = values.OrderBy(x => x).ToList();
+            int count = sorted.Count;
+            
+            if (count % 2 == 0)
+            {
+                return (sorted[count / 2 - 1] + sorted[count / 2]) / 2;
+            }
+            else
+            {
+                return sorted[count / 2];
+            }
+        }
+
+        private void ConfigurePayoutEntities(ModelBuilder modelBuilder)
+        {
+            // Configure Payout entity
+            modelBuilder.Entity<Payout>(entity =>
+            {
+                entity.ToTable("Payouts");
+                entity.HasKey(p => p.PayoutId);
+
+                // Configure relationships
+                entity.HasOne(p => p.Merchant)
+                    .WithMany()
+                    .HasForeignKey(p => p.MerchantId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(p => p.PaymentMethod)
+                    .WithMany()
+                    .HasForeignKey(p => p.PaymentMethodId)
+                    .OnDelete(DeleteBehavior.SetNull);
+
+                entity.HasMany(p => p.PayoutTransactions)
+                    .WithOne(pt => pt.Payout)
+                    .HasForeignKey(pt => pt.PayoutId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Configure indexes
+                entity.HasIndex(p => p.MerchantId);
+                entity.HasIndex(p => p.Status);
+                entity.HasIndex(p => p.PeriodStartDate);
+                entity.HasIndex(p => p.PeriodEndDate);
+                entity.HasIndex(p => p.CreatedDate);
+                entity.HasIndex(p => new { p.MerchantId, p.Status });
+
+                // Configure decimal precision
+                entity.Property(p => p.GrossAmount).HasColumnType("decimal(18,2)");
+                entity.Property(p => p.CommissionAmount).HasColumnType("decimal(18,2)");
+                entity.Property(p => p.NetAmount).HasColumnType("decimal(18,2)");
+                entity.Property(p => p.CommissionRate).HasColumnType("decimal(5,4)");
+
+                // Configure timestamp fields
+                entity.Property(p => p.PeriodStartDate).HasColumnType("timestamp with time zone");
+                entity.Property(p => p.PeriodEndDate).HasColumnType("timestamp with time zone");
+                entity.Property(p => p.CreatedDate).HasColumnType("timestamp with time zone");
+                entity.Property(p => p.ScheduledDate).HasColumnType("timestamp with time zone");
+                entity.Property(p => p.CompletedDate).HasColumnType("timestamp with time zone");
+                entity.Property(p => p.UpdatedDate).HasColumnType("timestamp with time zone");
+            });
+
+            // Configure PayoutTransaction entity
+            modelBuilder.Entity<PayoutTransaction>(entity =>
+            {
+                entity.ToTable("PayoutTransactions");
+                entity.HasKey(pt => pt.PayoutTransactionId);
+
+                // Configure relationships
+                entity.HasOne(pt => pt.Payout)
+                    .WithMany(p => p.PayoutTransactions)
+                    .HasForeignKey(pt => pt.PayoutId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(pt => pt.Order)
+                    .WithMany()
+                    .HasForeignKey(pt => pt.OrderId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Configure indexes
+                entity.HasIndex(pt => pt.PayoutId);
+                entity.HasIndex(pt => pt.OrderId);
+                entity.HasIndex(pt => pt.OrderCompletedDate);
+                entity.HasIndex(pt => pt.CreatedDate);
+
+                // Configure decimal precision
+                entity.Property(pt => pt.OrderAmount).HasColumnType("decimal(18,2)");
+                entity.Property(pt => pt.CommissionAmount).HasColumnType("decimal(18,2)");
+                entity.Property(pt => pt.NetAmount).HasColumnType("decimal(18,2)");
+                entity.Property(pt => pt.CommissionRate).HasColumnType("decimal(5,4)");
+
+                // Configure timestamp fields
+                entity.Property(pt => pt.OrderCompletedDate).HasColumnType("timestamp with time zone");
+                entity.Property(pt => pt.CreatedDate).HasColumnType("timestamp with time zone");
             });
         }
     }
