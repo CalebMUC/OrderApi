@@ -663,10 +663,15 @@ namespace Minimart_Api.Repositories.Order
                 };
 
                 // Step 1: Fetch orders directly without joins to OrderStatuses
+                //var ordersWithStatus = await _dbContext.Orders
+                //    .Where(o => o.StatusID == status && o.ApplicationUserId == userID && o.StatusEnum == Models.Enums.OrderStatusEnum.Paid)
+                //    .Select(o => new { Order = o, StatusMessage = o.Status })
+                //    .ToListAsync();
+
                 var ordersWithStatus = await _dbContext.Orders
-                    .Where(o => o.Status == statusString && o.ApplicationUserId == userID && o.StatusEnum == Models.Enums.OrderStatusEnum.Paid)
-                    .Select(o => new { Order = o, StatusMessage = o.Status })
-                    .ToListAsync();
+                   .Where(o => o.StatusID == status && o.ApplicationUserId == userID)
+                   .Select(o => new { Order = o, StatusMessage = o.Status })
+                   .ToListAsync();
 
                 // Step 2: Map the result to GetOrdersDTO and fetch product images
                 var orders = new List<GetOrdersDTO>();
@@ -683,6 +688,7 @@ namespace Minimart_Api.Repositories.Order
                         ProductName = p.ProductName,
                         Quantity = p.Quantity,
                         Price = p.Price,
+                        merchantId = p.merchantId,
                         ImageUrl = _dbContext.Products
                             .Where(tp => tp.ProductId.ToString() == p.ProductID.ToString())
                             .Select(tp => tp.ImageUrls.FirstOrDefault() ?? "")
