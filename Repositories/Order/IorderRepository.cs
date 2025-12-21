@@ -38,6 +38,8 @@ namespace Minimart_Api.Repositories.Order
 
         // Legacy Methods (maintained for backward compatibility) - Updated to use string userId
         Task<List<GetOrdersDTO>> GetOrdersByStatusAsync(int status, string userID);
+
+        public Task<List<GetOrdersDTO>> GetUserOrdersAsync(string userId);
         Task<List<OrderStatus>> GetOrderStatusAsync();
         Task<Status> UpdateOrderStatusAsync(OrderTrackingDTO orderTracking);
         //Task<List<OrderTracking>> GetOrderTrackingAsync(GetOrderTrackingStatus trackingStatus);
@@ -46,6 +48,21 @@ namespace Minimart_Api.Repositories.Order
         Task<List<MerchantOrderDto>> GetMerchantOrdersAsync(MerchantRequestDto requestDto);
         Task<List<MerchantOrderDto>> GetAdminOrdersAsync();
         Task<Status> AddOrder(OrderListDto transaction);
+
+        /// <summary>
+        /// Get detailed order progress showing status of each product
+        /// </summary>
+        //Task<OrderProgressResponse> GetOrderProgressAsync(string orderId);
+
+        /// <summary>
+        /// Checks if an order can be marked as completed
+        /// </summary>
+        //Task<bool> CanCompleteOrderAsync(string orderId);
+
+        /// <summary>
+        /// Gets summary of orders by status for reporting
+        /// </summary>
+        //Task<Dictionary<string, int>> GetOrderStatusSummaryAsync(Guid? merchantId = null);
     }
 
     // Service result for repository operations

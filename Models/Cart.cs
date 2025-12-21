@@ -19,6 +19,9 @@ namespace Minimart_Api.Models
         [Column(TypeName = "timestamp with time zone")]
         public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
+        [Column(TypeName = "timestamp with time zone")]
+        public DateTime? UpdatedAt { get; set; }
+
         // Navigation property to ApplicationUser (modern Identity system)
         [ForeignKey("ApplicationUserId")]
         public virtual ApplicationUser? User { get; set; }

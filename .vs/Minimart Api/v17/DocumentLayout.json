@@ -3,6 +3,41 @@
   "WorkspaceRootPath": "E:\\MinimartApi_Staging\\OrderApi\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\repositories\\order\\orderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:repositories\\order\\orderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\repositories\\order\\iorderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:repositories\\order\\iorderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\models\\cart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:models\\cart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\models\\counties.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:models\\counties.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\services\\orderservice\\orderservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:services\\orderservice\\orderservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\services\\orderservice\\iorderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:services\\orderservice\\iorderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ADMIN\\Downloads\\OrderStatuses (2).json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\services\\productservice\\iproductservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:services\\productservice\\iproductservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\repositories\\productrepository\\productrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:repositories\\productrepository\\productrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -11,24 +46,12 @@
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:services\\productservice\\productservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\services\\productservice\\iproductservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:services\\productservice\\iproductservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\repositories\\order\\orderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:repositories\\order\\orderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\controllers\\paymentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:controllers\\paymentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:controllers\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\services\\payouts\\ipayoutservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -175,9 +198,6 @@
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:models\\paymentmethods.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ADMIN\\Downloads\\response_1764901262045.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\controllers\\addresscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:controllers\\addresscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -304,10 +324,6 @@
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ADMIN\\Downloads\\OrderStatuses (1).json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\repositories\\order\\iorderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:repositories\\order\\iorderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\1829104016\\ProductSummaryDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -401,6 +417,10 @@
     {
       "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\product_orderproducts_fix_summary.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
       "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:product_orderproducts_fix_summary.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|e:\\minimartapi_staging\\orderapi\\cart_update_implementation_guide.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{2FF942EC-A1CC-4582-A267-E6BB64801BF4}|MinimartApi.csproj|solutionrelative:cart_update_implementation_guide.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
     }
   ],
   "DocumentGroupContainers": [
@@ -414,83 +434,167 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 44,
-              "Title": "response_1764901262045.json",
-              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\response_1764901262045.json",
-              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\response_1764901262045.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-12-05T02:21:49.099Z",
-              "IsPinned": true
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ProductController.cs",
-              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\ProductController.cs",
-              "RelativeDocumentMoniker": "Controllers\\ProductController.cs",
-              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\ProductController.cs",
-              "RelativeToolTip": "Controllers\\ProductController.cs",
-              "ViewState": "AgIAALwAAAAAAAAAAAAswL8AAAA5AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-30T03:17:23.884Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "IProductService.cs",
-              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\ProductService\\IProductService.cs",
-              "RelativeDocumentMoniker": "Services\\ProductService\\IProductService.cs",
-              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Services\\ProductService\\IProductService.cs",
-              "RelativeToolTip": "Services\\ProductService\\IProductService.cs",
-              "ViewState": "AgIAAA8AAAAAAAAAAADwvxMAAAA0AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-30T03:10:17.256Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 10,
               "Title": "ProductService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\ProductService\\ProductService.cs",
               "RelativeDocumentMoniker": "Services\\ProductService\\ProductService.cs",
               "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Services\\ProductService\\ProductService.cs",
               "RelativeToolTip": "Services\\ProductService\\ProductService.cs",
-              "ViewState": "AgIAAFEAAAAAAAAAAADwv1cAAAAsAAAAAAAAAA==",
+              "ViewState": "AgIAAEsAAAAAAAAAAAAwwFcAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-30T03:10:28.715Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Cart.cs",
+              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Models\\Cart.cs",
+              "RelativeDocumentMoniker": "Models\\Cart.cs",
+              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Models\\Cart.cs",
+              "RelativeToolTip": "Models\\Cart.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T09:04:58.315Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 108,
+              "Title": "CART_UPDATE_IMPLEMENTATION_GUIDE.md",
+              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\CART_UPDATE_IMPLEMENTATION_GUIDE.md",
+              "RelativeDocumentMoniker": "CART_UPDATE_IMPLEMENTATION_GUIDE.md",
+              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\CART_UPDATE_IMPLEMENTATION_GUIDE.md",
+              "RelativeToolTip": "CART_UPDATE_IMPLEMENTATION_GUIDE.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAANMAAAC0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-12-21T09:01:42.978Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Counties.cs",
+              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Models\\Counties.cs",
+              "RelativeDocumentMoniker": "Models\\Counties.cs",
+              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Models\\Counties.cs",
+              "RelativeToolTip": "Models\\Counties.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAA1wAwAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T08:42:40.371Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "ProductRepository.cs",
-              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\ProductRepository\\ProductRepository.cs",
-              "RelativeDocumentMoniker": "Repositories\\ProductRepository\\ProductRepository.cs",
-              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\ProductRepository\\ProductRepository.cs",
-              "RelativeToolTip": "Repositories\\ProductRepository\\ProductRepository.cs",
-              "ViewState": "AgIAADUAAAAAAAAAAAAIwDcAAAAxAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-30T03:12:47.322Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
               "Title": "OrderRepository.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\Order\\OrderRepository.cs",
               "RelativeDocumentMoniker": "Repositories\\Order\\OrderRepository.cs",
               "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\Order\\OrderRepository.cs",
               "RelativeToolTip": "Repositories\\Order\\OrderRepository.cs",
-              "ViewState": "AgIAAN0BAAAAAAAAAAAuwIoCAAAPAAAAAAAAAA==",
+              "ViewState": "AgIAADQAAAAAAAAAAAAQwEQAAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-29T03:45:36.544Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "IorderRepository.cs",
+              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\Order\\IorderRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Order\\IorderRepository.cs",
+              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\Order\\IorderRepository.cs",
+              "RelativeToolTip": "Repositories\\Order\\IorderRepository.cs",
+              "ViewState": "AgIAAGAAAAAAAAAAAAAAACkAAABKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-29T03:49:11.358Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "OrderController.cs",
+              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\OrderController.cs",
+              "RelativeDocumentMoniker": "Controllers\\OrderController.cs",
+              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\OrderController.cs",
+              "RelativeToolTip": "Controllers\\OrderController.cs",
+              "ViewState": "AgIAAEUAAAAAAAAAAAAYwIoBAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-03T18:47:25.756Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 5,
+              "Title": "OrderServices.cs",
+              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\OrderService\\OrderServices.cs",
+              "RelativeDocumentMoniker": "Services\\OrderService\\OrderServices.cs",
+              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Services\\OrderService\\OrderServices.cs",
+              "RelativeToolTip": "Services\\OrderService\\OrderServices.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAAYwBoAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T05:33:34.836Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "IOrderService.cs",
+              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\OrderService\\IOrderService.cs",
+              "RelativeDocumentMoniker": "Services\\OrderService\\IOrderService.cs",
+              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Services\\OrderService\\IOrderService.cs",
+              "RelativeToolTip": "Services\\OrderService\\IOrderService.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAsAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T05:32:38.868Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "OrderStatuses (2).json",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\OrderStatuses (2).json",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\OrderStatuses (2).json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAACaBwAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-12-21T04:51:26.977Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ProductRepository.cs",
+              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\ProductRepository\\ProductRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\ProductRepository\\ProductRepository.cs",
+              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\ProductRepository\\ProductRepository.cs",
+              "RelativeToolTip": "Repositories\\ProductRepository\\ProductRepository.cs",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAwwC4AAABUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-30T03:12:47.322Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "IProductService.cs",
+              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\ProductService\\IProductService.cs",
+              "RelativeDocumentMoniker": "Services\\ProductService\\IProductService.cs",
+              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Services\\ProductService\\IProductService.cs",
+              "RelativeToolTip": "Services\\ProductService\\IProductService.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAswBMAAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-30T03:10:17.256Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ProductController.cs",
+              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\ProductController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ProductController.cs",
+              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\ProductController.cs",
+              "RelativeToolTip": "Controllers\\ProductController.cs",
+              "ViewState": "AgIAAPUAAAAAAAAAAAAcwAEBAAA4AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-30T03:17:23.884Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
               "Title": "PaymentController.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\PaymentController.cs",
               "RelativeDocumentMoniker": "Controllers\\PaymentController.cs",
@@ -498,25 +602,11 @@
               "RelativeToolTip": "Controllers\\PaymentController.cs",
               "ViewState": "AgIAADQCAAAAAAAAAAAUwDkCAABEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-03T19:35:20.521Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-03T19:35:20.521Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "OrderController.cs",
-              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\OrderController.cs",
-              "RelativeDocumentMoniker": "Controllers\\OrderController.cs",
-              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\OrderController.cs",
-              "RelativeToolTip": "Controllers\\OrderController.cs",
-              "ViewState": "AgIAAH4BAAAAAAAAAADwv4IBAAA9AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-03T18:47:25.756Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 13,
               "Title": "IPayoutService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\Payouts\\IPayoutService.cs",
               "RelativeDocumentMoniker": "Services\\Payouts\\IPayoutService.cs",
@@ -524,12 +614,11 @@
               "RelativeToolTip": "Services\\Payouts\\IPayoutService.cs",
               "ViewState": "AgIAAAEAAAAAAAAAAAAAAE4AAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-16T01:12:27.873Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-16T01:12:27.873Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 18,
               "Title": "PayoutController.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\PayoutController.cs",
               "RelativeDocumentMoniker": "Controllers\\PayoutController.cs",
@@ -541,7 +630,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 17,
               "Title": "MinimartDBContext.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Data\\MinimartDBContext.cs",
               "RelativeDocumentMoniker": "Data\\MinimartDBContext.cs",
@@ -553,7 +642,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 14,
               "Title": "Products.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Models\\Products.cs",
               "RelativeDocumentMoniker": "Models\\Products.cs",
@@ -565,7 +654,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 16,
               "Title": "Program.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -577,7 +666,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 15,
               "Title": "PayoutService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\Payouts\\PayoutService.cs",
               "RelativeDocumentMoniker": "Services\\Payouts\\PayoutService.cs",
@@ -589,7 +678,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 103,
+              "DocumentIndex": 107,
               "Title": "PRODUCT_ORDERPRODUCTS_FIX_SUMMARY.md",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\PRODUCT_ORDERPRODUCTS_FIX_SUMMARY.md",
               "RelativeDocumentMoniker": "PRODUCT_ORDERPRODUCTS_FIX_SUMMARY.md",
@@ -601,7 +690,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 19,
               "Title": "DashboardController.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\DashboardController.cs",
               "RelativeDocumentMoniker": "Controllers\\DashboardController.cs",
@@ -613,7 +702,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 20,
               "Title": "PayoutDTOs.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Payouts\\PayoutDTOs.cs",
               "RelativeDocumentMoniker": "DTOS\\Payouts\\PayoutDTOs.cs",
@@ -625,7 +714,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 21,
               "Title": "PayoutTransaction.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Models\\PayoutTransaction.cs",
               "RelativeDocumentMoniker": "Models\\PayoutTransaction.cs",
@@ -637,7 +726,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 22,
               "Title": "Payout.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Models\\Payout.cs",
               "RelativeDocumentMoniker": "Models\\Payout.cs",
@@ -649,7 +738,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 101,
+              "DocumentIndex": 105,
               "Title": "PAYOUT_SYSTEM_IMPLEMENTATION_GUIDE.md",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\PAYOUT_SYSTEM_IMPLEMENTATION_GUIDE.md",
               "RelativeDocumentMoniker": "PAYOUT_SYSTEM_IMPLEMENTATION_GUIDE.md",
@@ -661,7 +750,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 102,
+              "DocumentIndex": 106,
               "Title": "PAYOUT_SYSTEM_TESTING_GUIDE.md",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\PAYOUT_SYSTEM_TESTING_GUIDE.md",
               "RelativeDocumentMoniker": "PAYOUT_SYSTEM_TESTING_GUIDE.md",
@@ -673,7 +762,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 23,
               "Title": "response_1765718139959.json",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\response_1765718139959.json",
               "ToolTip": "C:\\Users\\ADMIN\\Downloads\\response_1765718139959.json",
@@ -683,7 +772,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 26,
               "Title": "PaymentMethodDTOs.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\PaymentMethods\\PaymentMethodDTOs.cs",
               "RelativeDocumentMoniker": "DTOS\\PaymentMethods\\PaymentMethodDTOs.cs",
@@ -695,7 +784,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 25,
               "Title": "MerchantRepo.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\Merchant\\MerchantRepo.cs",
               "RelativeDocumentMoniker": "Repositories\\Merchant\\MerchantRepo.cs",
@@ -703,12 +792,11 @@
               "RelativeToolTip": "Repositories\\Merchant\\MerchantRepo.cs",
               "ViewState": "AgIAAOIAAAAAAAAAAAAAAOwAAABEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-02T17:44:49.449Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-02T17:44:49.449Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 24,
               "Title": "appsettings.json",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -720,7 +808,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 27,
               "Title": "PaymentMethodService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\PaymentMethods\\PaymentMethodService.cs",
               "RelativeDocumentMoniker": "Services\\PaymentMethods\\PaymentMethodService.cs",
@@ -732,7 +820,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 28,
               "Title": "IPaymentMethodService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\PaymentMethods\\IPaymentMethodService.cs",
               "RelativeDocumentMoniker": "Services\\PaymentMethods\\IPaymentMethodService.cs",
@@ -744,7 +832,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 29,
               "Title": "MerchantService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\Merchant\\MerchantService.cs",
               "RelativeDocumentMoniker": "Services\\Merchant\\MerchantService.cs",
@@ -756,7 +844,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 30,
               "Title": "MerchantController.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\MerchantController.cs",
               "RelativeDocumentMoniker": "Controllers\\MerchantController.cs",
@@ -764,12 +852,11 @@
               "RelativeToolTip": "Controllers\\MerchantController.cs",
               "ViewState": "AgIAAJMBAAAAAAAAAAApwJ4BAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-02T17:44:49.433Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-02T17:44:49.433Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 31,
               "Title": "EnhancedDashboardService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\Dashboard\\EnhancedDashboardService.cs",
               "RelativeDocumentMoniker": "Services\\Dashboard\\EnhancedDashboardService.cs",
@@ -781,7 +868,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 32,
               "Title": "TopProductDto.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Dashboard\\TopProductDto.cs",
               "RelativeDocumentMoniker": "DTOS\\Dashboard\\TopProductDto.cs",
@@ -793,7 +880,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 33,
               "Title": "response_1765688068120.json",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\response_1765688068120.json",
               "ToolTip": "C:\\Users\\ADMIN\\Downloads\\response_1765688068120.json",
@@ -803,7 +890,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 35,
               "Title": "CategoryService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\Category\\CategoryService.cs",
               "RelativeDocumentMoniker": "Services\\Category\\CategoryService.cs",
@@ -815,7 +902,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 36,
               "Title": "ICategoryService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\Category\\ICategoryService.cs",
               "RelativeDocumentMoniker": "Services\\Category\\ICategoryService.cs",
@@ -827,7 +914,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 37,
               "Title": "CategoryController.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\CategoryController.cs",
               "RelativeDocumentMoniker": "Controllers\\CategoryController.cs",
@@ -839,7 +926,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 34,
               "Title": "CategoryRepo.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\CategoryRepository\\CategoryRepo.cs",
               "RelativeDocumentMoniker": "Repositories\\CategoryRepository\\CategoryRepo.cs",
@@ -851,7 +938,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 38,
               "Title": "EnhancedMerchantDtos.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Merchants\\EnhancedMerchantDtos.cs",
               "RelativeDocumentMoniker": "DTOS\\Merchants\\EnhancedMerchantDtos.cs",
@@ -863,7 +950,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 40,
               "Title": "response_1765333284118.json",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\response_1765333284118.json",
               "ToolTip": "C:\\Users\\ADMIN\\Downloads\\response_1765333284118.json",
@@ -873,7 +960,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 100,
+              "DocumentIndex": 104,
               "Title": "Merchant_PaymentMethods_Integration_Guide.md",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Merchant_PaymentMethods_Integration_Guide.md",
               "RelativeDocumentMoniker": "Merchant_PaymentMethods_Integration_Guide.md",
@@ -885,7 +972,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 99,
+              "DocumentIndex": 103,
               "Title": "PostgreSQL_ExecutionStrategy_Fix_Guide.md",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\PostgreSQL_ExecutionStrategy_Fix_Guide.md",
               "RelativeDocumentMoniker": "PostgreSQL_ExecutionStrategy_Fix_Guide.md",
@@ -897,7 +984,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 41,
               "Title": "Verify_MerchantPaymentMethods.sql",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Verify_MerchantPaymentMethods.sql",
               "RelativeDocumentMoniker": "Verify_MerchantPaymentMethods.sql",
@@ -908,7 +995,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 42,
               "Title": "Create_MerchantPaymentMethods_Table.sql",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Create_MerchantPaymentMethods_Table.sql",
               "RelativeDocumentMoniker": "Create_MerchantPaymentMethods_Table.sql",
@@ -919,7 +1006,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 98,
+              "DocumentIndex": 102,
               "Title": "MerchantPaymentMethods_Test_Guide.md",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\MerchantPaymentMethods_Test_Guide.md",
               "RelativeDocumentMoniker": "MerchantPaymentMethods_Test_Guide.md",
@@ -931,7 +1018,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 39,
               "Title": "Merchants.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Models\\Merchants.cs",
               "RelativeDocumentMoniker": "Models\\Merchants.cs",
@@ -943,7 +1030,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 43,
               "Title": "Database_Migration_Documents_Array.sql",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Database_Migration_Documents_Array.sql",
               "RelativeDocumentMoniker": "Database_Migration_Documents_Array.sql",
@@ -954,7 +1041,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 44,
               "Title": "MerchantResponseDtos.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Merchants\\MerchantResponseDtos.cs",
               "RelativeDocumentMoniker": "DTOS\\Merchants\\MerchantResponseDtos.cs",
@@ -966,7 +1053,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 45,
               "Title": "merchant-registration-example.js",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\merchant-registration-example.js",
               "RelativeDocumentMoniker": "merchant-registration-example.js",
@@ -978,7 +1065,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 46,
               "Title": "IMerchantService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\Merchant\\IMerchantService.cs",
               "RelativeDocumentMoniker": "Services\\Merchant\\IMerchantService.cs",
@@ -990,7 +1077,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 97,
+              "DocumentIndex": 101,
               "Title": "MERCHANT_REGISTRATION_UPDATE.md",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\MERCHANT_REGISTRATION_UPDATE.md",
               "RelativeDocumentMoniker": "MERCHANT_REGISTRATION_UPDATE.md",
@@ -1002,7 +1089,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 47,
               "Title": "MerchantPaymentMethod.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Models\\MerchantPaymentMethod.cs",
               "RelativeDocumentMoniker": "Models\\MerchantPaymentMethod.cs",
@@ -1014,7 +1101,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 43,
+              "DocumentIndex": 49,
               "Title": "PaymentMethods.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Models\\PaymentMethods.cs",
               "RelativeDocumentMoniker": "Models\\PaymentMethods.cs",
@@ -1026,7 +1113,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
+              "DocumentIndex": 48,
               "Title": "Microsoft.CSharp.Core.targets",
               "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\Roslyn\\Microsoft.CSharp.Core.targets",
               "ToolTip": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\Roslyn\\Microsoft.CSharp.Core.targets",
@@ -1036,7 +1123,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 45,
+              "DocumentIndex": 50,
               "Title": "AddressController.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\AddressController.cs",
               "RelativeDocumentMoniker": "Controllers\\AddressController.cs",
@@ -1048,7 +1135,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 48,
+              "DocumentIndex": 53,
               "Title": "IAddressService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\Address\\IAddressService.cs",
               "RelativeDocumentMoniker": "Services\\Address\\IAddressService.cs",
@@ -1060,7 +1147,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 46,
+              "DocumentIndex": 51,
               "Title": "AddressRepositoryNew.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\AddressesRepo\\AddressRepositoryNew.cs",
               "RelativeDocumentMoniker": "Repositories\\AddressesRepo\\AddressRepositoryNew.cs",
@@ -1072,7 +1159,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 47,
+              "DocumentIndex": 52,
               "Title": "AddressServiceNew.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\Address\\AddressServiceNew.cs",
               "RelativeDocumentMoniker": "Services\\Address\\AddressServiceNew.cs",
@@ -1084,7 +1171,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 96,
+              "DocumentIndex": 100,
               "Title": "GetAddressDTO.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-187797160\\GetAddressDTO.cs",
               "ToolTip": "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-187797160\\GetAddressDTO.cs",
@@ -1094,7 +1181,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 49,
+              "DocumentIndex": 54,
               "Title": "AddressService.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-708316186\\AddressService.cs",
               "ToolTip": "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-708316186\\AddressService.cs",
@@ -1104,7 +1191,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 95,
+              "DocumentIndex": 99,
               "Title": "EditAddressDTO.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-1844249621\\EditAddressDTO.cs",
               "ToolTip": "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-1844249621\\EditAddressDTO.cs",
@@ -1114,7 +1201,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 94,
+              "DocumentIndex": 98,
               "Title": "AddressRepo.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\1720078122\\AddressRepo.cs",
               "ToolTip": "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\1720078122\\AddressRepo.cs",
@@ -1124,7 +1211,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 91,
+              "DocumentIndex": 95,
               "Title": "AddressDTO.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Address\\AddressDTO.cs",
               "RelativeDocumentMoniker": "DTOS\\Address\\AddressDTO.cs",
@@ -1136,7 +1223,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 93,
+              "DocumentIndex": 97,
               "Title": "AddressRepository.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\AddressesRepo\\AddressRepository.cs",
               "RelativeDocumentMoniker": "Repositories\\AddressesRepo\\AddressRepository.cs",
@@ -1148,7 +1235,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 92,
+              "DocumentIndex": 96,
               "Title": "IAddressRepository.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\AddressesRepo\\IAddressRepository.cs",
               "RelativeDocumentMoniker": "Repositories\\AddressesRepo\\IAddressRepository.cs",
@@ -1160,7 +1247,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 90,
+              "DocumentIndex": 94,
               "Title": "ICartRepository.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\Cart\\ICartRepository.cs",
               "RelativeDocumentMoniker": "Repositories\\Cart\\ICartRepository.cs",
@@ -1172,7 +1259,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 50,
+              "DocumentIndex": 55,
               "Title": "CartController.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\CartController.cs",
               "RelativeDocumentMoniker": "Controllers\\CartController.cs",
@@ -1180,12 +1267,11 @@
               "RelativeToolTip": "Controllers\\CartController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAABJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-02T17:44:49.366Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-02T17:44:49.366Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 53,
+              "DocumentIndex": 58,
               "Title": "CartService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\Cart\\CartService.cs",
               "RelativeDocumentMoniker": "Services\\Cart\\CartService.cs",
@@ -1197,7 +1283,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 54,
+              "DocumentIndex": 59,
               "Title": "response_1764965320160.json",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\response_1764965320160.json",
               "ToolTip": "C:\\Users\\ADMIN\\Downloads\\response_1764965320160.json",
@@ -1207,7 +1293,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 51,
+              "DocumentIndex": 56,
               "Title": "ICartService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\Cart\\ICartService.cs",
               "RelativeDocumentMoniker": "Services\\Cart\\ICartService.cs",
@@ -1219,7 +1305,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 52,
+              "DocumentIndex": 57,
               "Title": "CartRepository.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\Cart\\CartRepository.cs",
               "RelativeDocumentMoniker": "Repositories\\Cart\\CartRepository.cs",
@@ -1231,7 +1317,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 89,
+              "DocumentIndex": 93,
               "Title": "CartDTOs.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Cart\\CartDTOs.cs",
               "RelativeDocumentMoniker": "DTOS\\Cart\\CartDTOs.cs",
@@ -1243,7 +1329,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 55,
+              "DocumentIndex": 60,
               "Title": "IProductRepository.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\ProductRepository\\IProductRepository.cs",
               "RelativeDocumentMoniker": "Repositories\\ProductRepository\\IProductRepository.cs",
@@ -1255,7 +1341,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 88,
+              "DocumentIndex": 92,
               "Title": "BaseProductDto.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Products\\BaseProductDto.cs",
               "RelativeDocumentMoniker": "DTOS\\Products\\BaseProductDto.cs",
@@ -1267,7 +1353,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 56,
+              "DocumentIndex": 61,
               "Title": "SimilarProductsService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\SimilarProducts\\SimilarProductsService.cs",
               "RelativeDocumentMoniker": "Services\\SimilarProducts\\SimilarProductsService.cs",
@@ -1279,7 +1365,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 57,
+              "DocumentIndex": 62,
               "Title": "response_1764963806781.json",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\response_1764963806781.json",
               "ToolTip": "C:\\Users\\ADMIN\\Downloads\\response_1764963806781.json",
@@ -1289,7 +1375,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 58,
+              "DocumentIndex": 63,
               "Title": "ProductController.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\AppData\\Local\\SourceServer\\cf379320f30d4d0afef11cc707f0988679591573c3f4dd542094f088e4c6f441\\Controllers\\ProductController.cs",
               "ToolTip": "C:\\Users\\ADMIN\\AppData\\Local\\SourceServer\\cf379320f30d4d0afef11cc707f0988679591573c3f4dd542094f088e4c6f441\\Controllers\\ProductController.cs",
@@ -1299,7 +1385,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 59,
+              "DocumentIndex": 64,
               "Title": "IEnhancedDashboardService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\Dashboard\\IEnhancedDashboardService.cs",
               "RelativeDocumentMoniker": "Services\\Dashboard\\IEnhancedDashboardService.cs",
@@ -1311,7 +1397,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 60,
+              "DocumentIndex": 65,
               "Title": "Order.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Models\\Order.cs",
               "RelativeDocumentMoniker": "Models\\Order.cs",
@@ -1323,7 +1409,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 86,
+              "DocumentIndex": 90,
               "Title": "IMerchantRepo.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\Merchant\\IMerchantRepo.cs",
               "RelativeDocumentMoniker": "Repositories\\Merchant\\IMerchantRepo.cs",
@@ -1335,7 +1421,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 87,
+              "DocumentIndex": 91,
               "Title": "Enhanced_Merchant_Controller_Implementation_Guide.md",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Enhanced_Merchant_Controller_Implementation_Guide.md",
               "RelativeDocumentMoniker": "Enhanced_Merchant_Controller_Implementation_Guide.md",
@@ -1347,7 +1433,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 61,
+              "DocumentIndex": 66,
               "Title": "OrderProduct.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Models\\OrderProduct.cs",
               "RelativeDocumentMoniker": "Models\\OrderProduct.cs",
@@ -1359,7 +1445,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 83,
+              "DocumentIndex": 87,
               "Title": "TopMerchantDto.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Dashboard\\TopMerchantDto.cs",
               "RelativeDocumentMoniker": "DTOS\\Dashboard\\TopMerchantDto.cs",
@@ -1371,7 +1457,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 65,
+              "DocumentIndex": 70,
               "Title": "IdentityController.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Controllers\\IdentityController.cs",
               "RelativeDocumentMoniker": "Controllers\\IdentityController.cs",
@@ -1383,7 +1469,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 62,
+              "DocumentIndex": 67,
               "Title": "DashboardController.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-1590876635\\DashboardController.cs",
               "ToolTip": "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-1590876635\\DashboardController.cs",
@@ -1393,7 +1479,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 84,
+              "DocumentIndex": 88,
               "Title": "NewMerchantDto.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Dashboard\\NewMerchantDto.cs",
               "RelativeDocumentMoniker": "DTOS\\Dashboard\\NewMerchantDto.cs",
@@ -1405,7 +1491,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 85,
+              "DocumentIndex": 89,
               "Title": "AdminDashboardSummary.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Dashboard\\AdminDashboardSummary.cs",
               "RelativeDocumentMoniker": "DTOS\\Dashboard\\AdminDashboardSummary.cs",
@@ -1417,7 +1503,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 63,
+              "DocumentIndex": 68,
               "Title": "IdentityService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\Identity\\IdentityService.cs",
               "RelativeDocumentMoniker": "Services\\Identity\\IdentityService.cs",
@@ -1429,7 +1515,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 64,
+              "DocumentIndex": 69,
               "Title": "AuthRepository.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\Authorization\\AuthRepository.cs",
               "RelativeDocumentMoniker": "Repositories\\Authorization\\AuthRepository.cs",
@@ -1441,7 +1527,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 67,
+              "DocumentIndex": 72,
               "Title": "ICurrentUserService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\CurrentUserServices\\ICurrentUserService.cs",
               "RelativeDocumentMoniker": "Services\\CurrentUserServices\\ICurrentUserService.cs",
@@ -1453,7 +1539,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 66,
+              "DocumentIndex": 71,
               "Title": "CurrentUserService.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Services\\CurrentUserServices\\CurrentUserService.cs",
               "RelativeDocumentMoniker": "Services\\CurrentUserServices\\CurrentUserService.cs",
@@ -1465,7 +1551,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 68,
+              "DocumentIndex": 73,
               "Title": "RecentOrderDto.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Dashboard\\RecentOrderDto.cs",
               "RelativeDocumentMoniker": "DTOS\\Dashboard\\RecentOrderDto.cs",
@@ -1477,7 +1563,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 69,
+              "DocumentIndex": 74,
               "Title": "SalesDataPoint.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Dashboard\\SalesDataPoint.cs",
               "RelativeDocumentMoniker": "DTOS\\Dashboard\\SalesDataPoint.cs",
@@ -1489,7 +1575,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 70,
+              "DocumentIndex": 75,
               "Title": "PaymentMethodStats.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Dashboard\\PaymentMethodStats.cs",
               "RelativeDocumentMoniker": "DTOS\\Dashboard\\PaymentMethodStats.cs",
@@ -1501,7 +1587,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 71,
+              "DocumentIndex": 76,
               "Title": "OrderStatusCount.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Dashboard\\OrderStatusCount.cs",
               "RelativeDocumentMoniker": "DTOS\\Dashboard\\OrderStatusCount.cs",
@@ -1513,7 +1599,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 72,
+              "DocumentIndex": 77,
               "Title": "MerchantDashboardSummary.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Dashboard\\MerchantDashboardSummary.cs",
               "RelativeDocumentMoniker": "DTOS\\Dashboard\\MerchantDashboardSummary.cs",
@@ -1525,7 +1611,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 82,
+              "DocumentIndex": 86,
               "Title": "EnhancedDashboardDtos.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\918399556\\EnhancedDashboardDtos.cs",
               "ToolTip": "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\918399556\\EnhancedDashboardDtos.cs",
@@ -1535,7 +1621,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 73,
+              "DocumentIndex": 78,
               "Title": "ApiResponse.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\General\\ApiResponse.cs",
               "RelativeDocumentMoniker": "DTOS\\General\\ApiResponse.cs",
@@ -1547,7 +1633,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 80,
+              "DocumentIndex": 84,
               "Title": "CategoryMappingProfile.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Mappings\\CategoryMappingProfile.cs",
               "RelativeDocumentMoniker": "Mappings\\CategoryMappingProfile.cs",
@@ -1559,7 +1645,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 79,
+              "DocumentIndex": 83,
               "Title": "ProductSummaryDto.cs",
               "DocumentMoniker": "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\1829104016\\ProductSummaryDto.cs",
               "ToolTip": "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\1829104016\\ProductSummaryDto.cs",
@@ -1569,7 +1655,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 81,
+              "DocumentIndex": 85,
               "Title": "SubCategoryResponseDto.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\SubCategory\\SubCategoryResponseDto.cs",
               "RelativeDocumentMoniker": "DTOS\\SubCategory\\SubCategoryResponseDto.cs",
@@ -1581,7 +1667,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 74,
+              "DocumentIndex": 79,
               "Title": "ICategoryRepo.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\CategoryRepository\\ICategoryRepo.cs",
               "RelativeDocumentMoniker": "Repositories\\CategoryRepository\\ICategoryRepo.cs",
@@ -1593,7 +1679,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 75,
+              "DocumentIndex": 80,
               "Title": "ProductMappingProfile.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Mappings\\ProductMappingProfile.cs",
               "RelativeDocumentMoniker": "Mappings\\ProductMappingProfile.cs",
@@ -1605,7 +1691,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 76,
+              "DocumentIndex": 81,
               "Title": "ApproveProductRequest.cs",
               "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\DTOS\\Products\\ApproveProductRequest.cs",
               "RelativeDocumentMoniker": "DTOS\\Products\\ApproveProductRequest.cs",
@@ -1617,25 +1703,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 77,
+              "DocumentIndex": 82,
               "Title": "OrderStatuses (1).json",
               "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\OrderStatuses (1).json",
               "ToolTip": "C:\\Users\\ADMIN\\Downloads\\OrderStatuses (1).json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAABVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2025-11-29T03:56:50.592Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 78,
-              "Title": "IorderRepository.cs",
-              "DocumentMoniker": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\Order\\IorderRepository.cs",
-              "RelativeDocumentMoniker": "Repositories\\Order\\IorderRepository.cs",
-              "ToolTip": "E:\\MinimartApi_Staging\\OrderApi\\Repositories\\Order\\IorderRepository.cs",
-              "RelativeToolTip": "Repositories\\Order\\IorderRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAxwE8AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-29T03:49:11.358Z"
             }
           ]
         }

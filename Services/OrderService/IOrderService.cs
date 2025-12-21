@@ -8,7 +8,7 @@ namespace Minimart_Api.Services.OrderService.OrderService
     public interface IOrderService
     {
         Task<List<GetOrdersDTO>> GetOrdersByStatusAsync(int status, string userID);
-
+        public  Task<List<GetOrdersDTO>> GetUserOrdersAsync(string userId);
         Task<List<OrderStatus>> GetOrderStatusAsync();
         Task<Status> UpdateOrderStatusAsync(OrderTrackingDTO orderTracking);
         //Task<List<OrderTracking>> GetOrderTrackingAsync(GetOrderTrackingStatus trackingStatus);

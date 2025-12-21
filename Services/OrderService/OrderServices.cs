@@ -22,6 +22,11 @@ namespace Minimart_Api.Services.OrderService
             return await _orderRepository.GetOrdersByStatusAsync(status, userID);
         }
 
+        public async Task<List<GetOrdersDTO>> GetUserOrdersAsync(string userID)
+        {
+            return await _orderRepository.GetUserOrdersAsync(userID);
+        }
+
         public async Task<List<OrderStatus>> GetOrderStatusAsync()
         {
             return await _orderRepository.GetOrderStatusAsync();

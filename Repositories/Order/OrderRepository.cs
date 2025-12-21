@@ -1,4 +1,12 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using AspNetCore.ReportingServices.ReportProcessing.ReportObjectModel;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
@@ -21,12 +29,6 @@ using Minimart_Api.Services.SignalR;
 using Newtonsoft.Json;
 using Npgsql;
 using StackExchange.Redis;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Minimart_Api.Repositories.Order
 {
@@ -650,18 +652,6 @@ namespace Minimart_Api.Repositories.Order
         {
             try
             {
-                // Convert int status to string for comparison
-                var statusString = status switch
-                {
-                    1 => "Pending",
-                    2 => "Processing", 
-                    3 => "Paid",
-                    4 => "Shipped",
-                    5 => "Delivered",
-                    6 => "Cancelled",
-                    _ => "Pending"
-                };
-
                 // Step 1: Fetch orders directly without joins to OrderStatuses
                 //var ordersWithStatus = await _dbContext.Orders
                 //    .Where(o => o.StatusID == status && o.ApplicationUserId == userID && o.StatusEnum == Models.Enums.OrderStatusEnum.Paid)
@@ -720,6 +710,65 @@ namespace Minimart_Api.Repositories.Order
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting orders by status for user {UserID}", userID);
+                return new List<GetOrdersDTO>();
+            }
+        }
+
+
+        public async Task<List<GetOrdersDTO>> GetUserOrdersAsync(string userId)
+        {
+            try {
+
+                var userOrders = await _dbContext.Orders.Where(o=> o.ApplicationUserId == userId).ToListAsync();
+                //loop through the orders to bind with GetOrdersDto
+                var orders = new List<GetOrdersDTO>();
+
+                foreach (var userOrder in userOrders) {
+
+                    var products = JsonConvert.DeserializeObject<List<OrderProductsDTO>>(userOrder.ProductsJson);
+
+                    // Fetch ImageUrl for each product
+                    var productsWithImages = products?.Select(p => new OrderProductsDTO
+                    {
+                        ProductID = p.ProductID,
+                        ProductName = p.ProductName,
+                        Quantity = p.Quantity,
+                        Price = p.Price,
+                        merchantId = p.merchantId,
+                        ImageUrl = _dbContext.Products
+                            .Where(tp => tp.ProductId.ToString() == p.ProductID.ToString())
+                            .Select(tp => tp.ImageUrls.FirstOrDefault() ?? "")
+                            .FirstOrDefault() ?? ""
+                    }).ToList();
+
+                    // Map to GetOrdersDTO
+                    var getOrderDTO = new GetOrdersDTO
+                    {
+                        OrderID = userOrder.OrderID,
+                        OrderDate = userOrder.OrderDate,
+                        TotalOrderAmount = (double)userOrder.TotalOrderAmount,
+                        Status = userOrder.StatusMessage,
+                        PaymentConfirmation = userOrder.PaymentConfirmation,
+                        TotalPaymentAmount = (double)userOrder.TotalPaymentAmount,
+                        TotalDeliveryFees = (double)userOrder.TotalDeliveryFees,
+                        TotalTax = (double)userOrder.TotalTax,
+                        ShippingAddress = JsonConvert.DeserializeObject<ShippingAddress>(userOrder.ShippingAddress),
+                        Products = productsWithImages,
+                        PickUpLocation = JsonConvert.DeserializeObject<PickUpLocation>(userOrder.PickupLocation),
+                        PaymentDetails = JsonConvert.DeserializeObject<List<PaymentDetailsDto>>(userOrder.PaymentDetailsJson)
+                    };
+
+
+                    orders.Add(getOrderDTO);
+
+                }
+
+                return orders;
+
+            }
+            catch (Exception ex) {
+            
+                _logger.LogError(ex, "Error getting orders by status for user {UserID}", userId);
                 return new List<GetOrdersDTO>();
             }
         }
@@ -1202,6 +1251,9 @@ namespace Minimart_Api.Repositories.Order
 
                         _dbContext.Orders.Add(newOrder);
 
+                        // Update cart items - remove purchased items from user's cart
+                        await UpdateCartItemsAsync(orderDto.Products, orderDto.ApplicationUserId);
+
                         await TrackOrderAsync(newOrder);
                     }
 
@@ -1231,135 +1283,136 @@ namespace Minimart_Api.Repositories.Order
 
         #endregion
 
-        #region Order Progress and Status Queries
+        #region Cart Management Methods
 
         /// <summary>
-        /// Gets detailed order progress showing status of each product
+        /// Updates cart items by removing purchased products from the user's cart
         /// </summary>
-        public async Task<OrderProgressResponse> GetOrderProgressAsync(string orderId)
+        private async Task UpdateCartItemsAsync(List<OrderProductsDTO> purchasedProducts, string applicationUserId)
         {
             try
             {
-                var order = await _dbContext.Orders
-                    .Include(o => o.OrderProducts)
-                        .ThenInclude(op => op.Product)
-                    .FirstOrDefaultAsync(o => o.OrderID == orderId);
-
-                if (order == null)
+                if (purchasedProducts == null || !purchasedProducts.Any() || string.IsNullOrEmpty(applicationUserId))
                 {
-                    return null;
+                    _logger.LogWarning("No products to remove from cart or invalid user ID");
+                    return;
                 }
 
-                var productProgress = new List<ProductProgressDto>();
-                
-                foreach (var orderProduct in order.OrderProducts)
-                {
-                    // Get latest tracking for this product
-                    var latestTracking = await _dbContext.OrderTracking
-                        .Where(ot => ot.OrderID == orderId && ot.ProductId == orderProduct.ProductId)
-                        .OrderByDescending(ot => ot.UpdatedOn)
-                        .FirstOrDefaultAsync();
+                // Get the user's cart
+                var userCart = await _dbContext.Cart
+                    .Include(c => c.CartItems)
+                    .FirstOrDefaultAsync(c => c.ApplicationUserId == applicationUserId);
 
-                    productProgress.Add(new ProductProgressDto
+                if (userCart == null || !userCart.CartItems.Any())
+                {
+                    _logger.LogInformation("No cart found or cart is empty for user {UserId}", applicationUserId);
+                    return;
+                }
+
+                var removedItemsCount = 0;
+                var updatedItemsCount = 0;
+
+                // Process each purchased product
+                foreach (var purchasedProduct in purchasedProducts)
+                {
+                    // Find matching cart item
+                    var cartItem = userCart.CartItems
+                        .FirstOrDefault(ci => ci.ProductId == purchasedProduct.ProductID);
+
+                    if (cartItem != null)
                     {
-                        ProductId = orderProduct.ProductId,
-                        ProductName = orderProduct.Product?.ProductName ?? "Unknown Product",
-                        Quantity = orderProduct.Quantity,
-                        Status = MapOrderStatusEnumToString(orderProduct.Status),
-                        StatusEnum = orderProduct.Status,
-                        LastUpdated = orderProduct.UpdatedOn ?? orderProduct.CreatedOn,
-                        TrackingId = latestTracking?.TrackingID,
-                        ExpectedDeliveryDate = latestTracking?.ExpectedDeliveryDate,
-                        Carrier = latestTracking?.Carrier,
-                        CurrentLocation = latestTracking?.Location
-                    });
+                        if (cartItem.Quantity <= purchasedProduct.Quantity)
+                        {
+                            // Remove the cart item completely if purchased quantity >= cart quantity
+                            userCart.CartItems.Remove(cartItem);
+                            _dbContext.CartItems.Remove(cartItem);
+                            removedItemsCount++;
+
+                            _logger.LogInformation("Removed product {ProductId} from cart for user {UserId} - Purchased: {PurchasedQty}, Cart had: {CartQty}", 
+                                purchasedProduct.ProductID, applicationUserId, purchasedProduct.Quantity, cartItem.Quantity);
+                        }
+                        else
+                        {
+                            // Reduce the cart item quantity if cart quantity > purchased quantity
+                            cartItem.Quantity -= purchasedProduct.Quantity;
+                            cartItem.UpdatedOn = DateTime.UtcNow;
+                            _dbContext.CartItems.Update(cartItem);
+                            updatedItemsCount++;
+
+                            _logger.LogInformation("Reduced quantity for product {ProductId} in cart for user {UserId} - Purchased: {PurchasedQty}, Remaining: {RemainingQty}", 
+                                purchasedProduct.ProductID, applicationUserId, purchasedProduct.Quantity, cartItem.Quantity);
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogDebug("Product {ProductId} not found in cart for user {UserId}", 
+                            purchasedProduct.ProductID, applicationUserId);
+                    }
                 }
 
-                // Calculate progress percentages
-                var totalProducts = order.OrderProducts.Count;
-                var deliveredProducts = order.OrderProducts.Count(op => op.Status == Models.Enums.OrderStatusEnum.Delivered);
-                var shippedProducts = order.OrderProducts.Count(op => op.Status == Models.Enums.OrderStatusEnum.Shipped);
-                var processingProducts = order.OrderProducts.Count(op => 
-                    op.Status == Models.Enums.OrderStatusEnum.PaymentProcessing || 
-                    op.Status == Models.Enums.OrderStatusEnum.Paid);
-
-                return new OrderProgressResponse
+                // Update cart's UpdatedAt timestamp if any changes were made
+                if (removedItemsCount > 0 || updatedItemsCount > 0)
                 {
-                    OrderId = orderId,
-                    OverallStatus = order.Status,
-                    OverallStatusEnum = order.StatusEnum,
-                    StatusMessage = order.StatusMessage,
-                    TotalProducts = totalProducts,
-                    DeliveredProducts = deliveredProducts,
-                    ShippedProducts = shippedProducts,
-                    ProcessingProducts = processingProducts,
-                    ProgressPercentage = totalProducts > 0 ? (deliveredProducts * 100.0 / totalProducts) : 0,
-                    ProductProgress = productProgress,
-                    LastUpdated = order.OrderProducts.Max(op => op.UpdatedOn ?? op.CreatedOn),
-                    EstimatedDeliveryDate = productProgress
-                        .Where(p => p.ExpectedDeliveryDate.HasValue)
-                        .Max(p => p.ExpectedDeliveryDate)
-                };
+                    //userCart.UpdatedAt = DateTime.UtcNow;
+                    _dbContext.Cart.Update(userCart);
+
+                    _logger.LogInformation("Updated cart for user {UserId} - Removed {RemovedCount} items, Updated {UpdatedCount} items", 
+                        applicationUserId, removedItemsCount, updatedItemsCount);
+                }
+                else
+                {
+                    _logger.LogInformation("No cart items were affected for user {UserId}", applicationUserId);
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting order progress for {OrderId}", orderId);
-                return null;
+                _logger.LogError(ex, "Error updating cart items for user {UserId}", applicationUserId);
+                // Don't throw the exception as cart update failure shouldn't fail the order
+                // The order should still be processed even if cart update fails
             }
         }
 
         /// <summary>
-        /// Checks if an order can be marked as completed
+        /// Alternative method that completely clears the user's cart (if preferred)
         /// </summary>
-        public async Task<bool> CanCompleteOrderAsync(string orderId)
+        private async Task ClearUserCartAsync(string applicationUserId)
         {
             try
             {
-                var allProductsDelivered = await _dbContext.OrderProducts
-                    .Where(op => op.OrderID == orderId)
-                    .AllAsync(op => op.Status == Models.Enums.OrderStatusEnum.Delivered);
-
-                return allProductsDelivered;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error checking if order {OrderId} can be completed", orderId);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Gets summary of orders by status for reporting
-        /// </summary>
-        public async Task<Dictionary<string, int>> GetOrderStatusSummaryAsync(Guid? merchantId = null)
-        {
-            try
-            {
-                var query = _dbContext.Orders.AsQueryable();
-                
-                if (merchantId.HasValue)
+                if (string.IsNullOrEmpty(applicationUserId))
                 {
-                    // Filter by merchant through OrderProducts
-                    var merchantOrderIds = await _dbContext.OrderProducts
-                        .Where(op => op.MerchantID == merchantId.Value)
-                        .Select(op => op.OrderID)
-                        .Distinct()
-                        .ToListAsync();
-                    
-                    query = query.Where(o => merchantOrderIds.Contains(o.OrderID));
+                    _logger.LogWarning("Invalid user ID provided for cart clearing");
+                    return;
                 }
 
-                var statusSummary = await query
-                    .GroupBy(o => o.Status)
-                    .Select(g => new { Status = g.Key, Count = g.Count() })
-                    .ToDictionaryAsync(x => x.Status ?? "Unknown", x => x.Count);
+                var userCart = await _dbContext.Cart
+                    .Include(c => c.CartItems)
+                    .FirstOrDefaultAsync(c => c.ApplicationUserId == applicationUserId);
 
-                return statusSummary;
+                if (userCart == null)
+                {
+                    _logger.LogInformation("No cart found for user {UserId}", applicationUserId);
+                    return;
+                }
+
+                if (userCart.CartItems.Any())
+                {
+                    var itemCount = userCart.CartItems.Count;
+                    _dbContext.CartItems.RemoveRange(userCart.CartItems);
+                    userCart.UpdatedAt = DateTime.UtcNow;
+                    _dbContext.Cart.Update(userCart);
+
+                    _logger.LogInformation("Cleared {ItemCount} items from cart for user {UserId}", itemCount, applicationUserId);
+                }
+                else
+                {
+                    _logger.LogInformation("Cart was already empty for user {UserId}", applicationUserId);
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting order status summary");
-                return new Dictionary<string, int>();
+                _logger.LogError(ex, "Error clearing cart for user {UserId}", applicationUserId);
+                // Don't throw the exception as cart clearing failure shouldn't fail the order
             }
         }
 

@@ -393,6 +393,20 @@ namespace Minimart_Api.Controllers
         }
 
         /// <summary>
+        /// Original: Get User Orders
+        /// </summary>
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetUserOrders(string userId)
+        {
+            var orders = await _orderService.GetUserOrdersAsync(userId);
+            if (orders == null || orders.Count == 0)
+            {
+                return NotFound("No orders found for the given status.");
+            }
+            return Ok(orders);
+        }
+
+        /// <summary>
         /// Original: Get order status (Maintained for backward compatibility)
         /// </summary>
         [HttpGet("GetOrderStatus")]
