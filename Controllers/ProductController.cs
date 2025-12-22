@@ -189,7 +189,8 @@ namespace Minimart_Api.Controllers
         {
             try
             {
-                var result = await _productService.GetAllAsync(filter);
+                var defaultFilter = new ProductFilterDto { PageSize = 50 }; // Default pagination
+                var result = await _productService.GetAllAsync(defaultFilter);
                 return Ok(result);
             }
             catch (Exception ex)
