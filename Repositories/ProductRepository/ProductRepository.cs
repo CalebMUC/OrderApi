@@ -52,8 +52,8 @@ namespace Minimart_Api.Repositories.ProductRepository
                     .Include(p => p.Category)
                     .Include(p => p.SubCategory)
                     .Include(p => p.SubSubCategory)
-                    .Where(p => !p.IsDeleted
-                            && p.IsActive);
+                    .Where(p => !p.IsDeleted);
+                            //&& p.IsActive);
 
                 query = ApplyFilters(query, filter);
 
