@@ -1246,9 +1246,10 @@ namespace Minimart_Api.Repositories.Order
                         //Getting MerchnatId and ProductId from the extracted productIds
                         var productMerchantMap = await _dbContext.Products
                                                     .Where(p => productIds.Contains(p.ProductId))
-                                                    .ToDictionaryAsync(p =>
-                                                        p.MerchantID,
-                                                        p => p.ProductId
+                                                    .ToDictionaryAsync(
+                                                        p => p.ProductId,
+                                                        p =>p.MerchantID
+                                                        
                                                     );
 
                         if (productMerchantMap.Count != productIds.Count)
