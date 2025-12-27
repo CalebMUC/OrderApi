@@ -1241,7 +1241,20 @@ namespace Minimart_Api.Repositories.Order
                                 throw new Exception($"Payment not confirmed for {paymentMethod} payment method.");
                         }
 
-                        var newOrder = await CreateOrderEntity(orderDto, existingPayment);
+                        var productIds = orderDto.Products.Select(P => P.ProductID).Distinct().ToList();
+
+                        //Getting MerchnatId and ProductId from the extracted productIds
+                        var productMerchantMap = await _dbContext.Products
+                                                    .Where(p => productIds.Contains(p.ProductId))
+                                                    .ToDictionaryAsync(p =>
+                                                        p.MerchantID,
+                                                        p => p.ProductId
+                                                    );
+
+                        if (productMerchantMap.Count != productIds.Count)
+                            throw new Exception("One or more products are invalid.");
+
+                        var newOrder = await CreateOrderEntity(orderDto, existingPayment,productMerchantMap);
 
                         // Update payment Details with OrderID
                         //existingPayment.OrderID = newOrder.OrderID; //PaymentID is the foreign key in Orders table
@@ -1420,7 +1433,7 @@ namespace Minimart_Api.Repositories.Order
 
         #region Private Helper Methods
 
-        private async Task<Models.Order> CreateOrderEntity(OrderDTO orderDto, PaymentDetails payment)
+        private async Task<Models.Order> CreateOrderEntity(OrderDTO orderDto, PaymentDetails payment,Dictionary<Guid, Guid> productMerchants)
         {
             // Use the ApplicationUserId directly as a string since we're now using Identity system
             var applicationUserId = orderDto.ApplicationUserId ?? throw new Exception("Application User ID is required");
@@ -1470,17 +1483,28 @@ namespace Minimart_Api.Repositories.Order
                 TotalTax = orderDto.TotalTax,
                 PaymentDetailsJson = JsonConvert.SerializeObject(orderDto.PaymentDetails),
                 ProductsJson = JsonConvert.SerializeObject(orderDto.Products),
-                OrderProducts = orderDto.Products.Select(p => new OrderProduct
+
+                OrderProducts = orderDto.Products.Select(p => 
                 {
+                    if(!productMerchants.TryGetValue(p.ProductID,out var merchantId))
+                        throw new Exception($"Merchant not found for Product ID {p.ProductID}");
+
+
+                return new OrderProduct
+                {
+
                     ProductId = p.ProductID,
                     Quantity = p.Quantity,
                     OrderID = orderDto.OrderID,
-                    MerchantID = p.merchantId,
+                    MerchantID = merchantId,
                     TotalPrice = (decimal)(p.Price * p.Quantity),
                     Status = statusEnum, // Use corresponding enum
                     CreatedOn = utcNow,  // Use UTC DateTime
                     UpdatedOn = utcNow   // Use UTC DateTime
+                };
+
                 }).ToList(),
+
                 ShippingAddress = JsonConvert.SerializeObject(orderDto.ShippingAddress),
                 PickupLocation = JsonConvert.SerializeObject(orderDto.PickUpLocation),
                 StatusEnum = statusEnum,
