@@ -28,7 +28,7 @@ namespace Minimart_Api.Services.EmailServices
                 // Build HTML email body
                 var emailBody = $@"
                 <html>
-                <head><title>Welcome to QuickCrate - Merchant Account Created</title></head>
+                <head><title>Welcome to QuickCrate Express Limited - Merchant Account Created</title></head>
                 <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
                     <div style='max-width: 600px; margin: 0 auto; padding: 20px;'>
                         <h2 style='color: #2563eb;'>Welcome to QuickCrate Platform!</h2>
@@ -73,23 +73,37 @@ namespace Minimart_Api.Services.EmailServices
 
                 // ✅ Brevo SMTP implementation
                 var message = new MimeMessage();
+                //message.From.Add(new MailboxAddress(
+                //    _configuration["Brevo:FromName"] ?? "QuickCrate Platform",
+                //    _configuration["Brevo:FromAddress"]));
+
                 message.From.Add(new MailboxAddress(
-                    _configuration["Brevo:FromName"] ?? "QuickCrate Platform",
-                    _configuration["Brevo:FromAddress"]));
+                        _configuration["Zoho:FromName"] ?? "QuickCrate Express Limited",
+                        _configuration["Zoho:FromAddress"]));
+
                 message.To.Add(new MailboxAddress(businessName, email));
                 message.Subject = "Welcome to QuickCrate - Your Account is Ready!";
                 message.Body = new TextPart(TextFormat.Html) { Text = emailBody };
 
                 using var client = new SmtpClient();
 
+                //await client.ConnectAsync(
+                //    _configuration["Brevo:SmtpHost"] ?? "smtp-relay.brevo.com",
+                //    int.Parse(_configuration["Brevo:SmtpPort"] ?? "587"),
+                //    SecureSocketOptions.StartTls);
+
+                //await client.AuthenticateAsync(
+                //    _configuration["Brevo:SmtpUser"],
+                //    _configuration["Brevo:SmtpPass"]);
+
                 await client.ConnectAsync(
-                    _configuration["Brevo:SmtpHost"] ?? "smtp-relay.brevo.com",
-                    int.Parse(_configuration["Brevo:SmtpPort"] ?? "587"),
-                    SecureSocketOptions.StartTls);
+                        _configuration["Zoho:SmtpHost"],
+                        int.Parse(_configuration["Zoho:SmtpPort"]),
+                        SecureSocketOptions.StartTls);
 
                 await client.AuthenticateAsync(
-                    _configuration["Brevo:SmtpUser"],
-                    _configuration["Brevo:SmtpPass"]);
+                    _configuration["Zoho:SmtpUser"],
+                    _configuration["Zoho:SmtpPass"]);
 
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
