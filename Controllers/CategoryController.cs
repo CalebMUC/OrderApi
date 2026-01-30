@@ -224,12 +224,13 @@ namespace Minimart_Api.Controllers
         /// 
         [HttpGet("subcategories")]
         [ProducesResponseType(typeof(ApiResponse<List<SubCategoryResponseDto>>), 200)]
-        public async Task<ActionResult<ApiResponse<List<SubCategoryResponseDto>>>> GetAllSubCategories(
-            [FromQuery] bool includeProducts = false)
+        public async Task<ActionResult<ApiResponse<List<SubCategoryResponseDto>>>> GetAllSubCategories(Guid merchantId)
         {
+
             try
             {
-                var merchantId = _currentUserService.MerchantId;
+                bool includeProducts = false;
+                //var merchantId = _currentUserService.MerchantId;
                 
                 if (merchantId == Guid.Empty)
                 {

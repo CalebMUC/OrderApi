@@ -1392,8 +1392,8 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "includeProducts",
-        "Type": "System.Boolean",
+        "Name": "merchantId",
+        "Type": "System.Guid",
         "IsRequired": false
       }
     ],

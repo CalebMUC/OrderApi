@@ -2188,11 +2188,11 @@
         ],
         "parameters": [
           {
-            "name": "includeProducts",
+            "name": "merchantId",
             "in": "query",
             "schema": {
-              "type": "boolean",
-              "default": false
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
