@@ -1842,6 +1842,64 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Minimart_Api.Controllers.EmailTestController",
+    "Method": "TestBrevoHtmlEmail",
+    "RelativePath": "api/EmailTest/brevo/test-html",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.Controllers.TestEmailRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.EmailTestController",
+    "Method": "TestBrevoPlainEmail",
+    "RelativePath": "api/EmailTest/brevo/test-plain",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.Controllers.TestEmailRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.EmailTestController",
+    "Method": "GetConfigStatus",
+    "RelativePath": "api/EmailTest/config/status",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.EmailTestController",
+    "Method": "TestMerchantWelcomeEmail",
+    "RelativePath": "api/EmailTest/merchant/test-welcome",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Minimart_Api.Controllers.MerchantWelcomeTestRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Minimart_Api.Controllers.EntitiesController",
     "Method": "CreateCategory",
     "RelativePath": "api/Entities/CreateCategory",
