@@ -10,7 +10,10 @@ node_modules/
 *.log
 
 # Ignore sensitive configuration files
-appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+appsettings.Local.json
 appsettings.*.json
 !appsettings.Template.json
 !appsettings.Development.Template.json
