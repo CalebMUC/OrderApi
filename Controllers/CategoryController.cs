@@ -224,13 +224,13 @@ namespace Minimart_Api.Controllers
         /// 
         [HttpGet("subcategories")]
         [ProducesResponseType(typeof(ApiResponse<List<SubCategoryResponseDto>>), 200)]
-        public async Task<ActionResult<ApiResponse<List<SubCategoryResponseDto>>>> GetAllSubCategories(Guid merchantId)
+        public async Task<ActionResult<ApiResponse<List<SubCategoryResponseDto>>>> GetAllSubCategories()
         {
 
             try
             {
                 bool includeProducts = false;
-                //var merchantId = _currentUserService.MerchantId;
+                var merchantId = _currentUserService.MerchantId;
                 
                 if (merchantId == Guid.Empty)
                 {
@@ -286,5 +286,98 @@ namespace Minimart_Api.Controllers
             var result = await _categoryService.UpdateSubCategoryAsync(subCategoryId, dto, merchantId, userId);
             return Ok(ApiResponse<SubCategoryResponseDto>.CreateSuccess(result));
         }
+
+        /// <summary>
+        /// Delete (soft delete) a subcategory
+        /// </summary>
+        /// <param name="subCategoryId">The ID of the subcategory to delete</param>
+        /// <returns>Success response if deletion is successful</returns>
+        /// <remarks>
+        /// This endpoint performs a hard delete of a subcategory.
+        /// 
+        /// **Validation Rules:**
+        /// - SubCategory must exist and belong to the current merchant
+        /// - SubCategory cannot have associated products
+        /// - SubCategory cannot have child sub-subcategories
+        /// 
+        /// **Sample Request:**
+        /// 
+        ///     DELETE /api/category/subcategories/{subCategoryId}
+        /// 
+        /// **Error Responses:**
+        /// - 400 Bad Request: Invalid subcategory ID or subcategory has dependencies
+        /// - 404 Not Found: SubCategory not found
+        /// - 500 Internal Server Error: Unexpected error occurred
+        /// </remarks>
+        [HttpDelete("subcategories/{subCategoryId}")]
+        [ProducesResponseType(typeof(ApiResponse), 200)]
+        [ProducesResponseType(typeof(ApiResponse), 400)]
+        [ProducesResponseType(typeof(ApiResponse), 404)]
+        [ProducesResponseType(typeof(ApiResponse), 500)]
+        public async Task<ActionResult<ApiResponse>> DeleteSubCategory(Guid subCategoryId)
+        {
+            try
+            {
+                // Validate subcategory ID
+                if (subCategoryId == Guid.Empty)
+                {
+                    _logger.LogWarning("Invalid subcategory ID provided: {SubCategoryId}", subCategoryId);
+                    return BadRequest(ApiResponse.CreateError("Invalid subcategory ID"));
+                }
+
+                // Get merchant ID from current user
+                var merchantId = _currentUserService.MerchantId;
+
+                if (merchantId == Guid.Empty)
+                {
+                    _logger.LogWarning("Invalid merchant ID for user");
+                    return BadRequest(ApiResponse.CreateError("Invalid merchant ID"));
+                }
+
+                _logger.LogInformation(
+                    "Attempting to delete subcategory {SubCategoryId} for merchant {MerchantId}",
+                    subCategoryId,
+                    merchantId);
+
+                // Call service to delete subcategory
+                await _categoryService.DeleteSubCategoryAsync(subCategoryId, merchantId);
+
+                _logger.LogInformation(
+                    "Successfully deleted subcategory {SubCategoryId} for merchant {MerchantId}",
+                    subCategoryId,
+                    merchantId);
+
+                return Ok(ApiResponse.CreateSuccessResponse("Subcategory deleted successfully"));
+            }
+            catch (Exceptions.NotFoundException ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    "SubCategory not found. SubCategoryId: {SubCategoryId}",
+                    subCategoryId);
+
+                return NotFound(ApiResponse.CreateError(ex.Message));
+            }
+            catch (Exceptions.BadRequestException ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    "Bad request when deleting subcategory. SubCategoryId: {SubCategoryId}",
+                    subCategoryId);
+
+                return BadRequest(ApiResponse.CreateError(ex.Message));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Unexpected error deleting subcategory {SubCategoryId}",
+                    subCategoryId);
+
+                return StatusCode(500, ApiResponse.CreateError(
+                    "An unexpected error occurred while deleting the subcategory"));
+            }
+        }
+
     }
 }
