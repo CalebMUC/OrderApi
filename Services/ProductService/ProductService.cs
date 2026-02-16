@@ -122,9 +122,25 @@ namespace Minimart_Api.Services.ProductService
             return await _productRepo.UpdateProductAsync(productId, status);
         }
 
+        /// <summary>
+        /// Approve or reject a product
+        /// </summary>
+        /// <param name="productId">The ID of the product</param>
+        /// <param name="status">The new status of the product (e.g., "approved", "rejected")</param>
+        /// <param name="approvedBy">The ID of the user approving/rejecting the product</param>
+        /// <returns>True if the operation was successful, otherwise false</returns>
         public async Task<bool> ApproveProductAsync(string productId, string status, string approvedBy)
         {
-            return await _productRepo.ApproveProductAsync(productId, status, approvedBy);
+            try
+            {
+                _logger.LogInformation("Approving product {ProductId} with status {Status}", productId, status);
+                return await _productRepo.ApproveProductAsync(productId, status, approvedBy);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error approving product {ProductId}", productId);
+                throw;
+            }
         }
 
         // ==========================
@@ -420,6 +436,44 @@ namespace Minimart_Api.Services.ProductService
         public async Task<List<ProductResponseDto>> CopyProductsToMerchantAsync(List<Guid> productIds, Guid targetMerchantId, string createdBy)
         {
             return await _productRepo.CopyProductsToMerchantAsync(productIds, targetMerchantId, createdBy);
+        }
+
+        // ==========================
+        // SEO SLUG MANAGEMENT
+        // ==========================
+        
+        /// <summary>
+        /// Get product by SEO-friendly slug
+        /// </summary>
+        public async Task<ProductResponseDto?> GetProductBySlugAsync(string slug)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching product by slug: {Slug}", slug);
+                return await _productRepo.GetProductBySlugAsync(slug);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching product by slug: {Slug}", slug);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Update product slug (called when product name changes)
+        /// </summary>
+        public async Task<bool> UpdateProductSlugAsync(Guid productId, string newSlug, string updatedBy)
+        {
+            try
+            {
+                _logger.LogInformation("Updating slug for product {ProductId}", productId);
+                return await _productRepo.UpdateProductSlugAsync(productId, newSlug, updatedBy);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating slug for product {ProductId}", productId);
+                throw;
+            }
         }
     }
 }

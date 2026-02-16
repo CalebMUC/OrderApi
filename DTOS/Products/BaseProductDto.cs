@@ -2,6 +2,9 @@
 
 namespace Minimart_Api.DTOS.Products
 {
+    /// <summary>
+    /// Base Product DTO - contains common properties shared across all product DTOs
+    /// </summary>
     public abstract class BaseProductDto
     {
         [Required(ErrorMessage = "Product name is required")]
@@ -57,6 +60,13 @@ namespace Minimart_Api.DTOS.Products
         [StringLength(100, ErrorMessage = "Product type cannot exceed 100 characters")]
         public string ProductType { get; set; } = string.Empty;
 
+        // **SEO PROPERTIES - NEW**
+        public string? Slug { get; set; }
+        public DateTime? SlugUpdatedAt { get; set; }
+        public string? MetaTitle { get; set; }
+        public string? MetaDescription { get; set; }
+        public string? MetaKeywords { get; set; }
+
         public bool IsActive { get; set; } = true;
         public bool IsFeatured { get; set; } = false;
 
@@ -64,6 +74,18 @@ namespace Minimart_Api.DTOS.Products
         public string Status { get; set; } = "pending";
 
         public List<string> ImageUrls { get; set; } = new();
+
+        // Merchant Information
+        [Required(ErrorMessage = "Merchant ID is required")]
+        public Guid MerchantID { get; set; }
+
+        // Timestamps
+        public DateTime CreatedOn { get; set; }
+        public DateTime? UpdatedOn { get; set; }
+
+        // Calculated Properties
+        public decimal DiscountedPrice => Price - (Price * Discount / 100);
+        public bool InStock => IsActive && StockQuantity > 0;
     }
 
     // Create Product DTO
@@ -115,9 +137,16 @@ namespace Minimart_Api.DTOS.Products
         public string SKU { get; set; } = string.Empty;
         public Guid CategoryId { get; set; }
         public Guid SubCategoryId { get; set; }
+        public Guid? SubSubCategoryId { get; set; } // ADDED
         public string CategoryName { get; set; } = string.Empty;
         public string? SubCategoryName { get; set; }
         public string? SubSubCategoryName { get; set; }
+
+        // **SEO PROPERTIES - NEW**
+        public string? Slug { get; set; }
+        public string? MetaTitle { get; set; }
+        public string? MetaDescription { get; set; }
+
         public string ProductDescription { get; set; } = string.Empty;
         public string ProductSpecification { get; set; } = string.Empty;
         public string BoxContents { get; set; } = string.Empty;

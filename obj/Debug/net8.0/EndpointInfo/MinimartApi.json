@@ -7525,6 +7525,65 @@
         }
       }
     },
+    "/api/Product/slug/{slug}": {
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponseDtoApiResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponseDtoApiResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponseDtoApiResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Report/Generate": {
       "post": {
         "tags": [
@@ -8660,6 +8719,27 @@
             "type": "string",
             "nullable": true
           },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "slugUpdatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "metaTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaKeywords": {
+            "type": "string",
+            "nullable": true
+          },
           "isActive": {
             "type": "boolean"
           },
@@ -8678,6 +8758,24 @@
               "type": "string"
             },
             "nullable": true
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "discountedPrice": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "inStock": {
+            "type": "boolean",
+            "readOnly": true
           },
           "merchantID": {
             "type": "string",
@@ -10663,6 +10761,33 @@
         },
         "additionalProperties": false
       },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
       "ProductCategoryDto": {
         "type": "object",
         "properties": {
@@ -10820,6 +10945,11 @@
             "type": "string",
             "format": "uuid"
           },
+          "subSubCategoryId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "categoryName": {
             "type": "string",
             "nullable": true
@@ -10829,6 +10959,18 @@
             "nullable": true
           },
           "subSubCategoryName": {
+            "type": "string",
+            "nullable": true
+          },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaDescription": {
             "type": "string",
             "nullable": true
           },
@@ -11049,6 +11191,27 @@
             "type": "string",
             "nullable": true
           },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "slugUpdatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "metaTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaKeywords": {
+            "type": "string",
+            "nullable": true
+          },
           "isActive": {
             "type": "boolean"
           },
@@ -11067,6 +11230,15 @@
               "type": "string"
             },
             "nullable": true
+          },
+          "discountedPrice": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "inStock": {
+            "type": "boolean",
+            "readOnly": true
           },
           "productId": {
             "type": "string",
@@ -11116,6 +11288,29 @@
           },
           "subSubCategory": {
             "$ref": "#/components/schemas/ProductSubSubCategoryDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProductResponseDtoApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/ProductResponseDto"
           }
         },
         "additionalProperties": false
@@ -12244,6 +12439,7 @@
       "UpdateProductDto": {
         "required": [
           "categoryId",
+          "merchantID",
           "price",
           "productId",
           "productName",
@@ -12347,6 +12543,27 @@
             "type": "string",
             "nullable": true
           },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "slugUpdatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "metaTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaKeywords": {
+            "type": "string",
+            "nullable": true
+          },
           "isActive": {
             "type": "boolean"
           },
@@ -12365,6 +12582,28 @@
               "type": "string"
             },
             "nullable": true
+          },
+          "merchantID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "discountedPrice": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "inStock": {
+            "type": "boolean",
+            "readOnly": true
           },
           "productId": {
             "type": "string",

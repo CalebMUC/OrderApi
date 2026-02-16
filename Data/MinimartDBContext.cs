@@ -47,6 +47,8 @@ namespace Minimart_Api.Data
         public virtual DbSet<Payout> Payouts { get; set; }
         public virtual DbSet<PayoutTransaction> PayoutTransactions { get; set; }
 
+        public virtual DbSet<SlugRedirect> SlugRedirects { get; set; } // ADD THIS LINE
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Call base method first for Identity tables
@@ -211,6 +213,25 @@ namespace Minimart_Api.Data
 
         private void ConfigureAdditionalEntities(ModelBuilder modelBuilder)
         {
+            // Configure SlugRedirect entity (SEO)
+            modelBuilder.Entity<SlugRedirect>(entity =>
+            {
+                entity.ToTable("SlugRedirects");
+                entity.HasKey(sr => sr.Id);
+                
+                entity.Property(sr => sr.CreatedAt)
+                    .HasColumnType("timestamp with time zone");
+                
+                entity.HasOne(sr => sr.Product)
+                    .WithMany()
+                    .HasForeignKey(sr => sr.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasIndex(sr => sr.OldSlug);
+                entity.HasIndex(sr => sr.NewSlug);
+                entity.HasIndex(sr => sr.ProductId);
+            });
+
             // Configure CartItem entity
             modelBuilder.Entity<CartItem>(entity =>
             {

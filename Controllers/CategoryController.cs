@@ -232,7 +232,7 @@ namespace Minimart_Api.Controllers
                 bool includeProducts = false;
                 var merchantId = _currentUserService.MerchantId;
                 
-                if (merchantId == Guid.Empty)
+                    if (merchantId == Guid.Empty)
                 {
                     return BadRequest(ApiResponse.CreateError("Invalid merchant ID"));
                 }

@@ -98,16 +98,19 @@ namespace Minimart_Api.Services.ProductService
         Task<bool> ApplyDiscountAsync(Guid productId, decimal discount, string updatedBy);
         Task<bool> BulkUpdatePricesAsync(List<Guid> productIds, decimal priceAdjustment, bool isPercentage, string updatedBy);
 
-        // Duplicate and Copy
+        // ==========================
+        // DUPLICATE & COPY
+        // ==========================
         Task<ProductResponseDto> DuplicateProductAsync(Guid productId, string newProductName, string createdBy);
         Task<List<ProductResponseDto>> CopyProductsToMerchantAsync(List<Guid> productIds, Guid targetMerchantId, string createdBy);
 
-        // Legacy methods for backward compatibility
-        //Task<IEnumerable<Product>> GetAllProducts();
-        //Task<IEnumerable<Product>> FetchAllProducts();
-        //Task<IEnumerable<CartResults>> GetProductsByCategory(int CategoryID);
-        //Task<PagedResultDto<ProductListDto>> GetProductsByCategoryLegacyAsync(int categoryId, ProductFilterDto filter);
-        //Task<IEnumerable<Product>> LoadProductImages(string ProductID);
+        // ==========================
+        // SEO SLUG MANAGEMENT
+        // ==========================
+        Task<ProductResponseDto?> GetProductBySlugAsync(string slug);
+        Task<bool> UpdateProductSlugAsync(Guid productId, string newSlug, string updatedBy);
+        
+        // Product Approval
         Task<bool> ApproveProductAsync(string productId, string status, string approvedBy);
     }
 }

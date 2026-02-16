@@ -34,6 +34,29 @@ namespace Minimart_Api.Models
         [MaxLength(100)]
         public string SKU { get; set; } = string.Empty;
 
+        // ============================================================
+        // SEO PROPERTIES
+        // ============================================================
+        [StringLength(300)]
+        [Column("Slug")]
+        public string? Slug { get; set; }
+
+        [Column("SlugUpdatedAt")]
+        public DateTime? SlugUpdatedAt { get; set; }
+
+        [StringLength(150)]
+        [Column("MetaTitle")]
+        public string? MetaTitle { get; set; }
+
+        [StringLength(300)]
+        [Column("MetaDescription")]
+        public string? MetaDescription { get; set; }
+
+        [StringLength(500)]
+        [Column("MetaKeywords")]
+        public string? MetaKeywords { get; set; }
+        // ============================================================
+
         // Category Information
         public Guid CategoryId { get; set; }
 
@@ -51,7 +74,7 @@ namespace Minimart_Api.Models
         public string? SubSubCategoryName { get; set; }
 
         [MaxLength(4000)]
-        public string ProductSpecification { get; set; } = string.Empty; //save as Json
+        public string ProductSpecification { get; set; } = string.Empty;
 
         [MaxLength(2000)]
         public string Features { get; set; } = string.Empty;
@@ -135,8 +158,5 @@ namespace Minimart_Api.Models
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public virtual ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
         public virtual ICollection<Reviews> Reviews { get; set; } = new List<Reviews>();
-
-        // Legacy category navigation removed on purpose to avoid EF creating implicit FK 'CategoriesCategoryId'
-        // public virtual Categories? Categories { get; set; }  <-- REMOVED
     }
 }

@@ -166,8 +166,8 @@ builder.Services.AddScoped<IRecommendationRepository, RecommendationRepository>(
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
-//builder.Services.AddScoped<ISystemMerchants, MerchantsService>();
-//builder.Services.AddScoped<ISystemMerchantRepo, SystemMerchantRepo>();
+// Add SEO Slug Service
+builder.Services.AddScoped<Minimart_Api.Services.SlugService.ISlugService, Minimart_Api.Services.SlugService.SlugService>();
 
 //builder.Services.AddScoped<ICategoriesService, CategoriesNewService>();
 //builder.Services.AddScoped<ICategoryRepos, CategoryRepos>();

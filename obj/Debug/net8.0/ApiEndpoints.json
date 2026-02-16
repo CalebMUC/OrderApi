@@ -4023,6 +4023,41 @@
   },
   {
     "ContainingType": "Minimart_Api.Controllers.ProductController",
+    "Method": "GetProductBySlug",
+    "RelativePath": "api/Product/slug/{slug}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "slug",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Minimart_Api.DTOS.General.ApiResponse\u00601[[Minimart_Api.DTOS.Products.ProductResponseDto, MinimartApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      }
+    ]
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.ProductController",
     "Method": "GetBySubCategory",
     "RelativePath": "api/Product/subcategory/{subCategoryId}",
     "HttpMethod": "POST",
