@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MinimartApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+970276e806680dc78785e3e517d6852666345b65")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e9b4ca70744653757fee0917b7a5e54ebb7ed52c")]
 [assembly: System.Reflection.AssemblyProductAttribute("MinimartApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MinimartApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

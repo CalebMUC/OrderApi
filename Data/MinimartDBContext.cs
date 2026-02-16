@@ -217,10 +217,13 @@ namespace Minimart_Api.Data
             modelBuilder.Entity<SlugRedirect>(entity =>
             {
                 entity.ToTable("SlugRedirects");
-                entity.HasKey(sr => sr.Id);
+                entity.HasKey(sr => sr.RedirectId); // FIXED: Changed from Id to RedirectId
                 
                 entity.Property(sr => sr.CreatedAt)
                     .HasColumnType("timestamp with time zone");
+                
+                entity.Property(sr => sr.IsActive)
+                    .HasDefaultValue(true);
                 
                 entity.HasOne(sr => sr.Product)
                     .WithMany()
@@ -230,6 +233,7 @@ namespace Minimart_Api.Data
                 entity.HasIndex(sr => sr.OldSlug);
                 entity.HasIndex(sr => sr.NewSlug);
                 entity.HasIndex(sr => sr.ProductId);
+                entity.HasIndex(sr => sr.IsActive);
             });
 
             // Configure CartItem entity
