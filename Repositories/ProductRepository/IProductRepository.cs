@@ -94,18 +94,8 @@ namespace Minimart_Api.Repositories.ProductRepository
         Task<ProductResponseDto> DuplicateProductAsync(Guid productId, string newProductName, string createdBy);
         Task<List<ProductResponseDto>> CopyProductsToMerchantAsync(List<Guid> productIds, Guid targetMerchantId, string createdBy);
 
-        // Legacy methods for backward compatibility
-        Task<IEnumerable<Product>> GetAllProducts();
-        Task<IEnumerable<Product>> FetchAllProducts();
-        Task<IEnumerable<Product>> LoadProductImages(string productId);
-        Task<IEnumerable<CartResults>> GetProductsByCategory(int? CategoryID);
-
-        // Similar products methods (updated signatures)
-        Task<Product?> GetByIdAsync(string productId);
-        Task<IEnumerable<Product>> GetProductsByIdsAsync(IEnumerable<string> productIds);
-        Task<IEnumerable<Product>> GetProductsByCategoryAsync(int categoryId, int limit, string excludeProductId);
-        Task<IEnumerable<Product>> GetProductsBySubCategoryAsync(int subCategoryId, int limit, string excludeProductId);
-        Task<IEnumerable<Product>> GetProductsByKeywordsAsync(IEnumerable<string> keywords, int limit, string excludeProductId);
-        Task<IEnumerable<Product>> GetPopularProductsAsync(int limit, string excludeProductId);
+        // SEO Slug Management
+        Task<ProductResponseDto?> GetProductBySlugAsync(string slug);
+        Task<bool> UpdateProductSlugAsync(Guid productId, string newSlug, string updatedBy);
     }
 }

@@ -69,7 +69,7 @@ namespace Minimart_Api.Services.Cart
         {
             try
             {
-                var product = await _productRepository.GetByIdAsync(itemDto.ProductId.ToString());
+                var product = await _productRepository.GetByIdAsync(itemDto.ProductId);
                 if (product == null)
                 {
                     throw new ArgumentException("Product not found");
@@ -85,7 +85,20 @@ namespace Minimart_Api.Services.Cart
                 };
 
                 var result = await _legacyCartRepo.SaveItemAsync(savedItem);
-                return MapToLegacyDto(result, product);
+                
+                // Map ProductResponseDto to SavedProductsDto
+                return new SavedProductsDto
+                {
+                    ProductID = product.ProductId,
+                    ProductName = product.ProductName,
+                    ProductImage = product.ImageUrls?.FirstOrDefault() ?? "",
+                    Price = product.Price,
+                    Discount = (double)product.Discount,
+                    InStock = product.InStock,
+                    CategoryName = product.CategoryName ?? "",
+                    SavedOn = result.SavedOn,
+                    Quantity = result.Quantity
+                };
             }
             catch (Exception ex)
             {
@@ -130,14 +143,30 @@ namespace Minimart_Api.Services.Cart
 
                 var savedItems = await _legacyCartRepo.GetSavedItemsAsync(legacyUserId);
                 
-                var productIds = savedItems.Select(s => s.ProductId.ToString()).ToList();
-                var products = await _productRepository.GetProductsByIdsAsync(productIds);
-
-                return savedItems.Select(si =>
+                // Fetch products individually instead of using non-existent GetProductsByIdsAsync
+                var result = new List<SavedProductsDto>();
+                
+                foreach (var savedItem in savedItems)
                 {
-                    var product = products.FirstOrDefault(p => p.ProductId == si.ProductId);
-                    return MapToLegacyDto(si, product);
-                }).Where(dto => dto != null).ToList()!;
+                    var product = await _productRepository.GetByIdAsync(savedItem.ProductId);
+                    if (product != null)
+                    {
+                        result.Add(new SavedProductsDto
+                        {
+                            ProductID = product.ProductId,
+                            ProductName = product.ProductName,
+                            ProductImage = product.ImageUrls?.FirstOrDefault() ?? "",
+                            Price = product.Price,
+                            Discount = (double)product.Discount,
+                            InStock = product.InStock,
+                            CategoryName = product.CategoryName ?? "",
+                            SavedOn = savedItem.SavedOn,
+                            Quantity = savedItem.Quantity
+                        });
+                    }
+                }
+
+                return result;
             }
             catch (Exception ex)
             {
@@ -146,7 +175,7 @@ namespace Minimart_Api.Services.Cart
             }
         }
 
-        private SavedProductsDto? MapToLegacyDto(SavedItems savedItem, Product? product)
+        private SavedProductsDto? MapToLegacyDto(SavedItems savedItem, ProductResponseDto? product)
         {
             if (product == null) return null;
 
@@ -156,8 +185,8 @@ namespace Minimart_Api.Services.Cart
                 ProductName = product.ProductName,
                 ProductImage = product.ImageUrls?.FirstOrDefault() ?? "",
                 Price = product.Price,
-                Discount = product.Discount != null ? (double)product.Discount : 0,
-                InStock = product.IsActive,
+                Discount = (double)product.Discount,
+                InStock = product.InStock,
                 CategoryName = product.CategoryName ?? "",
                 SavedOn = savedItem.SavedOn,
                 Quantity = savedItem.Quantity

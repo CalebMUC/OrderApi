@@ -34,6 +34,8 @@ namespace Minimart_Api.Repositories.Category
 
                 var queryable = _context.Categories
                     .Include(c => c.SubCategories)
+                        .ThenInclude(sc=> sc.Products.Where(p=> !p.IsDeleted && p.IsActive))
+                    .Include(c => c.SubCategories)
                         .ThenInclude(sc => sc.SubSubCategories)
                     .Where(c => c.IsActive); // Only active categories by default
 
@@ -79,7 +81,31 @@ namespace Minimart_Api.Repositories.Category
                     .Take(query.PageSize)
                     .ToListAsync();
 
-                var mappedCategories = _mapper.Map<List<CategoryResponseDto>>(categories);
+                //var mappedCategories = _mapper.Map<List<CategoryResponseDto>>(categories);
+                var mappedCategories = categories.Select(category =>
+                {
+                    var dto = _mapper.Map<CategoryResponseDto>(category);
+
+                    dto.ProductCount = category.SubCategories?
+                        .Where(sc => sc.IsActive)
+                        .Sum(sc => sc.Products?.Count(p => !p.IsDeleted && p.IsActive) ?? 0) ?? 0;
+
+                    if (dto.SubCategories != null)
+                    {
+                        foreach (var subCategoryDto in dto.SubCategories)
+                        {
+                            var subCategory = category.SubCategories?
+                                .FirstOrDefault(sc => sc.SubCategoryId == subCategoryDto.SubCategoryId);
+
+                            if (subCategory != null)
+                            {
+                                subCategoryDto.ProductCount = subCategory.Products?
+                                    .Count(p => !p.IsDeleted && p.IsActive) ?? 0;
+                            }
+                        }
+                    }
+                    return dto;
+                }).ToList();
 
                 return new PagedResultDto<CategoryResponseDto>
                 {

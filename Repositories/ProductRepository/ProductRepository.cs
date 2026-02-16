@@ -5,6 +5,7 @@ using Minimart_Api.DTOS.Products;
 using Minimart_Api.Models;
 using AutoMapper;
 using GeneralPagedResultDto = Minimart_Api.DTOS.General.PagedResultDto<Minimart_Api.DTOS.Products.ProductListDto>;
+using Minimart_Api.Services.SlugService;
 
 namespace Minimart_Api.Repositories.ProductRepository
 {
@@ -13,12 +14,14 @@ namespace Minimart_Api.Repositories.ProductRepository
         private readonly MinimartDBContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<ProductRepository> _logger;
+        private readonly ISlugService _slugService;
 
-        public ProductRepository(MinimartDBContext context, IMapper mapper, ILogger<ProductRepository> logger)
+        public ProductRepository(MinimartDBContext context, IMapper mapper, ILogger<ProductRepository> logger, ISlugService slugService)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
+            _slugService = slugService;
         }
 
 
@@ -127,6 +130,9 @@ namespace Minimart_Api.Repositories.ProductRepository
                     SubSubCategoryName = p.SubSubCategoryName,
                     ProductName = p.ProductName,
                     Description = p.Description,
+                    Slug = p.Slug,
+                    MetaTitle = p.MetaTitle,
+                    MetaDescription = p.MetaDescription,
                     Price = p.Price,
                     Discount = p.Discount,
                     StockQuantity = p.StockQuantity,
@@ -202,6 +208,9 @@ namespace Minimart_Api.Repositories.ProductRepository
                     SubSubCategoryName = p.SubSubCategoryName,
                     ProductName = p.ProductName,
                     Description = p.Description,
+                    Slug = p.Slug,
+                    MetaTitle = p.MetaTitle,
+                    MetaDescription = p.MetaDescription,
                     Price = p.Price,
                     Discount = p.Discount,
                     StockQuantity = p.StockQuantity,
@@ -254,6 +263,26 @@ namespace Minimart_Api.Repositories.ProductRepository
                 product.CreatedBy = createdBy;
                 product.IsActive = false;
 
+                // **GENERATE SEO SLUG AND META TAGS**
+                product.Slug = _slugService.GenerateSlug(createProductDto.ProductName, product.ProductId);
+                product.SlugUpdatedAt = DateTime.UtcNow;
+
+                // Auto-generate meta tags for SEO
+                product.MetaTitle = $"{createProductDto.ProductName} | Buy in Kenya | QuickCrate";
+                
+                product.MetaDescription = string.IsNullOrEmpty(createProductDto.Description) 
+                    ? $"Buy {createProductDto.ProductName} in Kenya at QuickCrate" 
+                    : createProductDto.Description.Length > 250 
+                        ? createProductDto.Description.Substring(0, 247) + "..." 
+                        : createProductDto.Description;
+
+                product.MetaKeywords = $"{createProductDto.ProductName}, Kenya, QuickCrate, " +
+                                      $"{createProductDto.CategoryName}, Buy Online";
+
+                _logger.LogInformation(
+                    "Generated slug '{Slug}' for new product '{ProductName}' (ID: {ProductId})", 
+                    product.Slug, product.ProductName, product.ProductId);
+
                 _context.Products.Add(product);
                 await _context.SaveChangesAsync();
 
@@ -288,8 +317,47 @@ namespace Minimart_Api.Repositories.ProductRepository
                     }
                 }
 
+                // **CHECK IF PRODUCT NAME CHANGED - REGENERATE SLUG IF NEEDED**
+                bool nameChanged = existingProduct.ProductName != updateProductDto.ProductName;
+
                 _mapper.Map(updateProductDto, existingProduct);
                 existingProduct.UpdatedBy = updatedBy;
+
+                // **REGENERATE SLUG IF PRODUCT NAME CHANGED**
+                if (nameChanged && !string.IsNullOrEmpty(updateProductDto.ProductName))
+                {
+                    var oldSlug = existingProduct.Slug;
+                    var newSlug = _slugService.GenerateSlug(updateProductDto.ProductName, existingProduct.ProductId);
+
+                    existingProduct.Slug = newSlug;
+                    existingProduct.SlugUpdatedAt = DateTime.UtcNow;
+
+                    // Store old slug in redirects table for SEO (301 redirect)
+                    if (!string.IsNullOrEmpty(oldSlug) && oldSlug != newSlug)
+                    {
+                        var redirect = new SlugRedirect
+                        {
+                            OldSlug = oldSlug,
+                            NewSlug = newSlug,
+                            ProductId = existingProduct.ProductId,
+                            CreatedAt = DateTime.UtcNow
+                        };
+
+                        _context.SlugRedirects.Add(redirect);
+
+                        _logger.LogInformation(
+                            "Product name changed. Created slug redirect: {OldSlug} -> {NewSlug} for ProductId {ProductId}",
+                            oldSlug, newSlug, existingProduct.ProductId);
+                    }
+
+                    // Update meta tags when product name changes
+                    existingProduct.MetaTitle = $"{updateProductDto.ProductName} | Buy in Kenya | QuickCrate";
+                    existingProduct.MetaDescription = string.IsNullOrEmpty(updateProductDto.Description) 
+                        ? $"Buy {updateProductDto.ProductName} in Kenya at QuickCrate" 
+                        : updateProductDto.Description.Length > 250 
+                            ? updateProductDto.Description.Substring(0, 247) + "..." 
+                            : updateProductDto.Description;
+                }
 
                 await _context.SaveChangesAsync();
 
@@ -353,6 +421,74 @@ namespace Minimart_Api.Repositories.ProductRepository
 
             // Simplified placeholder implementation
             return await Task.FromResult(true);
+        }
+
+        //Slug
+
+        public async Task<ProductResponseDto?> GetProductBySlugAsync(string slug)
+        {
+            try
+            {
+                var product = await _context.Products
+                    .Include(p => p.Category)
+                    .Include(p => p.SubCategory)
+                    .Where(p => p.Slug == slug && !p.IsDeleted && p.IsActive)
+                    .FirstOrDefaultAsync();
+
+                if (product == null)
+                {
+                    var redirect = await _context.SlugRedirects
+                        .Where(sr => sr.OldSlug == slug)
+                        .OrderByDescending(sr => sr.CreatedAt)
+                        .FirstOrDefaultAsync();
+
+                    if (redirect != null)
+                    {
+                        product = await _context.Products
+                            .Include(p => p.Category)
+                            .Where(p => p.Slug == redirect.NewSlug && !p.IsDeleted && p.IsActive)
+                            .FirstOrDefaultAsync();
+                    }
+                }
+
+                return product != null ? _mapper.Map<ProductResponseDto>(product) : null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching product by slug: {Slug}", slug);
+                return null;
+            }
+        }
+
+        public async Task<bool> UpdateProductSlugAsync(Guid productId, string newSlug, string updatedBy)
+        {
+            try
+            {
+                var product = await _context.Products.FindAsync(productId);
+                if (product == null) return false;
+
+                var oldSlug = product.Slug;
+                product.Slug = newSlug;
+                product.SlugUpdatedAt = DateTime.UtcNow;
+
+                if (!string.IsNullOrEmpty(oldSlug) && oldSlug != newSlug)
+                {
+                    _context.SlugRedirects.Add(new SlugRedirect
+                    {
+                        OldSlug = oldSlug,
+                        NewSlug = newSlug,
+                        ProductId = productId
+                    });
+                }
+
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating slug");
+                return false;
+            }
         }
         #endregion
 

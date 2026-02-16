@@ -21,7 +21,14 @@ namespace Minimart_Api.Services.SimilarProducts
         {
             try
             {
-                var targetProduct = await _productRepository.GetByIdAsync(productId);
+                // Parse productId to Guid
+                if (!Guid.TryParse(productId, out Guid productGuid))
+                {
+                    _logger.LogWarning("Invalid product ID format: {ProductId}", productId);
+                    return Enumerable.Empty<SimilarProductDto>();
+                }
+
+                var targetProduct = await _productRepository.GetByIdAsync(productGuid);
                 if (targetProduct == null)
                 {
                     _logger.LogWarning("Product {ProductId} not found", productId);
@@ -41,9 +48,9 @@ namespace Minimart_Api.Services.SimilarProducts
         }
 
         private IEnumerable<SimilarProductDto> FilterBySimilarityScore(
-        IEnumerable<Product> products,
-        Product targetProduct,
-        int minScore)
+            IEnumerable<ProductResponseDto> products,
+            ProductResponseDto targetProduct,
+            int minScore)
         {
             return products
                 .Select(p => new SimilarProductDto
@@ -53,7 +60,7 @@ namespace Minimart_Api.Services.SimilarProducts
                     ImageUrl = p.ImageUrls?.FirstOrDefault() ?? "",
                     Price = p.Price,
                     Discount = (double)p.Discount,
-                    InStock = p.IsActive,
+                    InStock = p.InStock,
                     CategoryName = p.CategoryName,
                     ProductDescription = p.ProductDescription,
                     SimilarityScore = CalculateSimilarityScore(targetProduct, p)
@@ -62,49 +69,135 @@ namespace Minimart_Api.Services.SimilarProducts
                 .OrderByDescending(p => p.SimilarityScore);
         }
 
-        private async Task<IEnumerable<Product>> FindSimilarProducts(Product targetProduct, int limit)
+        private async Task<IEnumerable<ProductResponseDto>> FindSimilarProducts(ProductResponseDto targetProduct, int limit)
         {
-            var results = new List<Product>();
+            var results = new List<ProductResponseDto>();
 
-            // 1. Same category products - Use hash codes for legacy compatibility
-            var sameCategoryProducts = await _productRepository
-                .GetProductsByCategoryAsync(targetProduct.CategoryId.GetHashCode(), limit, targetProduct.ProductId.ToString());
-            results.AddRange(sameCategoryProducts);
-
-            // 2. Same sub-category products if we need more
-            if (results.Count < limit && targetProduct.SubCategoryId.HasValue)
+            try
             {
-                var sameSubCategoryProducts = await _productRepository
-                    .GetProductsBySubCategoryAsync(targetProduct.SubCategoryId.Value.GetHashCode(),
-                                                 limit - results.Count,
-                                                 targetProduct.ProductId.ToString());
-                results.AddRange(sameSubCategoryProducts);
-            }
-
-            // 3. Keyword matching if we still need more
-            if (results.Count < limit)
-            {
-                var keywords = targetProduct.ProductName?.Split(' ') ?? Array.Empty<string>();
-                if (keywords.Any())
+                // 1. Same category products using new repository method
+                var categoryFilter = new ProductFilterDto
                 {
-                    var keywordProducts = await _productRepository
-                        .GetProductsByKeywordsAsync(keywords, limit - results.Count, targetProduct.ProductId.ToString());
-                    results.AddRange(keywordProducts);
+                    CategoryId = targetProduct.CategoryId,
+                    IsActive = true,
+                    PageSize = limit * 2, // Get more to filter out current product
+                    Page = 1
+                };
+
+                var sameCategoryProducts = await _productRepository.GetProductsByCategoryAsync(
+                    targetProduct.CategoryId, 
+                    categoryFilter);
+
+                // Convert ProductListDto to ProductResponseDto and exclude current product
+                foreach (var product in sameCategoryProducts.Data.Where(p => p.ProductId != targetProduct.ProductId))
+                {
+                    var fullProduct = await _productRepository.GetByIdAsync(product.ProductId);
+                    if (fullProduct != null)
+                    {
+                        results.Add(fullProduct);
+                        if (results.Count >= limit) break;
+                    }
+                }
+
+                // 2. Same sub-category products if we need more
+                if (results.Count < limit && targetProduct.SubCategoryId.HasValue)
+                {
+                    var subCategoryFilter = new ProductFilterDto
+                    {
+                        SubCategoryId = targetProduct.SubCategoryId.Value,
+                        IsActive = true,
+                        PageSize = limit - results.Count,
+                        Page = 1
+                    };
+
+                    var sameSubCategoryProducts = await _productRepository.GetSubCategoryProductsAsync(
+                        targetProduct.SubCategoryId.Value,
+                        subCategoryFilter);
+
+                    foreach (var product in sameSubCategoryProducts.Data.Where(p => p.ProductId != targetProduct.ProductId))
+                    {
+                        if (results.Any(r => r.ProductId == product.ProductId))
+                            continue; // Skip duplicates
+
+                        var fullProduct = await _productRepository.GetByIdAsync(product.ProductId);
+                        if (fullProduct != null)
+                        {
+                            results.Add(fullProduct);
+                            if (results.Count >= limit) break;
+                        }
+                    }
+                }
+
+                // 3. Keyword/search matching if we still need more
+                if (results.Count < limit && !string.IsNullOrEmpty(targetProduct.ProductName))
+                {
+                    var keywords = targetProduct.ProductName.Split(' ')
+                        .Where(k => k.Length > 3)
+                        .Take(3); // Use top 3 meaningful words
+
+                    foreach (var keyword in keywords)
+                    {
+                        if (results.Count >= limit) break;
+
+                        var searchFilter = new ProductFilterDto
+                        {
+                            ProductName = keyword,
+                            IsActive = true,
+                            PageSize = limit - results.Count,
+                            Page = 1
+                        };
+
+                        var searchResults = await _productRepository.SearchProductsAsync(
+                            keyword,
+                            null, // Search across all merchants
+                            searchFilter);
+
+                        foreach (var product in searchResults.Data.Where(p => p.ProductId != targetProduct.ProductId))
+                        {
+                            if (results.Any(r => r.ProductId == product.ProductId))
+                                continue; // Skip duplicates
+
+                            var fullProduct = await _productRepository.GetByIdAsync(product.ProductId);
+                            if (fullProduct != null)
+                            {
+                                results.Add(fullProduct);
+                                if (results.Count >= limit) break;
+                            }
+                        }
+                    }
+                }
+
+                // 4. Featured products as fallback
+                if (results.Count < limit)
+                {
+                    var featuredProducts = await _productRepository.GetFeaturedProductsAsync(
+                        null, // All merchants
+                        limit - results.Count,
+                        targetProduct.CategoryId); // Prefer same category
+
+                    foreach (var product in featuredProducts.Where(p => p.ProductId != targetProduct.ProductId))
+                    {
+                        if (results.Any(r => r.ProductId == product.ProductId))
+                            continue; // Skip duplicates
+
+                        var fullProduct = await _productRepository.GetByIdAsync(product.ProductId);
+                        if (fullProduct != null)
+                        {
+                            results.Add(fullProduct);
+                            if (results.Count >= limit) break;
+                        }
+                    }
                 }
             }
-
-            // 4. Popular products as fallback
-            if (results.Count < limit)
+            catch (Exception ex)
             {
-                var popularProducts = await _productRepository
-                    .GetPopularProductsAsync(limit - results.Count, targetProduct.ProductId.ToString());
-                results.AddRange(popularProducts);
+                _logger.LogError(ex, "Error finding similar products for {ProductId}", targetProduct.ProductId);
             }
 
-            return results.Distinct().Take(limit);
+            return results.Take(limit);
         }
 
-        private IEnumerable<SimilarProductDto> MapToDto(IEnumerable<Product> products, Product targetProduct)
+        private IEnumerable<SimilarProductDto> MapToDto(IEnumerable<ProductResponseDto> products, ProductResponseDto targetProduct)
         {
             return products.Select(p => new SimilarProductDto
             {
@@ -113,28 +206,39 @@ namespace Minimart_Api.Services.SimilarProducts
                 ImageUrl = p.ImageUrls?.FirstOrDefault() ?? "",
                 Price = p.Price,
                 Discount = (double)p.Discount,
-                InStock = p.IsActive,
+                InStock = p.InStock,
                 CategoryName = p.CategoryName,
                 ProductDescription = p.ProductDescription,
                 SimilarityScore = CalculateSimilarityScore(targetProduct, p)
             });
         }
 
-        private double CalculateSimilarityScore(Product product1, Product product2)
+        private double CalculateSimilarityScore(ProductResponseDto product1, ProductResponseDto product2)
         {
             double score = 0;
 
             // Category match (50% weight)
-            if (product1.CategoryId == product2.CategoryId) score += 0.5;
+            if (product1.CategoryId == product2.CategoryId) 
+                score += 50;
             // Sub-category match (30% weight)
-            else if (product1.SubCategoryId == product2.SubCategoryId) score += 0.3;
+            else if (product1.SubCategoryId.HasValue && 
+                     product2.SubCategoryId.HasValue && 
+                     product1.SubCategoryId == product2.SubCategoryId) 
+                score += 30;
 
             // Price similarity (20% weight)
             var priceDiff = Math.Abs((double)(product1.Price - product2.Price));
             var maxPrice = Math.Max((double)product1.Price, (double)product2.Price);
-            score += 0.2 * (1 - Math.Min(priceDiff / maxPrice, 1));
+            if (maxPrice > 0)
+            {
+                score += 20 * (1 - Math.Min(priceDiff / maxPrice, 1));
+            }
 
-            return Math.Round(score * 100, 2);
+            // Merchant match bonus (10% weight)
+            if (product1.MerchantID == product2.MerchantID)
+                score += 10;
+
+            return Math.Round(score, 2);
         }
     }
 }

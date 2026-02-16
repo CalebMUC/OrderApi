@@ -3,6 +3,7 @@ using Minimart_Api.DTOS.General;
 using Minimart_Api.DTOS.Products;
 using Minimart_Api.Services.CurrentUserServices;
 using Minimart_Api.Services.ProductService;
+using Minimart_Api.Services.SlugService; // ADD THIS
 
 namespace Minimart_Api.Controllers
 {
@@ -13,15 +14,17 @@ namespace Minimart_Api.Controllers
         private readonly IProductService _productService;
         private readonly ILogger<ProductController> _logger;
         private readonly ICurrentUserService _currentUserService;
+        private readonly ISlugService _slugService; // ADD THIS
 
         public ProductController(IProductService productService,
             ICurrentUserService currentUserService,
-            ILogger<ProductController> logger
-            )
+            ILogger<ProductController> logger,
+            ISlugService slugService) // ADD THIS PARAMETER
         {
             _productService = productService;
             _currentUserService = currentUserService;
             _logger = logger;
+            _slugService = slugService; // ADD THIS ASSIGNMENT
         }
 
         /// <summary>
@@ -67,6 +70,16 @@ namespace Minimart_Api.Controllers
                 {
                     _logger.LogWarning("Product not found: {ProductId}", productId);
                     return NotFound(ApiResponse<object>.CreateError($"Product with ID {productId} not found"));
+                }
+
+                // **SEO: 301 Redirect to slug-based URL if slug exists**
+                if (!string.IsNullOrEmpty(product.Slug))
+                {
+                    _logger.LogInformation(
+                        "Redirecting ProductId {ProductId} to slug URL: {Slug}", 
+                        productId, product.Slug);
+                        
+                    return RedirectPermanent($"/api/Product/slug/{product.Slug}");
                 }
 
                 _logger.LogInformation("Successfully retrieved product: {ProductId}", productId);
@@ -437,6 +450,53 @@ namespace Minimart_Api.Controllers
             {
                 _logger.LogError(ex, "Error approving product {ProductId}", productId);
                 return StatusCode(500, "An error occurred while approving the product.");
+            }
+        }
+
+        /// <summary>
+        /// Get product by SEO-friendly slug
+        /// GET /api/Product/slug/getac-k120-core-i5-6949aa56
+        /// </summary>
+        /// <param name="slug">SEO-friendly product slug</param>
+        /// <returns>Product details</returns>
+        [HttpGet("slug/{slug}")]
+        [ProducesResponseType(typeof(ApiResponse<ProductResponseDto>), 200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetProductBySlug(string slug)
+        {
+            try
+            {
+                _logger.LogInformation("Getting product by slug: {Slug}", slug);
+
+                // Validate slug format
+                if (!_slugService.IsValidSlug(slug))
+                {
+                    _logger.LogWarning("Invalid slug format: {Slug}", slug);
+                    return BadRequest(ApiResponse<object>.CreateError("Invalid product URL format"));
+                }
+
+                // Try to find product by slug
+                var product = await _productService.GetProductBySlugAsync(slug);
+
+                if (product == null)
+                {
+                    _logger.LogWarning("Product not found for slug: {Slug}", slug);
+                    return NotFound(ApiResponse<object>.CreateError("Product not found"));
+                }
+
+                _logger.LogInformation(
+                    "Successfully retrieved product by slug: {Slug} -> ProductId: {ProductId}", 
+                    slug, product.ProductId);
+
+                return Ok(ApiResponse<ProductResponseDto>.CreateSuccess(
+                    product, 
+                    "Product retrieved successfully"));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving product by slug: {Slug}", slug);
+                return StatusCode(500, ApiResponse<object>.CreateError(
+                    "An error occurred while retrieving the product"));
             }
         }
     }
