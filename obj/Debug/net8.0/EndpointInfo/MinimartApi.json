@@ -7782,6 +7782,28 @@
         }
       }
     },
+    "/p/{slug}": {
+      "get": {
+        "tags": [
+          "Share"
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/SystemSecurity/submodule-categories": {
       "get": {
         "tags": [
