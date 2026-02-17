@@ -195,6 +195,7 @@ builder.Services.AddScoped<OrderMapper>();
 builder.Services.AddScoped<BrevoEmailService>();
 
 builder.Services.AddMemoryCache();
+builder.Services.AddResponseCaching();
 
 // Register RabbitMQ connection
 builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();

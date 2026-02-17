@@ -6,6 +6,7 @@ using Minimart_Api.Models;
 using AutoMapper;
 using GeneralPagedResultDto = Minimart_Api.DTOS.General.PagedResultDto<Minimart_Api.DTOS.Products.ProductListDto>;
 using Minimart_Api.Services.SlugService;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Minimart_Api.Repositories.ProductRepository
 {
@@ -15,13 +16,17 @@ namespace Minimart_Api.Repositories.ProductRepository
         private readonly IMapper _mapper;
         private readonly ILogger<ProductRepository> _logger;
         private readonly ISlugService _slugService;
+        private readonly IMemoryCache _cache;
 
-        public ProductRepository(MinimartDBContext context, IMapper mapper, ILogger<ProductRepository> logger, ISlugService slugService)
+        public ProductRepository(MinimartDBContext context, IMapper mapper, ILogger<ProductRepository> logger,
+            ISlugService slugService,
+            IMemoryCache cache)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
             _slugService = slugService;
+            _cache = cache;
         }
 
 
@@ -429,6 +434,11 @@ namespace Minimart_Api.Repositories.ProductRepository
         {
             try
             {
+                var cacheKey = $"product_slug{slug}";
+
+                if(_cache.TryGetValue(cacheKey,out ProductResponseDto cachedProduct))
+                    return cachedProduct;
+
                 var product = await _context.Products
                     .Include(p => p.Category)
                     .Include(p => p.SubCategory)
@@ -437,7 +447,7 @@ namespace Minimart_Api.Repositories.ProductRepository
 
                 if (product == null)
                 {
-                    var redirect = await _context.SlugRedirects
+                     var redirect = await _context.SlugRedirects
                         .Where(sr => sr.OldSlug == slug)
                         .OrderByDescending(sr => sr.CreatedAt)
                         .FirstOrDefaultAsync();
@@ -450,6 +460,8 @@ namespace Minimart_Api.Repositories.ProductRepository
                             .FirstOrDefaultAsync();
                     }
                 }
+
+                _cache.Set(cacheKey, _mapper.Map<ProductResponseDto>(product), TimeSpan.FromHours(1));
 
                 return product != null ? _mapper.Map<ProductResponseDto>(product) : null;
             }

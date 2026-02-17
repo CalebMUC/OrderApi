@@ -4677,6 +4677,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Minimart_Api.Controllers.ShareController",
+    "Method": "GetProduct",
+    "RelativePath": "p/{slug}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "slug",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Minimart_Api.Controllers.WeatherForecastController",
     "Method": "Get",
     "RelativePath": "WeatherForecast",

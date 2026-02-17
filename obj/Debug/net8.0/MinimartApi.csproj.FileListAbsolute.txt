@@ -376,7 +376,6 @@ E:\MinimartApi_Staging\OrderApi\obj\Debug\net8.0\staticwebassets.build.json
 E:\MinimartApi_Staging\OrderApi\obj\Debug\net8.0\staticwebassets.build.json.cache
 E:\MinimartApi_Staging\OrderApi\obj\Debug\net8.0\staticwebassets.development.json
 E:\MinimartApi_Staging\OrderApi\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-E:\MinimartApi_Staging\OrderApi\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 E:\MinimartApi_Staging\OrderApi\obj\Debug\net8.0\Minimart.A297F1E7.Up2Date
 E:\MinimartApi_Staging\OrderApi\obj\Debug\net8.0\MinimartApi.dll
 E:\MinimartApi_Staging\OrderApi\obj\Debug\net8.0\refint\MinimartApi.dll
