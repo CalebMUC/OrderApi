@@ -72,9 +72,11 @@ namespace Minimart_Api.Controllers
                 else
                 {
                     // Redirect human users to React frontend
-                    var frontendUrl = _configuration["Frontend:BaseUrl"] ?? "https://quickcrate.co.ke";
-                    _logger.LogInformation("Redirecting human user to: {FrontendUrl}/p/{Slug}", frontendUrl, slug);
-                    return Redirect($"{frontendUrl}/p/{slug}");
+                    //var frontendUrl = _configuration["Frontend:BaseUrl"] ?? "https://quickcrate.co.ke";
+                    //_logger.LogInformation("Redirecting human user to: {FrontendUrl}/p/{Slug}", frontendUrl, slug);
+                    //return Redirect($"{frontendUrl}/p/{slug}");
+                    var html = GenerateProductHtml(product);
+                    return Content(html, "text/html");
                 }
             }
             catch (Exception ex)
