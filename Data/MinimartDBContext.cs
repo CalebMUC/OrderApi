@@ -48,6 +48,10 @@ namespace Minimart_Api.Data
         public virtual DbSet<PayoutTransaction> PayoutTransactions { get; set; }
 
         public virtual DbSet<SlugRedirect> SlugRedirects { get; set; } // ADD THIS LINE
+        
+        // Guest checkout models
+        public virtual DbSet<GuestCart> GuestCarts { get; set; }
+        public virtual DbSet<GuestCheckout> GuestCheckouts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -400,170 +404,171 @@ namespace Minimart_Api.Data
 
             // Configure Payout entities
             ConfigurePayoutEntities(modelBuilder);
+            
+            // Configure Guest Checkout entities
+            ConfigureGuestCheckoutEntities(modelBuilder);
+        }
+
+        private void ConfigureGuestCheckoutEntities(ModelBuilder modelBuilder)
+        {
+            // Configure GuestCart entity
+            modelBuilder.Entity<GuestCart>(entity =>
+            {
+                entity.ToTable("GuestCarts");
+                entity.HasKey(gc => gc.GuestCartId);
+                
+                // Configure relationship with Product
+                entity.HasOne(gc => gc.Product)
+                    .WithMany()
+                    .HasForeignKey(gc => gc.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                // Configure timestamp fields
+                entity.Property(gc => gc.CreatedAt).HasColumnType("timestamp with time zone");
+                entity.Property(gc => gc.UpdatedAt).HasColumnType("timestamp with time zone");
+                entity.Property(gc => gc.ExpiresAt).HasColumnType("timestamp with time zone");
+                
+                // Add indexes for performance
+                entity.HasIndex(gc => gc.GuestId);
+                entity.HasIndex(gc => gc.ProductId);
+                entity.HasIndex(gc => gc.ExpiresAt);
+                entity.HasIndex(gc => new { gc.GuestId, gc.ProductId });
+            });
+            
+            // Configure GuestCheckout entity
+            modelBuilder.Entity<GuestCheckout>(entity =>
+            {
+                entity.ToTable("GuestCheckouts");
+                entity.HasKey(gco => gco.GuestCheckoutId);
+                
+                // Configure relationships
+                entity.HasOne(gco => gco.County)
+                    .WithMany()
+                    .HasForeignKey(gco => gco.CountyId)
+                    .OnDelete(DeleteBehavior.SetNull);
+                
+                entity.HasOne(gco => gco.Town)
+                    .WithMany()
+                    .HasForeignKey(gco => gco.TownId)
+                    .OnDelete(DeleteBehavior.SetNull);
+                
+                entity.HasOne(gco => gco.DeliveryStation)
+                    .WithMany()
+                    .HasForeignKey(gco => gco.DeliveryStationId)
+                    .OnDelete(DeleteBehavior.SetNull);
+                
+                entity.HasOne(gco => gco.Order)
+                    .WithOne(o => o.GuestCheckout)
+                    .HasForeignKey<GuestCheckout>(gco => gco.OrderId)
+                    .OnDelete(DeleteBehavior.SetNull);
+                
+                // Configure decimal precision
+                entity.Property(gco => gco.DeliveryFee).HasColumnType("decimal(18,2)");
+                entity.Property(gco => gco.SubtotalAmount).HasColumnType("decimal(18,2)");
+                entity.Property(gco => gco.TotalAmount).HasColumnType("decimal(18,2)");
+                
+                // Configure timestamp fields
+                entity.Property(gco => gco.CreatedAt).HasColumnType("timestamp with time zone");
+                entity.Property(gco => gco.CompletedAt).HasColumnType("timestamp with time zone");
+                
+                // Add indexes for performance
+                entity.HasIndex(gco => gco.GuestId);
+                entity.HasIndex(gco => gco.PhoneNumber);
+                entity.HasIndex(gco => gco.Status);
+                entity.HasIndex(gco => gco.CheckoutRequestId);
+                entity.HasIndex(gco => gco.MerchantRequestId);
+                entity.HasIndex(gco => gco.OrderId);
+                entity.HasIndex(gco => gco.CreatedAt);
+            });
         }
 
         private void ConfigureOrderEntities(ModelBuilder modelBuilder)
         {
-            // Order configuration with ApplicationUserId for Identity system
-            modelBuilder.Entity<Models.Order>(entity =>
+            // Configure Order entity
+            modelBuilder.Entity<Order>(entity =>
             {
                 entity.ToTable("Orders");
                 entity.HasKey(o => o.OrderID);
-                
-                // Configure ApplicationUserId as string for Identity system
-                entity.Property(o => o.ApplicationUserId)
-                    .HasColumnType("text");
 
-                // Configure Status as string
-                entity.Property(o => o.Status)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("varchar(50)")
-                    .HasDefaultValue("Pending");
+                entity.Property(o => o.OrderDate).HasColumnType("timestamp with time zone");
+                entity.Property(o => o.DeliveryScheduleDate).HasColumnType("timestamp with time zone");
 
-                // Add index for better query performance
-                entity.HasIndex(o => o.ApplicationUserId);
-                entity.HasIndex(o => o.OrderDate);
-                entity.HasIndex(o => o.Status);
-                entity.HasIndex(o => o.StatusEnum);
+                entity.Property(o => o.TotalOrderAmount).HasColumnType("decimal(18,2)");
+                entity.Property(o => o.TotalPaymentAmount).HasColumnType("decimal(18,2)");
+                entity.Property(o => o.TotalDeliveryFees).HasColumnType("decimal(18,2)");
+                entity.Property(o => o.TotalTax).HasColumnType("decimal(18,2)");
 
-                // Configure relationships
-                entity.HasMany(o => o.OrderProducts)
-                    .WithOne(op => op.Order)
-                    .HasForeignKey(op => op.OrderID)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(o => o.PaymentDetails)
-                    .WithOne()
-                    .HasForeignKey<Models.Order>(o => o.PaymentID)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                    
-                // Configure relationship with ApplicationUser
-                entity.HasOne<ApplicationUser>()
-                    .WithMany()
+                // Relationship with ApplicationUser
+                entity.HasOne(o => o.User)
+                    .WithMany(u => u.Orders)
                     .HasForeignKey(o => o.ApplicationUserId)
                     .OnDelete(DeleteBehavior.SetNull);
+
+                // Relationship with OrderStatus
+                entity.HasOne(o => o.OrderStatus)
+                    .WithMany()
+                    .HasForeignKey(o => o.StatusID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Relationship with PaymentDetails
+                entity.HasOne(o => o.PaymentDetails)
+                    .WithMany()
+                    .HasForeignKey(o => o.PaymentID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Add indexes
+                entity.HasIndex(o => o.ApplicationUserId);
+                entity.HasIndex(o => o.StatusID);
+                entity.HasIndex(o => o.OrderDate);
             });
 
-            // OrderStatus configuration
+            // Configure OrderStatus entity
             modelBuilder.Entity<OrderStatus>(entity =>
             {
                 entity.ToTable("OrderStatuses");
                 entity.HasKey(os => os.StatusID);
             });
 
-            modelBuilder.Entity<OrderProduct>(entity =>
-            {
-                entity.HasKey(op => op.OrderProductID);
-
-                entity.HasOne(op => op.Product)
-                    .WithMany(p => p.OrderProducts)
-                    .HasForeignKey(op => op.ProductId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(op => op.Merchant)
-                    .WithMany()
-                    .HasForeignKey(op => op.MerchantID)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(op => op.Order)
-                    .WithMany(o => o.OrderProducts)
-                    .HasForeignKey(op => op.OrderID)
-                    .OnDelete(DeleteBehavior.Cascade);
-            });
-
+            // Configure OrderTracking entity
             modelBuilder.Entity<OrderTracking>(entity =>
             {
                 entity.ToTable("OrderTracking");
                 entity.HasKey(ot => ot.TrackingID);
-
-                // Configure status as strings
-                entity.Property(ot => ot.CurrentStatus)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("varchar(50)")
-                    .HasDefaultValue("Processing");
-
-                entity.Property(ot => ot.PreviousStatus)
-                    .HasMaxLength(50)
-                    .HasColumnType("varchar(50)");
 
                 entity.HasOne(ot => ot.Order)
                     .WithMany(o => o.OrderTrackings)
                     .HasForeignKey(ot => ot.OrderID)
                     .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasOne(ot => ot.Product)
-                    .WithMany(p => p.OrderTrackings)
-                    .HasForeignKey(ot => ot.ProductId)
+                entity.HasIndex(ot => ot.OrderID);
+            });
+
+            // Configure OrderProduct entity
+            modelBuilder.Entity<OrderProduct>(entity =>
+            {
+                entity.ToTable("OrderProducts");
+                entity.HasKey(op => op.OrderProductID);
+
+                entity.HasOne(op => op.Order)
+                    .WithMany(o => o.OrderProducts)
+                    .HasForeignKey(op => op.OrderID)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(op => op.OrderID);
             });
         }
 
         private void ConfigureUserEntities(ModelBuilder modelBuilder)
         {
-            // Configure Application User - let Identity handle the primary key configuration
+            // Configure ApplicationUser entity
             modelBuilder.Entity<ApplicationUser>(entity =>
             {
-                // Only configure custom properties, let Identity handle Id, UserName, etc.
-                entity.Property(u => u.CreatedAt).HasColumnType("timestamp with time zone");
                 entity.Property(u => u.LastLogin).HasColumnType("timestamp with time zone");
+                entity.Property(u => u.CreatedAt).HasColumnType("timestamp with time zone");
                 entity.Property(u => u.PasswordChangesOn).HasColumnType("timestamp with time zone");
                 entity.Property(u => u.LastPasswordReset).HasColumnType("timestamp with time zone");
-                entity.Property(u => u.TemporaryPasswordExpiry).HasColumnType("timestamp with time zone");
                 entity.Property(u => u.LastLoginDate).HasColumnType("timestamp with time zone");
-                
-                // Configure navigation properties to related entities
-                entity.HasMany(u => u.Addresses)
-                    .WithOne(a => a.User)
-                    .HasForeignKey(a => a.ApplicationUserId)
-                    .OnDelete(DeleteBehavior.SetNull);
-
-                entity.HasMany(u => u.Carts)
-                    .WithOne()
-                    .HasForeignKey("ApplicationUserId")
-                    .OnDelete(DeleteBehavior.SetNull);
-
-                entity.HasMany(u => u.Reviews)
-                    .WithOne(r => r.User)
-                    .HasForeignKey(r => r.ApplicationUserId)
-                    .OnDelete(DeleteBehavior.SetNull);
-            });
-
-            // Configure Merchants entity
-            modelBuilder.Entity<Merchants>(entity =>
-            {
-                entity.ToTable("Merchants");
-                entity.HasKey(m => m.MerchantID);
-                
-                // Ensure ApplicationUserId is properly configured to reference ApplicationUser.Id
-                entity.Property(m => m.ApplicationUserId)
-                    .HasColumnType("text"); // Match ApplicationUser.Id type
-                
-                // Configure Documents as PostgreSQL text array
-                entity.Property(m => m.Documents)
-                    .HasColumnType("text[]");
-                
-                // Add index for performance
-                entity.HasIndex(m => m.ApplicationUserId)
-                    .IsUnique(); // One merchant per user
-                    
-                // Configure relationship with ApplicationUser
-                entity.HasOne(m => m.User)
-                    .WithOne(u => u.Merchant)
-                    .HasForeignKey<Merchants>(m => m.ApplicationUserId)
-                    .IsRequired(false);
-            });
-
-            // Configure Addresses entity
-            modelBuilder.Entity<Addresses>(entity =>
-            {
-                entity.ToTable("Addresses");
-                entity.HasKey(a => a.AddressID);
-                
-                // Add index for performance
-                entity.HasIndex(a => a.ApplicationUserId);
+                entity.Property(u => u.TemporaryPasswordExpiry).HasColumnType("timestamp with time zone");
             });
 
             // Configure Cart entity
@@ -571,15 +576,39 @@ namespace Minimart_Api.Data
             {
                 entity.ToTable("Cart");
                 entity.HasKey(c => c.CartId);
-                
-                // Configure relationship with CartItems
-                entity.HasMany(c => c.CartItems)
-                    .WithOne(ci => ci.Cart)
-                    .HasForeignKey(ci => ci.CartId)
+
+                entity.HasOne(c => c.User)
+                    .WithMany(u => u.Carts)
+                    .HasForeignKey(c => c.ApplicationUserId)
                     .OnDelete(DeleteBehavior.Cascade);
-                    
-                // Add index for performance
+
+                entity.Property(c => c.UpdatedAt).HasColumnType("timestamp with time zone");
+
                 entity.HasIndex(c => c.ApplicationUserId);
+            });
+
+            // Configure SavedItems entity
+            modelBuilder.Entity<SavedItems>(entity =>
+            {
+                entity.ToTable("SavedItems");
+                entity.HasKey(si => si.Id);
+                
+                entity.HasIndex(si => si.ApplicationUserId);
+                entity.HasIndex(si => si.ProductId);
+            });
+
+            // Configure Addresses entity
+            modelBuilder.Entity<Addresses>(entity =>
+            {
+                entity.ToTable("Addresses");
+                entity.HasKey(a => a.AddressID);
+
+                entity.HasOne(a => a.User)
+                    .WithMany(u => u.Addresses)
+                    .HasForeignKey(a => a.ApplicationUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(a => a.ApplicationUserId);
             });
 
             // Configure Reviews entity
@@ -587,51 +616,34 @@ namespace Minimart_Api.Data
             {
                 entity.ToTable("Reviews");
                 entity.HasKey(r => r.ReviewId);
-                
-                // Configure relationship with Product
+
+                entity.HasOne(r => r.User)
+                    .WithMany(u => u.Reviews)
+                    .HasForeignKey(r => r.ApplicationUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
                 entity.HasOne(r => r.Product)
-                    .WithMany(p => p.Reviews)
+                    .WithMany()
                     .HasForeignKey(r => r.ProductId)
                     .OnDelete(DeleteBehavior.Cascade);
-                    
-                // Add indexes for performance
+
                 entity.HasIndex(r => r.ApplicationUserId);
                 entity.HasIndex(r => r.ProductId);
             });
 
-            // Configure SavedItems entity
-            modelBuilder.Entity<SavedItems>(entity =>
+            // Configure Merchants entity
+            modelBuilder.Entity<Merchants>(entity =>
             {
-                entity.ToTable("SavedItems");
-                entity.HasKey(s => s.Id);
-                
-                // Configure relationship with Product
-                entity.HasOne(s => s.Product)
-                    .WithMany()
-                    .HasForeignKey(s => s.ProductId)
-                    .OnDelete(DeleteBehavior.Cascade);
-                    
-                // Add index for performance
-                entity.HasIndex(s => s.ApplicationUserId);
-                entity.HasIndex(s => s.ProductId);
-            });
-        }
+                entity.ToTable("Merchants");
+                entity.HasKey(m => m.MerchantID);
 
-        private decimal CalculateMedian(List<decimal> values)
-        {
-            if (!values.Any()) return 0;
-            
-            var sorted = values.OrderBy(x => x).ToList();
-            int count = sorted.Count;
-            
-            if (count % 2 == 0)
-            {
-                return (sorted[count / 2 - 1] + sorted[count / 2]) / 2;
-            }
-            else
-            {
-                return sorted[count / 2];
-            }
+                entity.HasOne(m => m.User)
+                    .WithOne(u => u.Merchant)
+                    .HasForeignKey<Merchants>(m => m.ApplicationUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(m => m.ApplicationUserId);
+            });
         }
 
         private void ConfigurePayoutEntities(ModelBuilder modelBuilder)
@@ -642,43 +654,36 @@ namespace Minimart_Api.Data
                 entity.ToTable("Payouts");
                 entity.HasKey(p => p.PayoutId);
 
-                // Configure relationships
-                entity.HasOne(p => p.Merchant)
-                    .WithMany()
-                    .HasForeignKey(p => p.MerchantId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(p => p.PaymentMethod)
-                    .WithMany()
-                    .HasForeignKey(p => p.PaymentMethodId)
-                    .OnDelete(DeleteBehavior.SetNull);
-
-                entity.HasMany(p => p.PayoutTransactions)
-                    .WithOne(pt => pt.Payout)
-                    .HasForeignKey(pt => pt.PayoutId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                // Configure indexes
-                entity.HasIndex(p => p.MerchantId);
-                entity.HasIndex(p => p.Status);
-                entity.HasIndex(p => p.PeriodStartDate);
-                entity.HasIndex(p => p.PeriodEndDate);
-                entity.HasIndex(p => p.CreatedDate);
-                entity.HasIndex(p => new { p.MerchantId, p.Status });
-
-                // Configure decimal precision
                 entity.Property(p => p.GrossAmount).HasColumnType("decimal(18,2)");
                 entity.Property(p => p.CommissionAmount).HasColumnType("decimal(18,2)");
-                entity.Property(p => p.NetAmount).HasColumnType("decimal(18,2)");
                 entity.Property(p => p.CommissionRate).HasColumnType("decimal(5,4)");
+                entity.Property(p => p.NetAmount).HasColumnType("decimal(18,2)");
 
-                // Configure timestamp fields
                 entity.Property(p => p.PeriodStartDate).HasColumnType("timestamp with time zone");
                 entity.Property(p => p.PeriodEndDate).HasColumnType("timestamp with time zone");
                 entity.Property(p => p.CreatedDate).HasColumnType("timestamp with time zone");
                 entity.Property(p => p.ScheduledDate).HasColumnType("timestamp with time zone");
                 entity.Property(p => p.CompletedDate).HasColumnType("timestamp with time zone");
                 entity.Property(p => p.UpdatedDate).HasColumnType("timestamp with time zone");
+
+                // Relationship with Merchant
+                entity.HasOne(p => p.Merchant)
+                    .WithMany()
+                    .HasForeignKey(p => p.MerchantId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Relationship with PaymentMethod
+                entity.HasOne(p => p.PaymentMethod)
+                    .WithMany()
+                    .HasForeignKey(p => p.PaymentMethodId)
+                    .OnDelete(DeleteBehavior.SetNull);
+
+                // Add indexes
+                entity.HasIndex(p => p.MerchantId);
+                entity.HasIndex(p => p.Status);
+                entity.HasIndex(p => p.CreatedDate);
+                entity.HasIndex(p => p.PeriodStartDate);
+                entity.HasIndex(p => p.PeriodEndDate);
             });
 
             // Configure PayoutTransaction entity
@@ -687,32 +692,29 @@ namespace Minimart_Api.Data
                 entity.ToTable("PayoutTransactions");
                 entity.HasKey(pt => pt.PayoutTransactionId);
 
-                // Configure relationships
-                entity.HasOne(pt => pt.Payout)
-                    .WithMany(p => p.PayoutTransactions)
-                    .HasForeignKey(pt => pt.PayoutId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(pt => pt.Order)
-                    .WithMany()
-                    .HasForeignKey(pt => pt.OrderId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
-                // Configure indexes
-                entity.HasIndex(pt => pt.PayoutId);
-                entity.HasIndex(pt => pt.OrderId);
-                entity.HasIndex(pt => pt.OrderCompletedDate);
-                entity.HasIndex(pt => pt.CreatedDate);
-
-                // Configure decimal precision
                 entity.Property(pt => pt.OrderAmount).HasColumnType("decimal(18,2)");
                 entity.Property(pt => pt.CommissionAmount).HasColumnType("decimal(18,2)");
                 entity.Property(pt => pt.NetAmount).HasColumnType("decimal(18,2)");
                 entity.Property(pt => pt.CommissionRate).HasColumnType("decimal(5,4)");
 
-                // Configure timestamp fields
                 entity.Property(pt => pt.OrderCompletedDate).HasColumnType("timestamp with time zone");
                 entity.Property(pt => pt.CreatedDate).HasColumnType("timestamp with time zone");
+
+                // Relationship with Payout
+                entity.HasOne(pt => pt.Payout)
+                    .WithMany(p => p.PayoutTransactions)
+                    .HasForeignKey(pt => pt.PayoutId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Relationship with Order
+                entity.HasOne(pt => pt.Order)
+                    .WithMany()
+                    .HasForeignKey(pt => pt.OrderId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Add indexes
+                entity.HasIndex(pt => pt.PayoutId);
+                entity.HasIndex(pt => pt.OrderId);
             });
         }
     }

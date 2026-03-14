@@ -13,6 +13,13 @@ namespace Minimart_Api.Models
 
         // Modern Identity support only
         public string? ApplicationUserId { get; set; }
+        
+        // Guest Order Support
+        [Column(TypeName = "boolean")]
+        public bool IsGuestOrder { get; set; } = false;
+        
+        public Guid? GuestCheckoutId { get; set; }
+
         //A foreign Key to OrderStatus
         [Required]
         public int StatusID { get; set; }
@@ -89,6 +96,9 @@ namespace Minimart_Api.Models
 
         [ForeignKey("ApplicationUserId")]
         public virtual ApplicationUser? User { get; set; }
+        
+        [ForeignKey("GuestCheckoutId")]
+        public virtual GuestCheckout? GuestCheckout { get; set; }
 
         public virtual ICollection<OrderTracking> OrderTrackings { get; set; } = new List<OrderTracking>();
         public virtual ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();

@@ -140,6 +140,13 @@ builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 // Payout Services
 builder.Services.AddScoped<IPayoutService, PayoutService>();
 
+// Guest Checkout Services
+builder.Services.AddScoped<Minimart_Api.Services.GuestCheckout.IGuestCartService, Minimart_Api.Services.GuestCheckout.GuestCartService>();
+builder.Services.AddScoped<Minimart_Api.Services.GuestCheckout.IGuestCheckoutService, Minimart_Api.Services.GuestCheckout.GuestCheckoutService>();
+
+// Background Services
+builder.Services.AddHostedService<Minimart_Api.BackgroundServices.GuestCartCleanupService>();
+
 builder.Services.AddScoped<ISimilarProductsService, SimilarProductsService>();
 
 builder.Services.AddScoped<IAuthentication, AuthenticationService>();

@@ -2111,6 +2111,164 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Minimart_Api.Controllers.GuestCartController",
+    "Method": "GetCart",
+    "RelativePath": "api/GuestCart/{guestId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "guestId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.GuestCartController",
+    "Method": "AddToCart",
+    "RelativePath": "api/GuestCart/add",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Minimart_Api.DTOS.GuestCheckout.AddToGuestCartDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.GuestCartController",
+    "Method": "CleanupExpiredCarts",
+    "RelativePath": "api/GuestCart/cleanup",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.GuestCartController",
+    "Method": "ClearCart",
+    "RelativePath": "api/GuestCart/clear/{guestId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "guestId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.GuestCartController",
+    "Method": "RemoveItem",
+    "RelativePath": "api/GuestCart/remove/{guestCartId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "guestCartId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "guestId",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.GuestCartController",
+    "Method": "UpdateQuantity",
+    "RelativePath": "api/GuestCart/update",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Minimart_Api.DTOS.GuestCheckout.UpdateGuestCartDto",
+        "IsRequired": true
+      },
+      {
+        "Name": "guestId",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.GuestCheckoutController",
+    "Method": "AbandonOldCheckouts",
+    "RelativePath": "api/GuestCheckout/abandon-old",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.GuestCheckoutController",
+    "Method": "CalculateDelivery",
+    "RelativePath": "api/GuestCheckout/calculate-delivery",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Minimart_Api.Controllers.DeliveryCalculationDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.GuestCheckoutController",
+    "Method": "InitiateCheckout",
+    "RelativePath": "api/GuestCheckout/initiate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Minimart_Api.DTOS.GuestCheckout.InitiateGuestCheckoutDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Minimart_Api.Controllers.GuestCheckoutController",
+    "Method": "GetCheckoutStatus",
+    "RelativePath": "api/GuestCheckout/status/{guestCheckoutId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "guestCheckoutId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Minimart_Api.Controllers.IdentityController",
     "Method": "AdminOnlyEndpoint",
     "RelativePath": "api/Identity/admin-only",

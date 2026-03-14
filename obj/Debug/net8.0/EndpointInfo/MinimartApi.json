@@ -3506,6 +3506,260 @@
         }
       }
     },
+    "/api/GuestCart/add": {
+      "post": {
+        "tags": [
+          "GuestCart"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToGuestCartDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToGuestCartDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToGuestCartDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GuestCart/{guestId}": {
+      "get": {
+        "tags": [
+          "GuestCart"
+        ],
+        "parameters": [
+          {
+            "name": "guestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GuestCart/update": {
+      "put": {
+        "tags": [
+          "GuestCart"
+        ],
+        "parameters": [
+          {
+            "name": "guestId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGuestCartDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGuestCartDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGuestCartDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GuestCart/remove/{guestCartId}": {
+      "delete": {
+        "tags": [
+          "GuestCart"
+        ],
+        "parameters": [
+          {
+            "name": "guestCartId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "guestId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GuestCart/clear/{guestId}": {
+      "delete": {
+        "tags": [
+          "GuestCart"
+        ],
+        "parameters": [
+          {
+            "name": "guestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GuestCart/cleanup": {
+      "post": {
+        "tags": [
+          "GuestCart"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GuestCheckout/initiate": {
+      "post": {
+        "tags": [
+          "GuestCheckout"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitiateGuestCheckoutDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitiateGuestCheckoutDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitiateGuestCheckoutDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GuestCheckout/status/{guestCheckoutId}": {
+      "get": {
+        "tags": [
+          "GuestCheckout"
+        ],
+        "parameters": [
+          {
+            "name": "guestCheckoutId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GuestCheckout/calculate-delivery": {
+      "post": {
+        "tags": [
+          "GuestCheckout"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeliveryCalculationDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeliveryCalculationDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeliveryCalculationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/GuestCheckout/abandon-old": {
+      "post": {
+        "tags": [
+          "GuestCheckout"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/v2/Identity/register": {
       "post": {
         "tags": [
@@ -7945,6 +8199,32 @@
         },
         "additionalProperties": false
       },
+      "AddToGuestCartDto": {
+        "required": [
+          "guestId",
+          "productId",
+          "quantity"
+        ],
+        "type": "object",
+        "properties": {
+          "guestId": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "maximum": 9999,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "AddressDTO": {
         "type": "object",
         "properties": {
@@ -8946,6 +9226,27 @@
         "type": "integer",
         "format": "int32"
       },
+      "DeliveryCalculationDto": {
+        "type": "object",
+        "properties": {
+          "countyId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "townId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "deliveryStationId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "EditAddressDTO": {
         "type": "object",
         "properties": {
@@ -9272,6 +9573,58 @@
           },
           "orderID": {
             "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InitiateGuestCheckoutDto": {
+        "required": [
+          "deliveryAddress",
+          "fullName",
+          "guestId",
+          "phoneNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "guestId": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "fullName": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "phoneNumber": {
+            "minLength": 1,
+            "pattern": "^(0[17]\\d{8}|254[17]\\d{8})$",
+            "type": "string"
+          },
+          "email": {
+            "maxLength": 255,
+            "type": "string",
+            "format": "email",
+            "nullable": true
+          },
+          "deliveryAddress": {
+            "minLength": 10,
+            "type": "string"
+          },
+          "countyId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "townId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "deliveryStationId": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           }
         },
@@ -12306,6 +12659,26 @@
             "maxLength": 500,
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateGuestCartDto": {
+        "required": [
+          "guestCartId",
+          "quantity"
+        ],
+        "type": "object",
+        "properties": {
+          "guestCartId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "quantity": {
+            "maximum": 9999,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false

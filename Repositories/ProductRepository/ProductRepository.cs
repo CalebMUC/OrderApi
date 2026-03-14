@@ -7,6 +7,7 @@ using AutoMapper;
 using GeneralPagedResultDto = Minimart_Api.DTOS.General.PagedResultDto<Minimart_Api.DTOS.Products.ProductListDto>;
 using Minimart_Api.Services.SlugService;
 using Microsoft.Extensions.Caching.Memory;
+using Minimart_Api.Utilities;
 
 namespace Minimart_Api.Repositories.ProductRepository
 {
@@ -268,6 +269,14 @@ namespace Minimart_Api.Repositories.ProductRepository
                 product.CreatedBy = createdBy;
                 product.IsActive = false;
 
+                // ? ROUND PRICE TO WHOLE NUMBER FOR KENYA MARKET
+                product.Price = PriceUtility.RoundPrice(product.Price);
+                product.Discount = PriceUtility.RoundPrice(product.Discount);
+                
+                _logger.LogInformation(
+                    "Price rounded for new product '{ProductName}': Original {OriginalPrice}, Rounded {RoundedPrice}",
+                    product.ProductName, createProductDto.Price, product.Price);
+
                 // **GENERATE SEO SLUG AND META TAGS**
                 product.Slug = _slugService.GenerateSlug(createProductDto.ProductName, product.ProductId);
                 product.SlugUpdatedAt = DateTime.UtcNow;
@@ -327,6 +336,14 @@ namespace Minimart_Api.Repositories.ProductRepository
 
                 _mapper.Map(updateProductDto, existingProduct);
                 existingProduct.UpdatedBy = updatedBy;
+
+                // ? ROUND PRICE TO WHOLE NUMBER FOR KENYA MARKET
+                existingProduct.Price = PriceUtility.RoundPrice(existingProduct.Price);
+                existingProduct.Discount = PriceUtility.RoundPrice(existingProduct.Discount);
+                
+                _logger.LogInformation(
+                    "Price rounded for product '{ProductName}' (ID: {ProductId}): Price {Price}, Discount {Discount}",
+                    existingProduct.ProductName, existingProduct.ProductId, existingProduct.Price, existingProduct.Discount);
 
                 // **REGENERATE SLUG IF PRODUCT NAME CHANGED**
                 if (nameChanged && !string.IsNullOrEmpty(updateProductDto.ProductName))
