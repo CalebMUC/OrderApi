@@ -266,7 +266,7 @@ namespace Minimart_Api.Repositories.ProductRepository
 
                 var product = _mapper.Map<Product>(createProductDto);
                 product.CreatedBy = createdBy;
-                product.IsActive = false;
+                product.IsActive = true; // Set to true by default, can be changed later by merchant
 
                 // **GENERATE SEO SLUG AND META TAGS**
                 product.Slug = _slugService.GenerateSlug(createProductDto.ProductName, product.ProductId);
